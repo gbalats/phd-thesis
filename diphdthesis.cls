@@ -6,7 +6,7 @@
 %
 % Copyright (c) 2014, 2015 Charalampos S. Nikolaou <charnik@di.uoa.gr>
 %
-% This work may be distributed and/or modified under the conditions of the 
+% This work may be distributed and/or modified under the conditions of the
 % LaTeX Project Public License. The latest version of this license is in
 %   http://www.latex-project.org/lppl.txt.
 %
@@ -18,12 +18,12 @@
 %		A sample document demonstrating the use of this class file
 %
 % emblems/
-%		A directory containing three colored versions of the official emblem of 
+%		A directory containing three colored versions of the official emblem of
 %		the National and Kapodistrian University of Athens.
 %
 % fonts/
-%		A directory containing the Arial family TrueType fonts. The directory 
-%		also includes a README file with instructions on installing the fonts 	
+%		A directory containing the Arial family TrueType fonts. The directory
+%		also includes a README file with instructions on installing the fonts
 %		in your system (assuming Unix-based).
 
 % Document Class Options
@@ -37,8 +37,8 @@
 %		command \acksEn{} is printed.
 %
 % preface
-%		If present, then a preface page is included just before the    
-%		introductory chapter. The content of this page is controled via the 
+%		If present, then a preface page is included just before the
+%		introductory chapter. The content of this page is controled via the
 %		command \preface{}.
 %
 % lop
@@ -48,12 +48,12 @@
 % Document Versions
 %
 % Version 1.1, 2015/11/06
-%		Updated document class so as to be compatible with the template file 
-%		regarding the appearance of headers/footers and appendix names. Require 
+%		Updated document class so as to be compatible with the template file
+%		regarding the appearance of headers/footers and appendix names. Require
 %		also package `longtable' for being used for abbreviations/acronyms.
 %
 % Version 1.0, 2014/12/08
-%		Initial attempt at creating the first class file for LaTeX Theses in 
+%		Initial attempt at creating the first class file for LaTeX Theses in
 %		DI&T, NKUA.
 
 % Known Issues
@@ -65,13 +65,13 @@
 %
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{diphdthesis}[2015/11/06 v1.1 LaTeX class for PhD Theses 
-submitted to the Department of Informatics and Telecommunications of the 
-National and Kapodistrian University of Athens (by Charalampos Nikolaou 
+\ProvidesClass{diphdthesis}[2015/11/06 v1.1 LaTeX class for PhD Theses
+submitted to the Department of Informatics and Telecommunications of the
+National and Kapodistrian University of Athens (by Charalampos Nikolaou
 <charnik@di.uoa.gr>)]
 
 %
-% Declare and initialize global ifs 
+% Declare and initialize global ifs
 % (set by passing options to this document class)
 %
 
@@ -104,8 +104,8 @@ National and Kapodistrian University of Athens (by Charalampos Nikolaou
 % (used later for setting an appropriate naming scheme for the appendix title)
 \newif\ifappendixstarted
 \appendixstartedfalse
-    
-% 
+
+%
 % Check passed options
 %
 \DeclareOption{inscr}{
@@ -133,28 +133,32 @@ National and Kapodistrian University of Athens (by Charalampos Nikolaou
 \RequirePackage[a4paper,
 top=2cm,bottom=2cm,bindingoffset=0.5cm,left=2cm,right=2cm,
 headheight=15pt,headsep=1.25cm,footskip=1.25cm,
-includehead,includefoot]{geometry} % add option showframe=true for debugging 
+includehead,includefoot]{geometry} % add option showframe=true for debugging
 \RequirePackage{fancyhdr}
 \RequirePackage[final]{graphicx}
 \RequirePackage{sectsty}   % needed for formatting chapter headings
 \RequirePackage{textcase}  % needed for forcing capital letters (in chapters)
-\RequirePackage[resetlabels]{multibib}
 %\usepackage[notlof,notlot,nottoc,notlop]{tocbibind}
 %\RequirePackage{tocloft}  % needed for making chapter titles upper case
 \RequirePackage{etoolbox}  % needed for patchcmd
 \RequirePackage{tabularx}  % needed for tabular* environment
-\RequirePackage{longtable} % needed for splitting big tables across pages 
+\RequirePackage{longtable} % needed for splitting big tables across pages
 
 %(e.g., abbreviations)
-%\RequirePackage[toc,page,titletoc]{appendix} % needed for configuring 
+%\RequirePackage[toc,page,titletoc]{appendix} % needed for configuring
 %%appendices
 
 %
 % Add Greek support
 %
-\usepackage{fontspec}
-\usepackage{xunicode}
-\usepackage{xltxtra}
+\usepackage[greek,english]{babel}
+\usepackage{csquotes}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[normalem]{ulem}
+
+\newcommand{\gr}{\selectlanguage{greek}}
+\newcommand{\en}{\selectlanguage{english}}
 
 %
 % Set font mamily Aria
@@ -174,10 +178,10 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Commands for first, middle, and last name (greek and english versions)
 %
-\providecommand{\authorFirstGr}[1]{\gdef\@authorFirstGr{#1}}
-\providecommand{\authorFirstAbrGr}[1]{\gdef\@authorFirstAbrGr{#1}}
-\providecommand{\authorMiddleGr}[1]{\gdef\@authorMiddleGr{#1}}
-\providecommand{\authorLastGr}[1]{\gdef\@authorLastGr{#1}}
+\providecommand{\authorFirstGr}[1]{\gdef\@authorFirstGr{{\gr #1}}}
+\providecommand{\authorFirstAbrGr}[1]{\gdef\@authorFirstAbrGr{{\gr #1}}}
+\providecommand{\authorMiddleGr}[1]{\gdef\@authorMiddleGr{{\gr #1}}}
+\providecommand{\authorLastGr}[1]{\gdef\@authorLastGr{{\gr #1}}}
 \providecommand{\authorFirstEn}[1]{\gdef\@authorFirstEn{#1}}
 \providecommand{\authorFirstAbrEn}[1]{\gdef\@authorFirstAbrEn{#1}}
 \providecommand{\authorMiddleEn}[1]{\gdef\@authorMiddleEn{#1}}
@@ -186,23 +190,23 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Commands for the title of the thesis (greek and english versions)
 %
-\providecommand{\titleGr}[1]{\gdef\@titleGr{#1}}
+\providecommand{\titleGr}[1]{\gdef\@titleGr{{\gr #1}}}
 \providecommand{\titleEn}[1]{\gdef\@titleEn{#1}}
 
 %
 % Commands for the date of the writing of the thesis (Month followed by Year)
 % [provide greek and english versions]
 %
-\providecommand{\dateGr}[1]{\gdef\@dateGr{#1}}
+\providecommand{\dateGr}[1]{\gdef\@dateGr{{\gr #1}}}
 \providecommand{\dateEn}[1]{\gdef\@dateEn{#1}}
 
 
 %
 % Commands for advisor
 %
-\providecommand{\advisorGr}[1]{\gdef\@advisorGr{#1}}
-\providecommand{\advisorRankGr}[1]{\gdef\@advisorRankGr{#1}}
-\providecommand{\advisorOrgGr}[1]{\gdef\@advisorOrgGr{#1}}
+\providecommand{\advisorGr}[1]{\gdef\@advisorGr{{\gr #1}}}
+\providecommand{\advisorRankGr}[1]{\gdef\@advisorRankGr{{\gr #1}}}
+\providecommand{\advisorOrgGr}[1]{\gdef\@advisorOrgGr{{\gr #1}}}
 \providecommand{\advisorEn}[1]{\gdef\@advisorEn{#1}}
 \providecommand{\advisorRankEn}[1]{\gdef\@advisorRankEn{#1}}
 \providecommand{\advisorOrgEn}[1]{\gdef\@advisorOrgEn{#1}}
@@ -220,9 +224,9 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Commands for the 2nd member of the examination board
 %
-\providecommand{\boardTwoGr}[1]{\gdef\@boardTwoGr{#1}}
-\providecommand{\boardTwoRankGr}[1]{\gdef\@boardTwoRankGr{#1}}
-\providecommand{\boardTwoOrgGr}[1]{\gdef\@boardTwoOrgGr{#1}}
+\providecommand{\boardTwoGr}[1]{\gdef\@boardTwoGr{{\gr #1}}}
+\providecommand{\boardTwoRankGr}[1]{\gdef\@boardTwoRankGr{{\gr #1}}}
+\providecommand{\boardTwoOrgGr}[1]{\gdef\@boardTwoOrgGr{{\gr #1}}}
 \providecommand{\boardTwoEn}[1]{\gdef\@boardTwoEn{#1}}
 \providecommand{\boardTwoRankEn}[1]{\gdef\@boardTwoRankEn{#1}}
 \providecommand{\boardTwoOrgEn}[1]{\gdef\@boardTwoOrgEn{#1}}
@@ -230,9 +234,9 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Commands for the 3rd member of the examination board
 %
-\providecommand{\boardThreeGr}[1]{\gdef\@boardThreeGr{#1}}
-\providecommand{\boardThreeRankGr}[1]{\gdef\@boardThreeRankGr{#1}}
-\providecommand{\boardThreeOrgGr}[1]{\gdef\@boardThreeOrgGr{#1}}
+\providecommand{\boardThreeGr}[1]{\gdef\@boardThreeGr{{\gr #1}}}
+\providecommand{\boardThreeRankGr}[1]{\gdef\@boardThreeRankGr{{\gr #1}}}
+\providecommand{\boardThreeOrgGr}[1]{\gdef\@boardThreeOrgGr{{\gr #1}}}
 \providecommand{\boardThreeEn}[1]{\gdef\@boardThreeEn{#1}}
 \providecommand{\boardThreeRankEn}[1]{\gdef\@boardThreeRankEn{#1}}
 \providecommand{\boardThreeOrgEn}[1]{\gdef\@boardThreeOrgEn{#1}}
@@ -243,7 +247,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \newcommand{\examOneGr}{\advisorGr}
 \newcommand{\examOneRankGr}{\advisorRankGr}
 \newcommand{\examOneOrgGr}{\advisorOrgGr}
-\newcommand{\examOneEn}{\advisorEn} 
+\newcommand{\examOneEn}{\advisorEn}
 \newcommand{\examOneRankEn}{\advisorRankEn}
 \newcommand{\examOneOrgEn}{\advisorOrgEn}
 
@@ -253,7 +257,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \newcommand{\examTwogr}{\boardTwoGr}
 \newcommand{\examTwoRankGr}{\boardTwoRankGr}
 \newcommand{\examTwoOrgGr}{\boardTwoOrgGr}
-\newcommand{\examTwoEn}{\boardTwoEn} 
+\newcommand{\examTwoEn}{\boardTwoEn}
 \newcommand{\examTwoRankEn}{\boardTwoRankEn}
 \newcommand{\examTwoOrgEn}{\boardTwoOrgEn}
 
@@ -263,66 +267,66 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \newcommand{\examThreeGr}{\boardThreeGr}
 \newcommand{\examThreeRankGr}{\boardThreeRankGr}
 \newcommand{\examThreeOrgGr}{\boardThreeOrgGr}
-\newcommand{\examThreeEn}{\boardThreeEn} 
+\newcommand{\examThreeEn}{\boardThreeEn}
 \newcommand{\examThreeRankEn}{\boardThreeRankEn}
 \newcommand{\examThreeOrgEn}{\boardThreeOrgEn}
 
 %
 % Commands for the 4th member of the examination board
 %
-\providecommand{\examFourGr}[1]{\gdef\@examFourGr{#1}}
-\providecommand{\examFourRankGr}[1]{\gdef\@examFourRankGr{#1}}
-\providecommand{\examFourOrgGr}[1]{\gdef\@examFourOrgGr{#1}}
-\providecommand{\examFourEn}[1]{\gdef\@examFourEn{#1}} 
+\providecommand{\examFourGr}[1]{\gdef\@examFourGr{{\gr #1}}}
+\providecommand{\examFourRankGr}[1]{\gdef\@examFourRankGr{{\gr #1}}}
+\providecommand{\examFourOrgGr}[1]{\gdef\@examFourOrgGr{{\gr #1}}}
+\providecommand{\examFourEn}[1]{\gdef\@examFourEn{#1}}
 \providecommand{\examFourRankEn}[1]{\gdef\@examFourRankEn{#1}}
 \providecommand{\examFourOrgEn}[1]{\gdef\@examFourOrgEn{#1}}
 
 %
 % Commands for the 5th member of the examination board
 %
-\providecommand{\examFiveGr}[1]{\gdef\@examFiveGr{#1}}
-\providecommand{\examFiveRankGr}[1]{\gdef\@examFiveRankGr{#1}}
-\providecommand{\examFiveOrgGr}[1]{\gdef\@examFiveOrgGr{#1}}
-\providecommand{\examFiveEn}[1]{\gdef\@examFiveEn{#1}} 
+\providecommand{\examFiveGr}[1]{\gdef\@examFiveGr{{\gr #1}}}
+\providecommand{\examFiveRankGr}[1]{\gdef\@examFiveRankGr{{\gr #1}}}
+\providecommand{\examFiveOrgGr}[1]{\gdef\@examFiveOrgGr{{\gr #1}}}
+\providecommand{\examFiveEn}[1]{\gdef\@examFiveEn{#1}}
 \providecommand{\examFiveRankEn}[1]{\gdef\@examFiveRankEn{#1}}
 \providecommand{\examFiveOrgEn}[1]{\gdef\@examFiveOrgEn{#1}}
 
 %
 % Commands for the 6th member of the examination board
 %
-\providecommand{\examSixGr}[1]{\gdef\@examSixGr{#1}}
-\providecommand{\examSixRankGr}[1]{\gdef\@examSixRankGr{#1}}
-\providecommand{\examSixOrgGr}[1]{\gdef\@examSixOrgGr{#1}}
-\providecommand{\examSixEn}[1]{\gdef\@examSixEn{#1}} 
+\providecommand{\examSixGr}[1]{\gdef\@examSixGr{{\gr #1}}}
+\providecommand{\examSixRankGr}[1]{\gdef\@examSixRankGr{{\gr #1}}}
+\providecommand{\examSixOrgGr}[1]{\gdef\@examSixOrgGr{{\gr #1}}}
+\providecommand{\examSixEn}[1]{\gdef\@examSixEn{#1}}
 \providecommand{\examSixRankEn}[1]{\gdef\@examSixRankEn{#1}}
 \providecommand{\examSixOrgEn}[1]{\gdef\@examSixOrgEn{#1}}
 
 %
 % Commands for the 7th member of the examination board
 %
-\providecommand{\examSevenGr}[1]{\gdef\@examSevenGr{#1}}
-\providecommand{\examSevenRankGr}[1]{\gdef\@examSevenRankGr{#1}}
-\providecommand{\examSevenOrgGr}[1]{\gdef\@examSevenOrgGr{#1}}
-\providecommand{\examSevenEn}[1]{\gdef\@examSevenEn{#1}} 
+\providecommand{\examSevenGr}[1]{\gdef\@examSevenGr{{\gr #1}}}
+\providecommand{\examSevenRankGr}[1]{\gdef\@examSevenRankGr{{\gr #1}}}
+\providecommand{\examSevenOrgGr}[1]{\gdef\@examSevenOrgGr{{\gr #1}}}
+\providecommand{\examSevenEn}[1]{\gdef\@examSevenEn{#1}}
 \providecommand{\examSevenRankEn}[1]{\gdef\@examSevenRankEn{#1}}
 \providecommand{\examSevenOrgEn}[1]{\gdef\@examSevenOrgEn{#1}}
 
 %
 % Commands for setting up the dates for the examination
 %
-\providecommand{\examinationDateGr}[1]{\gdef\@examinationDateGr{#1}}
+\providecommand{\examinationDateGr}[1]{\gdef\@examinationDateGr{{\gr #1}}}
 \providecommand{\examinationDateEn}[1]{\gdef\@examinationDateEn{#1}}
 
 %
-% Commands for setting up abstract (greek and english versions), ack (english 
-% version), synopsis (greek version only), incsriptionEn (english version 
+% Commands for setting up abstract (greek and english versions), ack (english
+% version), synopsis (greek version only), incsriptionEn (english version
 %only), and prefaceEn (english version only) pages
 %
 \providecommand{\abstractEn}[1]{\gdef\@abstractEn{#1}}
-\providecommand{\abstractGr}[1]{\gdef\@abstractGr{#1}}
-\providecommand{\synopsisGr}[1]{\gdef\@synopsisGr{#1}}
+\providecommand{\abstractGr}[1]{\gdef\@abstractGr{{\gr #1}}}
+\providecommand{\synopsisGr}[1]{\gdef\@synopsisGr{{\gr #1}}}
 \providecommand{\acksEn}[1]{\gdef\@acksEn{#1}}
-\providecommand{\inscriptionEn}[1]{\gdef\@inscriptionEn{% 
+\providecommand{\inscriptionEn}[1]{\gdef\@inscriptionEn{%
 \vspace*{0.2\textheight}
 \begin{flushright}
 #1
@@ -334,7 +338,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 % Commands for Subject Area and Keywords fields
 % (greek and english versions)
 %
-\providecommand{\subjectAreaGr}[1]{\gdef\@subjectAreaGr{#1}}
+\providecommand{\subjectAreaGr}[1]{\gdef\@subjectAreaGr{{\gr #1}}}
 \providecommand{\subjectAreaEn}[1]{\gdef\@subjectAreaEn{#1}}
 \providecommand{\keywordsGr}[1]{\gdef\@keywordsGr{#1}}
 \providecommand{\keywordsEn}[1]{\gdef\@keywordsEn{#1}}
@@ -343,7 +347,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 % Command for specifiying the file containing the publications
 % in the context of the PhD.
 %
-\providecommand{\lopfile}[1]{\newcites{lop}{List of 
+\providecommand{\lopfile}[1]{\newcites{lop}{List of
 publications}\gdef\@lopfileinternal{#1}}
 
 %
@@ -358,57 +362,59 @@ publications}\gdef\@lopfileinternal{#1}}
 
 %
 % Front page (greek and english versions)
-% 
+%
 \def\@frontpage{
 \begin{center}
 \includegraphics{emblems/athena-black}
 \end{center}
 \begin{minipage}[t]{\textwidth}
     \begin{center}
-      {\large \bfseries 
+      {\large \bfseries
       \ifenglishfrontpage
       	NATIONAL AND KAPODISTRIAN UNIVERSITY OF ATHENS
-      \else
-      	ΕΘΝΙΚΟ ΚΑΙ ΚΑΠΟΔΙΣΤΡΙΑΚΟ ΠΑΝΕΠΙΣΤΗΜΙΟ ΑΘΗΝΩΝ
+      \else {\gr
+        ΕΘΝΙΚΟ ΚΑΙ ΚΑΠΟΔΙΣΤΡΙΑΚΟ ΠΑΝΕΠΙΣΤΗΜΙΟ ΑΘΗΝΩΝ }
       \fi
       }
       \linebreak
-      
-      {\bfseries 
+
+      {\bfseries
       \ifenglishfrontpage
       	SCHOOL OF SCIENCES \\ DEPARTMENT OF INFORMATICS AND TELECOMMUNICATIONS
       \else
-      	ΣΧΟΛΗ ΘΕΤΙΚΩΝ ΕΠΙΣΤΗΜΩΝ \\ ΤΜΗΜΑ  ΠΛΗΡΟΦΟΡΙΚΗΣ ΚΑΙ ΤΗΛΕΠΙΚΟΙΝΩΝΙΩΝ
+        {\gr
+        ΣΧΟΛΗ ΘΕΤΙΚΩΝ ΕΠΙΣΤΗΜΩΝ \\ ΤΜΗΜΑ  ΠΛΗΡΟΦΟΡΙΚΗΣ ΚΑΙ ΤΗΛΕΠΙΚΟΙΝΩΝΙΩΝ
+        }
       \fi
       }
       \linebreak
-      
-      {\bfseries 
+
+      {\bfseries
       \ifenglishfrontpage
-      	PROGRAM OF POSTGRADUATE STUDIES
+        PROGRAM OF POSTGRADUATE STUDIES
       \else
-      	ΠΡΟΓΡΑΜΜΑ  ΜΕΤΑΠΤΥΧΙΑΚΩΝ ΣΠΟΥΔΩΝ
+        {\gr ΠΡΟΓΡΑΜΜΑ  ΜΕΤΑΠΤΥΧΙΑΚΩΝ ΣΠΟΥΔΩΝ }
       \fi}
       \linebreak\linebreak\linebreak
-      \linebreak\linebreak\linebreak      
+      \linebreak\linebreak\linebreak
 
-      {\bfseries 
+      {\bfseries
       \ifenglishfrontpage
       	PhD THESIS
       \else
-      	ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ
+        {\gr ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ }
       \fi}
       \linebreak\linebreak\linebreak
 
-      {\Large \bfseries 
+      {\Large \bfseries
       \ifenglishfrontpage
       	\@titleEn
       \else
       	\@titleGr
       \fi}
       \linebreak\linebreak\linebreak
-      
-      {\bfseries 
+
+      {\bfseries
       \ifenglishfrontpage
 	  	\@authorFirstEn{} \@authorMiddleEn{} \@authorLastEn
 	  \else
@@ -418,15 +424,15 @@ publications}\gdef\@lopfileinternal{#1}}
 \end{minipage}
     \vfill
     \begin{center}
-    {\bfseries 
+    {\bfseries
      \ifenglishfrontpage
      	ATHENS
      \else
-	 	ΑΘΗΝΑ
+        {\gr ΑΘΗΝΑ }
      \fi
     }
     \linebreak
-    
+
     {\bfseries
      \ifenglishfrontpage
      	\@dateEn
@@ -449,7 +455,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \ifenglishcommitteepage
 	PhD THESIS
 \else
-	ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ
+	{\gr ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ }
 \fi
 }
 \linebreak
@@ -475,9 +481,10 @@ publications}\gdef\@lopfileinternal{#1}}
 
 {
 \ifenglishcommitteepage%
-    {\bfseries SUPERVISOR: \@advisorEn{}}, \@advisorRankEn{} \@advisorOrgEn{}\\
+    {\bfseries SUPERVISOR: \@advisorEn{}}, \@advisorRankEn{}
+    \@advisorOrgEn{}\\
 \else
-    {\bfseries ΕΠΙΒΛΕΠΩΝ ΚΑΘΗΓΗΤΗΣ: \@advisorGr{}}, \@advisorRankGr{} 
+    {\bfseries \gr ΕΠΙΒΛΕΠΩΝ ΚΑΘΗΓΗΤΗΣ: \@advisorGr{}}, \@advisorRankGr{}
 	\@advisorOrgGr{}\\
 \fi
 }
@@ -488,7 +495,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \ifenglishcommitteepage
 	{\bfseries THREE-MEMBER ADVISORY COMMITTEE:}
 \else
-	{\bfseries ΤΡΙΜΕΛΗΣ ΕΠΙΤΡΟΠΗ ΠΑΡΑΚΟΛΟΥΘΗΣΗΣ:}
+	{\bfseries \gr ΤΡΙΜΕΛΗΣ ΕΠΙΤΡΟΠΗ ΠΑΡΑΚΟΛΟΥΘΗΣΗΣ:}
 \fi
 }
 
@@ -498,7 +505,7 @@ publications}\gdef\@lopfileinternal{#1}}
 
 \hspace{2cm}{\bfseries \@boardTwoEn{}}, \@boardTwoRankEn{} \@boardTwoOrgEn{}
 
-\hspace{2cm}{\bfseries \@boardThreeEn{}}, \@boardThreeRankEn{} 
+\hspace{2cm}{\bfseries \@boardThreeEn{}}, \@boardThreeRankEn{}
 \@boardThreeOrgEn{}\\
 \else
 \hspace{2cm}{\bfseries \@advisorGr{}}, \@advisorRankGr{} \@advisorOrgGr{}
@@ -515,7 +522,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \ifenglishcommitteepage
 	SEVEN-MEMBER EXAMINATION COMMITTEE
 \else
-	ΕΠΤΑΜΕΛΗΣ ΕΞΕΤΑΣΤΙΚΗ ΕΠΙΤΡΟΠΗ
+	{\gr ΕΠΤΑΜΕΛΗΣ ΕΞΕΤΑΣΤΙΚΗ ΕΠΙΤΡΟΠΗ }
 \fi
 }
 \end{center}
@@ -530,7 +537,7 @@ publications}\gdef\@lopfileinternal{#1}}
 
                                          & &                \\[1cm]
 \@boardThreeEn{},                        & & \@examFourEn{},\\
-\@boardThreeRankEn{} \@boardThreeOrgEn{} & &\@examFourRankEn{} 
+\@boardThreeRankEn{} \@boardThreeOrgEn{} & &\@examFourRankEn{}
 \@examFourOrgEn{}\\
 
                                      & &                    \\[1cm]
@@ -546,7 +553,7 @@ publications}\gdef\@lopfileinternal{#1}}
 
                                          & &                \\[1cm]
 \@boardThreeGr{},                        & & \@examFourGr{},\\
-\@boardThreeRankGr{} \@boardThreeOrgGr{} & &\@examFourRankGr{} 
+\@boardThreeRankGr{} \@boardThreeOrgGr{} & &\@examFourRankGr{}
 \@examFourOrgGr{}\\
 
                                      & &                    \\[1cm]
@@ -566,7 +573,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \ifenglishcommitteepage
 	Examination Date: \@examinationDateEn
 \else
-	Ημερομηνία Εξέτασης: \@examinationDateGr
+	{\gr Ημερομηνία Εξέτασης}: \@examinationDateGr
 \fi
 }
 \end{center}
@@ -582,9 +589,9 @@ publications}\gdef\@lopfileinternal{#1}}
   \thispagestyle{empty}
   \@abstractEn{}
   \vfill
-  
+
   {\bfseries SUBJECT AREA}: \@subjectAreaEn\\
-  
+
   {\bfseries KEYWORDS}: \@keywordsEn
 }
 
@@ -592,26 +599,30 @@ publications}\gdef\@lopfileinternal{#1}}
 % Abstract (greek version)
 %
 \def\@absGr{
-  \chapter*{ΠΕΡΙΛΗΨΗ}
-  \thispagestyle{empty}
-  \@abstractGr{}
-  \vfill
-  
-  {\bfseries ΘΕΜΑΤΙΚΗ ΠΕΡΙΟΧΗ}: \@subjectAreaGr\\
-  
-  {\bfseries ΛΕΞΕΙΣ ΚΛΕΙΔΙΑ}: \@keywordsGr
-    
-  \clearpage
+  {\gr
+    \chapter*{ΠΕΡΙΛΗΨΗ}
+    \thispagestyle{empty}
+    \@abstractGr{}
+    \vfill
+
+    {\bfseries ΘΕΜΑΤΙΚΗ ΠΕΡΙΟΧΗ}: \@subjectAreaGr\\
+
+    {\bfseries ΛΕΞΕΙΣ ΚΛΕΙΔΙΑ}: \@keywordsGr
+
+    \clearpage
+  }
 }
 
 %
 % Greek synopsis of the thesis
 %
 \def\@synopsis{
-  \chapter*{ΣΥΝΟΠΤΙΚΗ ΠΑΡΟΥΣΙΑΣΗ ΤΗΣ ΔΙΔΑΚΤΟΡΙΚΗΣ ΔΙΑΤΡΙΒΗΣ}
-  \thispagestyle{empty}  
-  \@synopsisGr{}
-  \clearpage
+  {\gr
+    \chapter*{ΣΥΝΟΠΤΙΚΗ ΠΑΡΟΥΣΙΑΣΗ ΤΗΣ ΔΙΔΑΚΤΟΡΙΚΗΣ ΔΙΑΤΡΙΒΗΣ}
+    \thispagestyle{empty}
+    \@synopsisGr{}
+  }
+    \clearpage
 }
 
 %
@@ -632,9 +643,9 @@ publications}\gdef\@lopfileinternal{#1}}
 %
 \def\@acks{
   \chapter*{Acknowledgements}
-  \thispagestyle{empty}  
+  \thispagestyle{empty}
   \@acksEn{}
-  \clearpage  
+  \clearpage
 }
 
 %
@@ -642,8 +653,8 @@ publications}\gdef\@lopfileinternal{#1}}
 %
 % Enable it by passing option ``preface'' to the document class.
 %
-% Check the following page that gives a definition among the uses of Prologue, 
-% Foreword, and Preface: 
+% Check the following page that gives a definition among the uses of Prologue,
+% Foreword, and Preface:
 %http://iankingsleyauthor.blogspot.de/2013/03/defined-prologue-epilogue-foreword.html.
 %
 \def\@preface{
@@ -661,7 +672,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \def\@listofpubs{
   \bibliographystylelop{unsrt}
   \bibliographylop{\@lopfileinternal}
-  \thispagestyle{empty}  
+  \thispagestyle{empty}
   \clearpage
 }
 
@@ -672,14 +683,14 @@ publications}\gdef\@lopfileinternal{#1}}
     \pagestyle{empty}
     % frontpage - greek version
     \@frontpage
-    
+
     % frontpage - english version
     \englishfrontpagetrue
     \@frontpage
 
     % examination committe page - greek version
     \@committeepage
-    
+
     % examination committe page - greek version
     \englishcommitteepagetrue
     \@committeepage
@@ -693,22 +704,22 @@ publications}\gdef\@lopfileinternal{#1}}
     \ifinscriptionpage
        	\@inscr
     \fi
-    
+
     % acknowledgements (english version only, OPTIONAL)
     \ifackpage
     	\@acks
     \fi
-    
+
     % list of publications (english version only, OPTIONAL)
     \ifloppage
        	\@listofpubs
     \fi
-    
+
     % table of contents
     % add TOC as bookmark
     \addtocontents{toc}{\protect{\pdfbookmark[0]{CONTENTS}{toc}}}
     \tableofcontents
-    
+
     % list of figures
     %\listoffigures
     %\thispagestyle{empty}
@@ -717,7 +728,7 @@ publications}\gdef\@lopfileinternal{#1}}
     \makeatletter
     \let\ps@plain\ps@empty
     \makeatother
-    
+
     \pagestyle{empty}
     \listoffigures
     \cleardoublepage
@@ -726,12 +737,12 @@ publications}\gdef\@lopfileinternal{#1}}
     % list of tables
     \listoftables
     \thispagestyle{empty}
-        
+
     % preface page (english version only, OPTIONAL)
     \ifprefacepage
 	    \@preface
     \fi
-    
+
     % Prepare things for the rest of the document
     \clearpage
     \thispagestyle{empty}
@@ -747,7 +758,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \renewcommand{\backmatter}{
 	% just set the style of the pages to be fancy
     \pagestyle{fancy}
-    
+
     % and also, make the empty page style permanent, since
     % when a \chapter command is invoked, the command
     % \thispagestyle{plain} is invoked
@@ -764,10 +775,10 @@ publications}\gdef\@lopfileinternal{#1}}
     \interlinepenalty\@M
     \ifappendixstarted
        \large \centering \bfseries APPENDIX \thechapter. \MakeTextUppercase{#1}
-    \else                         
+    \else
 	   \large \centering \bfseries \thechapter. \MakeTextUppercase{#1}
     \fi
-    \par\nobreak     
+    \par\nobreak
     \vskip 20\p@
   }}
 
@@ -785,7 +796,7 @@ publications}\gdef\@lopfileinternal{#1}}
 % Rename Bibliography to References
 %
 \renewcommand{\bibname}{REFERENCES}
-  
+
 %
 % Set ToC depth
 %
@@ -798,7 +809,7 @@ publications}\gdef\@lopfileinternal{#1}}
 \setlength{\parindent}{0pt}
 
 %
-% Paragraph spacing should be 
+% Paragraph spacing should be
 %
 \setlength{\parskip}{6pt}
 
@@ -816,12 +827,12 @@ publications}\gdef\@lopfileinternal{#1}}
 \fancyfoot[C]{{\footnotesize \thepage}}
 \fancyfoot[LE,RO]{{\footnotesize \@authorFirstAbrEn{} \@authorLastEn{}}}
 
-% needed redefinition, because commands like \chapter call 
+% needed redefinition, because commands like \chapter call
 % \thispagestyle{plain} automatically
 \fancypagestyle{plain} {
   \fancyhf{}
   \fancyhead[LO]{{\footnotesize \@titleEn{}}}
-  \fancyfoot[C]{{\footnotesize \thepage}}   
+  \fancyfoot[C]{{\footnotesize \thepage}}
   \fancyfoot[LE,RO]{{\footnotesize \@authorFirstAbrEn{} \@authorLastEn{}}}
 }
 \renewcommand{\headrulewidth}{0pt}
@@ -830,4 +841,4 @@ publications}\gdef\@lopfileinternal{#1}}
 % Configure the first page of ToC to have an empty pagestyle
 % (thanks to http://tex.stackexchange.com/a/5789)
 %
-\AtBeginDocument{\addtocontents{toc}{\protect\thispagestyle{empty}}} 
+\AtBeginDocument{\addtocontents{toc}{\protect\thispagestyle{empty}}}
