@@ -1,0 +1,3 @@
+[submodule "bib/ptr-analysis"]
+	path = bib/ptr-analysis
+	url = git@github.com:gbalats/pointer-analysis-bib.git
