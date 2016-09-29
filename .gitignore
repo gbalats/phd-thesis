@@ -3,6 +3,9 @@
 /*.log
 /*.bbl
 /*.blg
+/*.lof
+/*.lot
+/*.toc
 /auto/
 /thesis-blx.bib
 /thesis.run.xml
