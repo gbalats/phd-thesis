@@ -1,0 +1,241 @@
+% demo.tex
+%
+% Enjoy, evolve, and share!
+%
+% Compile it as follows:
+%	xelatex demo.tex
+%   bibtex demo.aux
+%   bibtex lop.aux (run this, only if you pass option 'lop' below)
+%   xelatex demo.tex && xelatex demo.tex
+%
+% Alternatively, compile it using `make -i' (see the provided Makefile).
+%
+% Check file `diphdthesis.cls' for other configuration options.
+%
+\documentclass[inscr,ack,preface]{diphdthesis}
+
+%\usepackage{graphicx}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% User-specific package inclusions %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{booktabs}
+\usepackage{paralist}
+\usepackage{hyperref}
+\hypersetup{
+    unicode=true,                     % non-Latin characters in bookmarks
+    pdffitwindow=true,                % page fit to window when opened
+    pdfnewwindow=true,                % links in new window
+    pdfkeywords={},                   % list of keywords
+    colorlinks=true,                  % false: boxed links; true: colored links
+    linkcolor=black,                  % color of internal links
+    citecolor=black,                  % color of links to bibliography
+    filecolor=black,                  % color of file links
+    urlcolor=black,                   % color of external links
+    pdftitle={},                      % title
+    pdfauthor={},                     % author
+    pdfsubject={}                     % subject of the document
+}
+
+\usepackage[backend=bibtex,citestyle=alphabetic]{biblatex}
+\addbibresource{bib/ptr-analysis/ptranalysis.bib}
+\addbibresource{bib/ptr-analysis/specs.bib}
+\addbibresource{bib/ptr-analysis/tools.bib}
+\addbibresource{bib/ptr-analysis/proceedings.bib}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%% User-specific package inclusions %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% First name, last name
+%
+\authorFirstGr{Γεώργιος}
+\authorFirstAbrGr{Γ.} % abbreviation of first name
+\authorMiddleGr{Δ.}   % abbreviation of father's first name
+\authorLastGr{Μπαλατσούρας}
+\authorFirstEn{Georgios}
+\authorFirstAbrEn{G.}
+\authorMiddleEn{D.}
+\authorLastEn{Balatsouras}
+
+%
+% The title of the thesis
+%
+\titleGr{Τίτλος διδακτορικής διατριβής στα Ελληνικά}
+\titleEn{PhD thesis title in English}
+
+%
+% Month followed by Year
+%
+\dateGr{ΜΑΪΟΣ 2010}
+\dateEn{MAY 2010}
+
+%
+% Advisor info
+%
+\advisorGr{Πρώτο μέλος}
+\advisorRankGr{Βαθμίδα}
+\advisorOrgGr{Οργανισμός}
+\advisorEn{First member}
+\advisorRankEn{Rank}
+\advisorOrgEn{Organization}
+
+%
+% Members of the advisory board 
+% (the first one, will be automatically taken up by the advisor)
+%
+\boardTwoGr{Δεύτερο μέλος}
+\boardTwoRankGr{Βαθμίδα}
+\boardTwoOrgGr{Οργανισμός}
+\boardTwoEn{Second member}
+\boardTwoRankEn{Rank}
+\boardTwoOrgEn{Organization}
+
+\boardThreeGr{Τρίτο μέλος}
+\boardThreeRankGr{Βαθμίδα}
+\boardThreeOrgGr{Οργανισμός}
+\boardThreeEn{Third member}
+\boardThreeRankEn{Rank}
+\boardThreeOrgEn{Organization}
+
+%
+% 7 Member examination committee
+% (the first three will be taken up by the advisory board)
+%
+\examFourGr{Τέταρτο μέλος}
+\examFourRankGr{Βαθμίδα}
+\examFourOrgGr{Οργανισμός}
+\examFourEn{Fourth member} 
+\examFourRankEn{Rank}
+\examFourOrgEn{Organization}
+
+\examFiveGr{Πέμπτο μέλος}
+\examFiveRankGr{Βαθμίδα}
+\examFiveOrgGr{Οργανισμός}
+\examFiveEn{Fifth member} 
+\examFiveRankEn{Rank}
+\examFiveOrgEn{Organization}
+
+\examSixGr{Έκτο μέλος}
+\examSixRankGr{Βαθμίδα}
+\examSixOrgGr{Οργανισμός}
+\examSixEn{Sixth member} 
+\examSixRankEn{Rank}
+\examSixOrgEn{Organization}
+
+\examSevenGr{Έβδομο μέλος}
+\examSevenRankGr{Βαθμίδα}
+\examSevenOrgGr{Οργανισμός}
+\examSevenEn{Seventh member} 
+\examSevenRankEn{Rank}
+\examSevenOrgEn{Organization}
+
+%
+% The examination date of the thesis
+%
+\examinationDateGr{15 Μαΐου 2010}
+\examinationDateEn{May 15, 2010}
+
+%
+% Abstract, synopsis, inscription, ack, and preface pages.
+%
+\abstractEn{Abstract in English here.}
+\abstractGr{Η περίληψη στα Ελληνικά.}
+\synopsisGr{Συνοπτική περιγραφή του διδακτορικού (5--8 σελίδες).}
+\acksEn{
+}
+\prefaceEn{}
+
+\inscriptionEn{\emph{To my dear person.}}
+
+%
+% Subject area and keywords
+%
+\subjectAreaGr{Θεματική Περιοχή}
+\subjectAreaEn{Subject Area}
+\keywordsGr{Λέξη κλειδί1, λέξη κλειδί2, λέξη κλειδί3}
+\keywordsEn{Keyword1, keyword2, keyword3}
+
+%
+% Set the .bib file containing your paper publications (leave the extension out)
+%
+% This is optional, but it should be specified when option 'lop' is passed to
+% the document class.
+%
+% Then, inside the document environment, you may use the command '\nocitelop' to
+% site your papers, as you would traditionally do with the commands '\cite' or
+% '\nocite'.
+%
+% The papers are printed in reverse chronological order.
+%
+%\lopfile{mypapers/pubs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\frontmatter
+
+% site my papers
+%\nocitelop{}
+
+\mainmatter
+
+% add main chapters (should be given in capital letters)
+\chapter{INTRODUCTION}
+
+% Test citation
+\cite{pldi/KastrinisS13}
+
+\chapter{BACKGROUND AND RELATED WORK}
+\chapter{ANOTHER CHAPTER}
+\chapter{CONCLUSIONS AND FUTURE WORK}
+
+\backmatter
+
+% abbreviations table
+\abbreviations
+\begin{center}
+	\renewcommand{\arraystretch}{1.5}
+	\begin{longtable}{ l @{\qquad} l }
+	\toprule
+	RDF    & Resource Description Framework \\
+	SPARQL & SPARQL Protocol and RDF Query Language \\
+	OWL    & Web Ontology Language \\
+	OGC    & Open Geospatial Consortium \\
+	\bottomrule
+	\end{longtable}
+\end{center}
+
+% appendix
+\begin{appendix}
+% mark the beginning of the appendix
+\appendixstartedtrue
+
+% add appendix line to ToC
+\phantomsection
+\addcontentsline{toc}{chapter}{APPENDICES}
+
+\chapter{FIRST APPENDIX}
+\chapter{SECOND APPENDIX}
+\chapter{THIRD APPENDIX}
+\end{appendix}
+
+\printbibliography[title={References}]
+% include it also in ToC (do sth on your own)
+\addcontentsline{toc}{chapter}{REFERENCES}
+
+\end{document}
