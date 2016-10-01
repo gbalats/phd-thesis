@@ -181,22 +181,30 @@
 % the document class.
 %
 % Then, inside the document environment, you may use the command '\nocitelop' to
-% site your papers, as you would traditionally do with the commands '\cite' or
+% cite your papers, as you would traditionally do with the commands '\cite' or
 % '\nocite'.
 %
 % The papers are printed in reverse chronological order.
 %
 %\lopfile{mypapers/pubs}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Front Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \frontmatter
 
-% site my papers
+% cite my papers
 %\nocitelop{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Main Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \mainmatter
 
@@ -211,9 +219,18 @@
 \chapter{ANOTHER CHAPTER}
 \chapter{CONCLUSIONS AND FUTURE WORK}
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   Back Matter  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \backmatter
 
-% abbreviations table
+%------------------------------------------------
+% Abbreviations Table
+%------------------------------------------------
+
 \abbreviations
 \begin{center}
 	\renewcommand{\arraystretch}{1.5}
@@ -227,7 +244,11 @@
 	\end{longtable}
 \end{center}
 
-% appendix
+
+%------------------------------------------------
+% Appendices Section
+%------------------------------------------------
+
 \begin{appendix}
 % mark the beginning of the appendix
 \appendixstartedtrue
@@ -240,6 +261,11 @@
 \chapter{SECOND APPENDIX}
 \chapter{THIRD APPENDIX}
 \end{appendix}
+
+
+%------------------------------------------------
+% Bibliography Section
+%------------------------------------------------
 
 \printbibliography[title={References}]
 % include it also in ToC (do sth on your own)
