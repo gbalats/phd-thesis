@@ -37,11 +37,17 @@
     pdfsubject={}                     % subject of the document
 }
 
+%%%-----------------------------------------------------------------------------
+%%  Bibliography Management and Resources
+%%%-----------------------------------------------------------------------------
+
 \usepackage[backend=bibtex,citestyle=alphabetic]{biblatex}
+\addbibresource{bib/my-publications.bib}
 \addbibresource{bib/ptr-analysis/ptranalysis.bib}
 \addbibresource{bib/ptr-analysis/specs.bib}
 \addbibresource{bib/ptr-analysis/tools.bib}
 \addbibresource{bib/ptr-analysis/proceedings.bib}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%% User-specific package inclusions %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,6 +205,7 @@
 
 % Test citation
 \cite{pldi/KastrinisS13}
+\cite{structsens}
 
 \chapter{BACKGROUND AND RELATED WORK}
 \chapter{ANOTHER CHAPTER}
