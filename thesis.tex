@@ -14,13 +14,26 @@
 %
 \documentclass[inscr,ack,preface]{diphdthesis}
 
-%\usepackage{graphicx}
+%%%--------------------------------------------------------------
+%%  Package Dependencies
+%%%--------------------------------------------------------------
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%% User-specific package inclusions %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amssymb,amsmath,latexsym}
+% \usepackage{bookmark}
 \usepackage{booktabs}
+% \usepackage{cite}
+\usepackage{color,soul}
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{marvosym}
+\usepackage{multirow}
 \usepackage{paralist}
+\usepackage{url}
+\usepackage{subcaption}
+% \captionsetup{compatibility=false}
+\usepackage{minted}
+\usepackage{xparse}
 \usepackage{hyperref}
 \hypersetup{
     unicode=true,                     % non-Latin characters in bookmarks
@@ -37,25 +50,22 @@
     pdfsubject={}                     % subject of the document
 }
 
-%%%-----------------------------------------------------------------------------
-%%  Bibliography Management and Resources
-%%%-----------------------------------------------------------------------------
 
-\usepackage[backend=bibtex,citestyle=alphabetic]{biblatex}
+% Additional Local packages
+\usepackage{styles/mathpartir}
+
+
+%%%--------------------------------------------------------------
+%%  Bibliography Management and Resources
+%%%--------------------------------------------------------------
+
+\usepackage[backend=bibtex,style=numeric-comp]{biblatex}
 \addbibresource{bib/my-publications.bib}
 \addbibresource{bib/ptr-analysis/ptranalysis.bib}
 \addbibresource{bib/ptr-analysis/specs.bib}
 \addbibresource{bib/ptr-analysis/tools.bib}
 \addbibresource{bib/ptr-analysis/proceedings.bib}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%% User-specific package inclusions %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,9 +197,7 @@
 % The papers are printed in reverse chronological order.
 %
 %\lopfile{mypapers/pubs}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%% Required Metadata %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \begin{document}
 
