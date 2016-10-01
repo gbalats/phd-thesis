@@ -163,10 +163,10 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Set font mamily Aria
 %
-\setmainfont[Ligatures={Common,TeX}]{Arial} % the passed option was needed for 
-                                            % correctly rendering double quotes 
-\defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-\setsansfont[Mapping=tex-text,Scale=MatchLowercase]{Arial}
+% \setmainfont[Ligatures={Common,TeX}]{Arial} % the passed option was needed for
+%                                             % correctly rendering double quotes
+% \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+% \setsansfont[Mapping=tex-text,Scale=MatchLowercase]{Arial}
 
 %\ifglossaryInPreamble
 %\RequirePackage[toc,section=chapter,numberedsection=false,nonumberlist]{glossaries}
