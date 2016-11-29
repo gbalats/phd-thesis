@@ -403,8 +403,9 @@ void * xmalloc (size_t n) {
   return p;
 }
 \end{lcppcode}
-  \caption{Generic \code{malloc()} wrapper with error checking that
-    aborts the program when allocation fails}
+\caption[Generic \code{malloc()} wrapper]{%
+  Generic \code{malloc()} wrapper with error checking that aborts the
+  program when allocation fails}
   \label{fig/xmalloc}
 \end{figure}
 
@@ -644,9 +645,11 @@ accept a variable (function pointer), as their first argument.
     \\
     \bottomrule
   \end{tabular}
-  \caption{LLVM IR Instruction Set. We also prepend a label $l \in L$
-    to each instruction (that we omit in this figure). Each such label
-    can be used to uniquely identify its instruction.}
+  \caption[LLVM IR Instruction Set]{%
+    LLVM IR Instruction Set. We also prepend a label $l \in L$ to each
+    instruction (that we omit in this figure). Each such label can be
+    used to uniquely identify its instruction. %
+  }
   \label{fig/llvm}
 \end{figure}
 
@@ -1116,7 +1119,8 @@ the edges is from the less to the more general object.
 \begin{figure}[ht]
   \centering
   \includegraphics[clip,width=0.80\linewidth]{figures/Partial-Order.pdf}
-  \caption{Abstract Object Ordering -- Example: Nodes are abstract
+  \caption[Abstract Object Ordering]{%
+    Abstract Object Ordering -- Example: Nodes are abstract
     objects. An edge $(\, \alloc{s},\alloc{t} \,)$ denotes that object
     $\alloc{s}\:$ is generalized by object $\alloc{t}\:$ (i.e.,
     $\, \alloc{s} \sqsubseteq \alloc{t}\, $).}
@@ -1453,11 +1457,12 @@ metrics on the input and output of each analysis:
     psql       & 1.4M & 5925 & 460522 & 67.76s & 14025 & 25.28s \\
     \bottomrule
   \end{tabular}
-  \caption{Input and Output Metrics. The first column is
-    benchmark bitcode size (in bytes). The second column is the
-    number of call-graph edges (as computed by our analysis). The third (resp. fifth) column is the
-    number of abstract objects created. The fourth (resp. sixth) column
-    is the analysis running time.}
+  \caption[Input and Output Metrics]{%
+    Input and Output Metrics. The first column is benchmark bitcode
+    size (in bytes). The second column is the number of call-graph
+    edges (as computed by our analysis). The third (resp. fifth)
+    column is the number of abstract objects created. The fourth
+    (resp. sixth) column is the analysis running time.}
   \label{fig/stats:misc}
 \end{figure}
 
@@ -1530,9 +1535,10 @@ objects.
     average    & 39.38 & 7.72 &  4.55 & 24.91 & 2.89 &  6.87 \\
     \bottomrule
   \end{tabular}
-  \caption{Variable points-to sets. Proportion of
-    resolved variables (that point to one abstract
-    object), as well as variables with two or three points-to targets.}
+  \caption[Variable points-to sets]{%
+    Variable points-to sets. Proportion of resolved variables (that
+    point to one abstract object), as well as variables with two or
+    three points-to targets.}
   \label{fig/stats:var}
 \end{figure}
 
