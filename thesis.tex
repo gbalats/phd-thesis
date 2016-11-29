@@ -1,17 +1,3 @@
-% demo.tex
-%
-% Enjoy, evolve, and share!
-%
-% Compile it as follows:
-%	xelatex demo.tex
-%   bibtex demo.aux
-%   bibtex lop.aux (run this, only if you pass option 'lop' below)
-%   xelatex demo.tex && xelatex demo.tex
-%
-% Alternatively, compile it using `make -i' (see the provided Makefile).
-%
-% Check file `diphdthesis.cls' for other configuration options.
-%
 \documentclass[inscr,ack,preface]{diphdthesis}
 
 %%%--------------------------------------------------------------
@@ -21,7 +7,6 @@
 \usepackage{amssymb,amsmath,latexsym}
 % \usepackage{bookmark}
 \usepackage{booktabs}
-% \usepackage{cite}
 \usepackage{color,soul}
 \usepackage{comment}
 \usepackage{fancyhdr}
@@ -31,7 +16,9 @@
 \usepackage{paralist}
 \usepackage{url}
 \usepackage{subcaption}
+% \usepackage{cite}
 % \captionsetup{compatibility=false}
+\usepackage{verbatimbox}
 \usepackage{minted}
 \usepackage{xparse}
 \usepackage{hyperref}
@@ -66,9 +53,21 @@
 \addbibresource{bib/ptr-analysis/tools.bib}
 \addbibresource{bib/ptr-analysis/proceedings.bib}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%% User-specific configuration %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\cclyzer}{\texttt{cclyzer}}
+\newcommand{\pearce}{\emph{Pearce$^c$}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pt}[1]{\texttt{\textsc{Pt}(#1)}}
+
+\newtheorem{defn}{Definition}
+
+
+\usepackage{styles/instructions}
+\usepackage{styles/languages}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,6 +224,10 @@
 
 \chapter{Background and Related Work}
 \chapter{Another Chapter}
+
+\chapter{Structure-Sensitive Points-To Analysis for C and C++}
+\input{chapters/structsens.tex}
+
 \chapter{Conclusions and Future Work}
 
 

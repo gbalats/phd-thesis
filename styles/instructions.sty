@@ -1,7 +1,39 @@
 %--------------------------------------------------------------------
-% LLVM Bitcode Instructions
+% LLVM Styling
 %--------------------------------------------------------------------
 
+% Entities
+
+\newcommand{\alloc}[1]{\widehat{#1}}
+\newcommand{\var}[1]{\texttt{#1}}
+\newcommand{\constant}[1]{#1}
+\newcommand{\op}[1]{#1}
+\newcommand{\tp}[1]{\texttt{#1}}
+\newcommand{\instr}[1]{\code{#1}}
+
+\newcommand{\functions}{\mathbb{F}}
+\newcommand{\gvars}{\mathbb{G}}
+\newcommand{\vars}{\mathbb{V}}
+
+
+% Points-to relations
+
+\newcommand{\vpt}[2]{\var{#1} \mapsto \alloc{#2}}
+\newcommand{\cpt}[2]{\constant{#1} \mapsto \alloc{#2}}
+\newcommand{\opt}[2]{\op{#1} \mapsto \alloc{#2}}
+\newcommand{\derefpt}[2]{\alloc{#1} \leadsto \alloc{#2}}
+
+% Type relations
+\newcommand{\typefunc}{\text{\emph{type}}}
+\newcommand{\gtype}[1]{\typefunc(#1)}
+\newcommand{\alloctype}[1]{\typefunc(\alloc{#1})}
+\newcommand{\vartype}[1]{\typefunc(\var{#1})}
+\newcommand{\codetype}[1]{\typefunc(\code{#1})}
+
+
+%--------------------------------------------------------------------
+% LLVM Bitcode Instructions
+%--------------------------------------------------------------------
 
 \newcommand{\alloca}[2]{\instr{alloca}\; \tp{#1},\, \op{#2}}
 \newcommand{\malloc}[1]{\instr{malloc}\; \op{#1}}

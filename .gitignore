@@ -1,4 +1,4 @@
-/*.aux
+/**/*.aux
 /*.out
 /*.log
 /*.bbl
@@ -7,7 +7,7 @@
 /*.lot
 /*.toc
 /*.pyg
-/auto/
+/**/auto/
 /bib/auto/
 /thesis-blx.bib
 /thesis.run.xml
