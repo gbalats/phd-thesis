@@ -1,0 +1,37 @@
+digraph or {
+rankdir="BT";
+node [shape=circle]
+edge [style=filled]
+
+  G [label="G"]
+  H [label="H"]
+  I [label="I"]
+  J [label="J"]
+  K [label="K"]
+  L [label="L"]
+  M [label="M"]
+  R [label="R"]
+  A [label="A"]
+  B [label="B"]
+  C [label="C"]
+  D [label="D"]
+  E [label="E"]
+  F [label="F"]
+
+A->R
+B->R
+C->A
+D->A
+E->B
+F->C
+G->B
+H->G
+I->H
+J->L
+K->J
+L->F
+M->F
+
+}
+
+

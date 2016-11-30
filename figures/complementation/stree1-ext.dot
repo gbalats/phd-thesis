@@ -1,0 +1,25 @@
+digraph solutionTreeExt {
+rankdir="BT";
+node [shape=circle]
+
+A [label="A"]
+B [label="B"]
+C [label="C"]
+D [label="D"]
+E [label="E"]
+F [label="F"] [shape=doublecircle];
+G [label="G"]
+H [label="H"]
+I [label="I"]
+J [label="J"] [shape=doublecircle];
+
+B->A
+C->G
+E->A
+D->B
+F->C [style=bold];
+H->E
+G->E
+I->F
+J->F [style=bold];
+}

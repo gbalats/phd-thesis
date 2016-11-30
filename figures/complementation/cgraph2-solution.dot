@@ -1,0 +1,21 @@
+digraph solutionTree {
+rankdir="BT";
+node [shape=circle]
+
+A [label="A"]
+B [label="B"]
+C [label="C"]
+D [label="D"]
+E [label="E"]
+F [label="F"]
+G [label="G"]
+
+A->B
+B->E
+E->F
+E->G
+C->F
+C->G
+F->D
+A->D
+}

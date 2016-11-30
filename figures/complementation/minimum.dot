@@ -1,0 +1,31 @@
+digraph proj {
+rankdir="BT";
+node [shape=circle]
+edge [style=filled]
+
+  B [label="B"]
+  C [label="C"]
+  D [label="D"]
+  E [label="E"]
+
+subgraph known {
+  node [shape=doublecircle]
+
+  A [label="A"]
+
+}
+
+A->B
+A->C
+A->D
+
+subgraph path
+   {
+       edge [style=dashed]
+
+       A->E
+   }
+D->E [style=invis];
+}
+
+

@@ -1,0 +1,35 @@
+digraph constraintGraph {
+rankdir="BT";
+node [shape=circle]
+edge [style=dashed]
+
+A [label="A"]
+B [label="B"]
+C [label="C"]
+D [label="D"]
+E [label="E"]
+F [label="F"]
+G [label="G"]
+H [label="H"]
+I [label="I"]
+J [label="J"]
+
+B->A
+C->A
+D->A
+I->A
+D->B
+F->C
+I->F
+J->F
+J->G
+G->E
+H->E
+E->A
+
+  subgraph hidden {
+    edge [style=invis]
+    C->G
+    F->G
+  }
+}

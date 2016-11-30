@@ -1,0 +1,56 @@
+digraph constraintGraph {
+rankdir="BT";
+node [shape = circle, fixedsize = true, style = filled, fillcolor = grey]
+edge [style = dashed]
+
+C [label="C"]
+D [label="D"]
+H [label="H"]
+I [label="I"]
+
+subgraph pclasses {
+  node [fillcolor = white]
+  B [label="B"]
+}
+
+subgraph kclasses {
+  node [shape = doublecircle, fillcolor = white]
+  A [label="A"]
+  E [label="E"]
+}
+
+subgraph pifaces {
+  node [fillcolor = black, fontcolor = white]
+  F [label="F"]
+}
+
+subgraph kifaces {
+  node [shape = doublecircle, fillcolor = black, fontcolor = white]
+  G [label="G"]
+}
+
+subgraph kedges {
+  edge [style=filled]
+  E->F
+  E->G
+  E->B
+  G->D
+}
+
+C->D
+E->C
+E->A
+H->B
+H->E
+H->G
+H->I
+I->F
+B->A
+
+subgraph hidden {
+  edge [style=invis]
+  F->C
+  D->A
+}
+
+}

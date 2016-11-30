@@ -1,0 +1,34 @@
+digraph constraintGraph {
+rankdir="BT";
+node [shape = circle, fixedsize = true, style = filled, fillcolor = white]
+edge [style = filled]
+
+subgraph pclasses {
+  B [label="B"]
+  A [label="A"]
+  E [label="E"]
+  H [label="H"]
+  H->E->B->A
+}
+
+subgraph pifaces {
+  node [fillcolor = black, fontcolor = white]
+  F [label="F"]
+  G [label="G"]
+  C [label="C"]
+  D [label="D"]
+  I [label="I"]
+
+  I->F->C->D
+}
+
+{rank=same; A; D; }
+
+B->C
+E->F
+E->G [constraint = false];
+H->I [constraint = false];
+G->D
+// D->A [style=invis]
+}
+

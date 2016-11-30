@@ -1,0 +1,16 @@
+digraph hierarchy {
+rankdir="BT";
+node [shape=circle]
+edge [style=dashed]
+
+A [label="A"]
+B [label="B"]
+C [label="C"]
+D [label="D"]
+
+B->A
+C->A
+D->B
+D->C
+
+}

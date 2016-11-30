@@ -1,0 +1,18 @@
+digraph or {
+rankdir="BT";
+node [shape=circle]
+edge [style=filled]
+
+  A [label="A"]
+  B [label="B"]
+  C [label="C"]
+
+subgraph path
+   {
+       edge [style=dashed]
+
+       A->B
+       A->C
+   }
+}
+

@@ -1,0 +1,61 @@
+digraph or {
+rankdir="BT";
+node [shape=circle]
+edge [style=filled]
+
+  A [label="A"]
+  D [label="D"]
+  E [label="E"]
+  F [label="F"]
+  G [label="G"]
+  H [label="H"]
+  I [label="I"]
+  J [label="J"]
+  M [label="M"]
+  N [label="N"]
+
+subgraph known {
+  node [shape=doublecircle]
+
+  B [label="B"]
+  C [label="C"]
+  K [label="K"]
+  L [label="L"]
+}
+
+B->A
+C->A
+K->F
+L->F
+
+subgraph path
+   {
+       edge [style=dashed]
+
+       D->B
+       D->E
+       H->E
+       H->F
+       I->F
+       I->G
+       J->G
+       J->C
+
+       M->A
+       N->A
+       M->K
+       N->L
+   }
+
+   subgraph hidden {
+       edge [style=invis]
+
+       E->A
+       F->A
+       G->A
+   }
+
+   {rank=same; B C}
+}
+
+
