@@ -535,7 +535,6 @@ considerations, as past approaches do.
 %-------------------------------------------------------------------------------
 
 \section{Hierarchy Complementation for Multiple Inheritance}
-
 \label{multiple}
 
 We begin with a modeling of the hierarchy complementation problem in
@@ -853,6 +852,515 @@ an iteration passed with no progress made.
 
 A detailed proof of the correctness of our algorithm can be found in
 Appendix~\ref{correctness}.
+
+
+%-------------------------------------------------------------------------------
+% Single Inheritance
+%-------------------------------------------------------------------------------
+
+\section{Hierarchy Complementation for Single Inheritance}
+\label{single}
+
+The problem for a single inheritance setting has a very similar
+statement as in the earlier case of multiple inheritance, but markedly
+different reasoning intricacies and solution approaches, due to a newly
+arising constraint: every class in this setting can only have a
+single parent.
+
+Formally, our problem is modeled in much the same way as before. Our
+input is again a directed graph $G = (V,E)$, with two disjoint sets of
+nodes $V = V_{known} \disjunion V_{phantom}$ and two disjoint sets of edges
+$E = E_{direct} \disjunion E_{path}$, where $E_{direct} \subseteq V_{known}
+\times V$.  The difference is that the output of our algorithm should
+be a directed \emph{tree} (instead of a DAG), $G_T = (V,E')$, such
+that the same conditions as in the earlier case are satisfied:
+\begin{enumerate}
+\item $\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
+ v_t) \in E_{direct}$
+\item $(v_s,v_t) \in E_{path} \Rightarrow$ there is a path from $v_s$ to
+$v_t$ in $G_T$
+\end{enumerate}
+
+Without loss of generality, we assume that there exists a ``root''
+node $n_r \in V_{known}$ that is a common supertype for all of our
+types. If no such type exists, we can create an artificial one, by
+adding extra constraint edges. In this way, we can be certain that
+computing a graph with a single outgoing edge for all nodes (but one)
+will form a tree instead of a forest.
+
+% Thus, each type may now have multiple supertypes. The only limiting
+% constraint is  that we cannot have cycles in the resulting
+% hierarchy. This constraint also applied to the single inheritance case, where
+% the algorithm would detect such a cycle, if no unconstrained nodes
+% were left in a non-empty graph (Algorithm\ref{alg:single:simple},
+% function \textsc{placeUnder()}---line~\ref{lst:line:cycle}).
+
+% Based on theses examples we see that solving the problem seems to
+% require a search.\footnote{We have thus far failed to either cast the
+% problem as a (polynomial) stratification or flow problem, or to prove
+% NP-completeness, despite significant efforts. Nevertheless, this is
+% unlikely to affect the practical algorithm used for the solution in
+% JPhantom: our current approach is simple and very fast in practice.}
+% Therefore our algorithm for the multiple inheritance case is a
+% straightforward backtracking exhaustive search for the satisfaction of
+% all constraints of the form of Figure~\ref{fig:choice}.
+
+
+The problem is quite hard in its general setting. There are several
+patterns that necessitate a complex search in the space of
+possibilities. Figures~\ref{fig:single1}-\ref{fig:single4} show some
+basic patterns that induce complex constraints. All nodes reachable
+from a single one need to be linearly ordered
+(Figure~\ref{fig:single1} shows the simplest case). This requires
+computing an ordering (i.e., guessing a permutation) of these
+nodes. Other constraints can render some of the permutations
+invalid. The basic pattern behind such restrictions is that of
+Figure~\ref{fig:single2}: there are hierarchies that cannot be
+related. Combining the two patterns suggests that there needs to be a
+search in the space of permutations for a valid one:
+Figures~\ref{fig:single3} and \ref{fig:single4} show some simple
+cases.
+
+\begin{figure*}[t]
+  \vspace{-5mm}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-1.pdf}
+    \subcaption{B and C must be subtype-related (in either
+      direction).}\label{fig:single1}
+  \end{minipage}
+  \hspace{0.4in}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-2.pdf}
+    \subcaption{D and E cannot be subtype-related.}\label{fig:single2}
+  \end{minipage}
+  \\
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-3.pdf}
+    \subcaption{A has to be a subtype of F.}\label{fig:single3}
+  \end{minipage}
+  \hspace{0.2in}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-4.pdf}
+    \subcaption{A has to be a subtype of either G or
+      H.}\label{fig:single4}
+  \end{minipage}
+  \caption{Single Inheritance Basic Patterns}
+\end{figure*}
+
+Composing such constraints into more complex hierarchies gives an idea
+of the difficulty of the search involved. Figure~\ref{fig:hard:or}
+shows an example where it is hard to see without complex
+reasoning which of the $E$, $F$, $G$ nodes have to be placed
+above $A$ and which cannot.
+
+\begin{figure}
+  \centering \includegraphics[scale=0.341]{images/single-or.pdf}
+
+  \caption{Harder composite example of single-inheritance constraints.
+    The (undirected) path from $B$ to $C$ through $E,F,G$
+    implies that $(A <: E) \lor (A <: F) \lor (A <: G)$. However,
+    since $F$ is the first common known supertype of $M$ and $N$, and $A$ just a
+    supertype of both, $F <: A$, and thus $(A <: E) \lor (A <: G)$.}
+\label{fig:hard:or}
+\end{figure}
+
+%%You keep using that word, comprise. I don't think it means what you
+%%think it means.
+
+Clearly the problem can be modeled as a constraint satisfaction
+problem instance, where $V_{phantom}$ is our set of variables and $V$
+is the domain of values (representing the variable's direct
+supertype). The path-edges and the absence of cycles constitute our
+constraints. This requires an exponential search in the worst
+case. Indeed, our implementation performs precisely such an exhaustive
+search, but with a heuristic choice of nodes so that the search tries
+to satisfy the constraints introduced by the patterns in
+Figures~\ref{fig:single1} and \ref{fig:single2}---i.e., the pattern of
+Figure~\ref{fig:single1} is identified, all induced permutations are
+tried, and the pattern of Figure~\ref{fig:single2} is used to prune
+them eagerly, instead of waiting to detect failure later.
+
+Most importantly, our approach provides special handling for a
+simple but practically quite common case. In this special case,
+there is a polynomial algorithm for solving the problem and exhaustive
+search is avoided.
+%\footnote{More accurately, the special case algorithm
+%is used as a subroutine and exhaustive search is performed by having
+%the special case algorithm return different solutions when one fails.}
+
+\input{algorithms/single/kdirect}
+
+\paragraph{Simplified setting: No direct-edges to phantom nodes.}
+
+It is easy to solve the problem in the case that there are no direct
+edges from known nodes to phantom nodes. Since we are in a
+single-inheritance setting, this means that no class in the known part
+of the program has a superclass in the complement that we are trying
+to produce. In this case, we have that $E_{direct} \subseteq
+V_{known}\times V_{known}$. The extra condition allows us to employ a
+fast polynomial time algorithm. This interesting case of our problem
+is very common in practice. Intuitively, the ease of dealing with this
+case stems from avoiding the search in the space of permutations when
+the input contains patterns such as those in Figure~\ref{fig:single3}:
+if two permutations have elements in common (e.g., the permutation of
+$B$ and $F$, and that of $F$ and $C$ in Figure~\ref{fig:single3}) they
+cannot include nodes that are guaranteed to be subtype-unrelated (such
+as $B$ and $C$ in this example) and all unknown nodes have to be below
+the known ones in any solution.
+
+Algorithm~\ref{alg:single:kdirect} first removes path-edges
+originating from known-nodes, after verifying that the corresponding
+paths indeed exist. It then uses union/find data structures to compute
+connected components of phantom nodes, while treating path-edges
+as \emph{undirected} edges: anything connected through such edges can
+safely end up in a single linear ordering. Then, for each phantom
+undirected connected component, it computes the lowest known-node to
+serve as the first-common-supertype of all of this component's phantom
+nodes. Note that when two known-nodes are reachable by two phantom
+nodes of the same connected component (in the phantom subgraph), then
+one of them ought to be a supertype of the other, or else no solution
+can exist in a single inheritance setting. This condition is captured
+in line~\ref{lst:line:crossover}. After the first common (known)
+supertype for every connected component has been computed, a mere
+topological sort, i.e. placing all relevant nodes in a total order, is
+enough to satisfy all of this component's constraints. This may
+introduce many superfluous edges in the solution: these edges are not
+actually required by our constraints (since a topological order is a
+total order). In practice, we produce a partial order by using a
+variant of topological sort that generates a tree instead of a list as
+its result, but a full topological sort also satisfies the correctness
+requirements of the algorithm. (We return to the topic of why we
+actually want a weaker ordering in Section~\ref{java}.)
+
+In the example of Figure~\ref{fig:kdirect:ex},
+Algorithm~\ref{alg:single:kdirect} first checks and removes the
+$(F,A)$ path-edge. Then the phantom nodes are divided in the following
+phantom connected components: $\{G,H,I\}$, $\{J,K,L\}$, and
+$\{M\}$. The first common known supertype for each component is $B$,
+$F$, and $F$ respectively. Each component is then linearized, which
+generates the following complete orders that are appended to the
+output: $I <: H <: G <: B$, $K <: J <: L <: F$, and $M <: F$.
+
+\begin{figure}[t]
+  \centering
+  \hspace{-6mm}
+  \subfloat[Constraint Graph]{
+    \includegraphics[scale=0.34]{images/single-direct.pdf}
+    \label{fig:stree1:simple}
+  }
+  \hspace{-5mm}
+  \subfloat[Solution]{
+    \includegraphics[scale=0.34]{images/single-direct-sol.pdf}
+    \label{fig:cgraph1:simple}
+  }
+  \caption{%
+    Algorithm~\ref{alg:single:kdirect} - Example
+  }
+\label{fig:kdirect:ex}
+\end{figure}
+
+%% Do we care? Seems like a leftover.
+%A phantom-only input, i.e. $V = V_{phantom}$, $E = E_{path}$, poses no
+%difficulties in this setting too, since a single topological sort
+%would suffice as an acceptable solution. (A solution, for our
+%purposes, yields a correct program complement exactly when one exists,
+%i.e., is both sound and complete.)
+
+
+
+\begin{comment}
+%%%%%%%%%%%%%%%%%%% Old stuff follow
+
+However, in order to achieve a solution that generalizes well to
+harder cases, we would like to avoid ordering nodes if there is no
+need for them to be ordered. The result will be a tree and not a
+linear order (in the general case). Specifically, we would like to
+compute a partial order relation,\footnote{Throughout the paper, our
+use of the term ``partial order'' denotes an irreflexive partial
+order.} $\ll$, such that:
+
+\begin{itemize}
+\item $\ll$ subsumes the input constraints, i.e., $v_a \ll v_b$ if $(v_a,v_b) \in E$
+\item if $v_c \ll v_a$ and $v_c \ll v_b$ then either $v_a \ll v_b$ or $v_b \ll v_a$
+\item $\ll$ is transitively closed
+\item $\ll$ is minimal, i.e., removing any pair from the relation would violate
+the above rules.
+\end{itemize}
+
+The addition of the second rule, above, is a hallmark feature of the
+hierarchy complementation problem. Consider the input of
+Figure~\ref{fig:diamond}. The $(B,A)$ and $(C,A)$ edges guarantee that
+both $B$ and $C$ will be ordered below $A$ in the result.  However, we
+also know that they should be ordered relative to each other: the
+$(D,B)$ and $(D,C)$ edges enforce this requirement, since there can
+only be a single path from $D$ to the root of the hierarchy and both
+$B$ and $C$ must be on it. Note that, in the absence of
+other ordering constraints, we could have either $B \ll C$ or
+$C \ll B$---both options would yield $\ll$ relations that satisfy the
+above requirements, for this example.
+
+%% \begin{defn}
+%%   A solution $G_S = (V,E')$ to a set of subtype constraints $G_C =
+%%   (V,E)$ is minimum if and only if, $\forall x,y \in V$ such that a
+%%   path $p = x \ldots y$ exists in $G_S \Rightarrow$ .
+%% \end{defn}
+
+\begin{figure}
+  \centering \includegraphics[width=0.2\textwidth]{images/diamond.pdf}
+
+  \caption{In any solution of these subtyping constraints, B and C
+  have to be below A, but also they have to be relatively ordered with
+  each other, since D must find both on its (single inheritance) path
+  to the root.}
+\label{fig:diamond}
+\end{figure}
+
+Algorithm~\ref{alg:single:simple} produces an ordering relation
+(represented as a ``solution'' set of ``direct parent'' edges, $S$)
+whose transitive closure satisfies the requirements for
+$\ll$,\footnote{I.e., the algorithm computes the \emph{transitive
+reduction} of $\ll$, or, in diagram form, the Hasse diagram of the
+$\ll$ partial order, i.e., the depiction of the partial order with
+direct-predecessor-only edges.} or signals an error if none
+exists. The algorithm is given in pseudocode, mixed with informal
+well-understood operations when their precise description would be
+tedious. Such concepts include ``remove vertex and all incoming
+edges'', ``undirected view of a directed graph'', ``maximally
+connected component'', ``restriction of a graph to a subset of its
+nodes''.
+
+Function \textsc{placeUnder()} augments the solution being generated
+by placing every node of its first argument, graph $G$, under its
+second argument, node $n$. The invariant maintained across recursive
+invocations is that, on entry, $n$ is a node of $G$ with no outgoing
+edges and all nodes of $G$ can reach $n$ \emph{when the edges of G are
+converted to undirected edges}.  The key to the algorithm is precisely
+this property: we order below a node all other nodes that can reach it
+with edges considered in any direction, thus satisfying the properties
+of the $\ll$ definition. A key lemma (proven by induction) is that if
+an unconstrained node (i.e., one without outgoing edges), $u$, can
+reach another node, $k$, via any combination of up-or-down subtyping
+inferences, then $u$ and $k$ have a common descendant, i.e., a node
+that has (directed) paths to both. Therefore $u$ and $k$ must be
+relatively ordered (although it is not known in which direction).  By
+also picking to place a subtree under one of its nodes with no
+outgoing edges (mimicking a plain topological sort), we ensure that
+the arbitrary ordering picked (to satisfy the second rule of the $\ll$
+definition) does not violate explicit ordering constraints in the
+input (per the first rule of the $\ll$ definition). The above
+properties also serve as a proof sketch for the correctness of
+Algorithm~\ref{alg:single:simple} relative to the definition of $\ll$.
+
+% Thus, to create our solution, given that our
+%constraint graph is weakly connected---and if it's not, we can make it
+%so by adding auxiliary edges to the \emph{root} node---we only have to
+%call \textsc{placeUnder()} with the \emph{root} node as its second
+%argument.
+
+\input{algorithms/single/simple}
+
+An example is given in Figure~\ref{fig:ex1:simple}. We assume that
+node $A$ is the \emph{root} node. Therefore, the algorithm will first
+call \textsc{placeUnder($G_C$, $A$)} and then erase the edges
+$\{(B,A), (C,A), (D,A), (E,A), (I,A)\}$. The set of unconstrained
+nodes, $V_n$, will contain the nodes $B,C,E$. Without loss of
+generality, we assume that the \textsc{pick()} function always returns
+the lexicographically smaller node of its candidates. Thus, the edge
+$(B,A)$ is added to the solution, and \textsc{placeUnder()} is
+recursively called for the component of $G$ that contains only the
+edge $(D,B)$, which is then also removed from $G$ and added to the
+solution. The control flow will go back to node $A$, pick the next
+unconstrained node, $C$, and call \textsc{placeUnder()} again after
+adding the edge $(C,A)$ to the solution. This time, the component
+computed (by undirected reachability) to be under $C$ will contain
+every remaining node, and will therefore prevent any other node from
+being placed directly under $A$. After edge $(F,C)$ is removed, the
+unconstrained nodes now become $E$ and $F$. The edge $(E,C)$ is added
+and $(G,E),(H,E)$ are removed. Again, every remaining node will be
+placed under $E$. The node $F$ is picked among $F,G,H$, edge $(F,E)$
+is added, and $G'$ gets every remaining edge except $(H,E)$ because
+$H$ is (undirected-)unreachable by $F$. Edge $(H,E)$ will be added
+eventually, after $G,J,I$ have been recursively placed under $F$ in
+this order.
+
+\begin{figure}
+  \centering
+  \subfloat[Constraint Graph]{
+    \includegraphics[scale=0.4]{images/cgraph1.pdf}
+    \label{fig:stree1:simple}
+  }
+  \subfloat[Solution]{
+    \includegraphics[scale=0.4]{images/stree1.pdf}
+    \label{fig:cgraph1:simple}
+  }
+  \caption{%
+    Algorithm~\ref{alg:single:simple} - Example
+  }
+\label{fig:ex1:simple}
+\end{figure}
+
+
+
+%
+%We can then decouple the two different types of edges into the $f_i$
+%mapping and a graph $G_C = (V,E_{path})$. For ease of notation, we
+%will use $f_i$ and $G_C = (V,E)$ from now on, as a shorthand, but each
+%edge of $G_C$ will represent a path-edge: $\forall (x_1,x_n) \in
+%E : \text{there exists a path } (x_1,x_2,\ldots, x_n) \text{ in } G_T$.
+%
+%
+%Let us ignore, for now, the subset of fixed edges that corresponds to
+%$f_i$ and should eventually be present in any solution. This variation
+%of our problem means that we allow only phantom types in our
+%constraints, for which no supertype information exists, whatsoever. A
+%simple solution to this problem would be a topological order
+%w.r.t. our constraints $E$.
+
+
+\paragraph{Full single inheritance setting: known and phantom nodes.}
+
+We can extend our algorithm to support an existing class hierarchy by
+combining a simple preprocessing step and a biasing of
+function \textsc{pick} so that it preferentially returns a direct
+child, if one exists in the input. Recall that our input is now two
+distinguished sets of nodes, $V_{known}$, $V_{phantom}$ and similarly
+for edges, $E_{direct}$, $E_{path}$.  For notational convenience we
+represent $E_{direct}$ as a function $f_i:V_{known} \rightarrow
+V$. (Since we are in a single inheritance setting, we can guarantee
+that $E_{direct}$ is a function from its first argument: if a node
+$v \in V_{known}$ has more than one outgoing edge then the problem is
+immediately unsolvable. Our solution edge set is similarly a function,
+since we are computing a tree.)
+
+
+%Similarly, since $G_T$ has to be a tree, we can also encode our
+%solution (output) as another mapping, $f_o:V \rightarrow V$.  Both of
+%these mappings map a type (key) to its \emph{direct}-supertype
+%(value). Thus, the first constraint of our solution becomes: $\forall
+%v \in V_{known} : f_o[v] = f_i[v]$, where $f_i[v]$ denotes the known
+%direct supertype of $v$ (given as input), and $f_i$ can now be viewed
+%as a partial solution that should be preserved by our final solution
+%$f_o$.
+
+The preprocessing step consists of merely adding subtyping edges from
+all known supertypes of a type to all its unknown ones. In other
+words, the principle is that if a node $n$ can reach another node $m$
+through a path of $E_{direct}$ edges, while $n$ reaches $m'$ via an
+$E_{path}$ edge, then the solution should have a path from $m$ to
+$m'$.  By transitively following the $f_i$ function (i.e.,
+$E_{direct}$ edges) we can add outgoing edges to all nodes found on
+this path, so they will never be placed above a node ordered relative
+to their descendant via $E_{path}$, thus violating the requirement of
+preserving the input hierarchy. This is shown in
+Algorithm~\ref{alg:single:ext}. Function \textsc{solve()} performs
+the preprocessing step while keeping the core logic, i.e. the earlier
+\textsc{placeUnder()} function, intact. Function \textsc{pick()}
+prioritizes known direct descendants, in order to maintain the
+$E_{direct}$ edges in the output.
+
+\input{algorithms/single/extended}
+
+For example, in Figure~\ref{fig:ex1:ext} we can see how the solution
+of Figure~\ref{fig:ex1:simple} is altered if we take a given class
+hierarchy into account. Let $V_{known} = \{F,J\}$ and $E_{direct}
+= \{(F,C),(J,F)\}$. The solid edges denote the constraints added due
+to $f_i$, while the newly added edges $(F,G),(C,G)$ have been inserted
+because of $(J,G)$. Since $G$ is surely a supertype of $J$ and we know
+that $F$ is the direct supertype, we can soundly add the edge $(F,G)$
+to preserve their respective order. After $(F,G)$ has been added, and
+because $f_i[F] = C$, we can soundly add $(C,G)$ and then reach a
+fixpoint.
+
+% (line~\ref{lst:line:indirect}).
+
+Line~\ref{lst:line:priority} in the \textsc{pick()} function will
+choose a \emph{direct} subtype according to $f_i$, over any other
+unconstrained node. For instance, if ``$f_i[C] = A$'' were part of the
+input in the earlier pattern of Figure~\ref{fig:diamond}, then
+the \textsc{pick()} function would choose node $C$ among $V = \{B,C\}$
+to place next, resulting in the $A \leftarrow C \leftarrow
+B \leftarrow D$ ordering (and not $A \leftarrow B \leftarrow
+C \leftarrow D$, as produced by settling arbitrary node choices according
+to lexicographic order).
+
+In line \ref{lst:line:crossover} of the \textsc{pick()} function, an
+error is raised if a known direct supertype disagrees with what
+we have computed. This can only happen if two subtrees of $G$ have
+roots in $V_{known}$, and these two subtrees are somehow connected. In
+this case, the problem is unsolvable for single
+inheritance. An example would be the pattern of Figure~\ref{fig:diamond} if
+$V_{known} = \{A,B,C\}$ and $E_{direct} = \{(B,A), (C,A)\}$. Our
+algorithm would reach a point where either node $C$ would have to be
+placed under $B$, or node $B$ under $C$. In both cases, this would
+conflict with $f_i$, and would be captured by our
+\emph{crossover} error check.
+
+\begin{figure}
+  \centering
+  \subfloat[Constraint Graph]{
+    \includegraphics[scale=0.4]{images/cgraph1-ext.pdf}
+    \label{fig:stree1}
+  }
+  \subfloat[Solution]{
+    \includegraphics[scale=0.4]{images/stree1-ext.pdf}
+    \label{fig:cgraph1:ext}
+  }
+  \caption{%
+    Algorithm~\ref{alg:single:ext} - Example
+  }
+\label{fig:ex1:ext}
+\end{figure}
+
+\paragraph{Correctness Proof Sketch:}
+
+Algorithm~\ref{alg:single:simple} already satisfies all path-edge
+constraints. The extended version (\ref{alg:single:ext}) adds new
+path-edges soundly, i.e. an edge $(s,t)$ is added exactly when
+$s$ \emph{has} to be a subtype of $t$. Therefore, to prove that our
+algorithm is correct we only have to show that it maintains in the
+output the direct-edges of its input.
+
+The edges added by line~\ref{lst:line:add} of the \textsc{solve()}
+function ensure that a node $k \in V_{known}$ will be placed in an
+unconstrained set (i.e., $k$ has no outgoing edges) \emph{for the
+first time} when the second argument of \textsc{placeUnder()} is equal
+to its actual direct supertype: each direct supertype acquires edges
+to all indirect, so that it becomes free of outgoing edges only after
+each indirect supertype has been placed above it in the solution
+hierarchy.
+
+However, the phantom-only version of our algorithm guarantees that the
+subset of nodes that will be placed underneath each unconstrained node
+$u$ will only involve nodes that are somehow connected with $u$ at
+that time.  Thus, if a known node $k$ were to be placed somewhere
+lower than its direct supertype, there has to be another unconstrained
+node $u$ to be placed above $k$ and $u$'s (undirected)-connected
+component includes an edge to $k$, so that $k$ is included in
+the \textsc{placeUnder} graph argument for $u$. However, since
+the \textsc{pick()} function prioritizes known nodes over phantom
+ones, $u$ can only be a known node that happened to be picked before
+$k$ in the same unconstrained set (when both $u,k$ were to be placed
+under their direct-supertype). This, however, is an unsatisfiable
+condition upon which our algorithm signals an error. To see that the
+error truly indicates unsatisfiability of the input, recall the
+property of Algorithm~\ref{alg:single:simple} mentioned earlier: if a
+node with no outgoing edges can reach another node through an
+undirected path, then both nodes have a common descendant, i.e., a
+node that can reach both through \emph{directed} paths, and thus they
+should be ordered relative to each other. But this is impossible since
+both nodes are known and both their direct supertypes and all their
+supertypes have been ordered in the output (the supertype of one
+should have the other node above it). Therefore, our algorithm fails
+to compute a solution only when no valid solution according to our
+formal criteria exists. Moreover, each solution it generates is sound
+w.r.t. our constraint edges (both path and direct).
+
+
+\end{comment}
 
 
 
