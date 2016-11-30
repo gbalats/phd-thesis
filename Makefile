@@ -1,6 +1,7 @@
 PDFLATEX     := pdflatex -shell-escape -interaction=nonstopmode -file-line-error
 BIBTEX       := bibtex -min-crossrefs=9000
 PS2PDF       := ps2pdf -dEPSCrop
+DOT          := dot
 RM           := rm -f
 MV           := mv
 LPR          := lpr
@@ -14,15 +15,31 @@ biblio.bib   += $(wildcard bib/pointer-analysis/*.bib)
 styles.sty   := $(wildcard styles/*.sty)
 sources.tex  := $(wildcard *.tex)
 sources.tex  += $(wildcard chapters/*.tex)
+algo.tex     := $(shell find algorithms/ -type f -name '*.tex')
+
 figures.eps  := $(wildcard figures/*.eps)
+figures.eps  += $(wildcard figures/complementation/*.eps)
+figures.eps  += $(wildcard figures/structsens/*.eps)
 figures.svg  := $(wildcard figures/*.svg)
+figures.svg  += $(wildcard figures/complementation/*.svg)
+figures.svg  += $(wildcard figures/structsens/*.svg)
+figures.dot  := $(wildcard figures/*.dot)
+figures.dot  += $(wildcard figures/complementation/*.dot)
+figures.dot  += $(wildcard figures/structsens/*.dot)
+figures.odg  := $(wildcard figures/*.odg)
+figures.odg  += $(wildcard figures/complementation/*.odg)
+figures.odg  += $(wildcard figures/structsens/*.odg)
 figures.pdf  := $(figures.eps:%.eps=%.pdf)
 figures.pdf  += $(figures.svg:%.svg=%.pdf)
+figures.pdf  += $(figures.dot:%.dot=%.pdf)
+figures.pdf  += $(figures.odg:%.odg=%.pdf)
+
 thesis.pdf   := thesis.pdf
 
 dependencies := $(sources.tex) $(figures.pdf)
 dependencies += $(biblio.bib)
 dependencies += $(class.cls) $(styles.sty)
+dependencies += $(algo.tex)
 
 #--------------------------
 # Default target
@@ -40,6 +57,12 @@ $(thesis.pdf): %.pdf: %.tex force
 	$(PDFLATEX) $<
 	$(PDFLATEX) $<
 
+thesis-full.tex: thesis.tex force
+	perl latexpand --expand-bbl thesis.bbl thesis.tex > $@
+
+# diff.tex: thesis.pdf
+# 	latexdiff --flatten submitted.tex thesis.tex > $@
+
 .PHONY: print
 print:
 	$(LPR) -P$(PRINTER) $(thesis.pdf)
@@ -56,6 +79,15 @@ $(figures.svg:%.svg=%.pdf): %.pdf: %.svg
 
 $(figures.eps:%.eps=%.pdf): %.pdf: %.eps
 	$(PS2PDF) $< $@
+
+$(figures.dot:%.dot=%.pdf): %.pdf: %.dot
+	$(DOT) $< -Tpdf -o $@
+
+$(figures.odg:%.odg=%.pdf): %.pdf: %.odg
+	unoconv $< -o $@
+	$(PDFCROP) $@
+	$(RM) $@
+	$(MV) $*-crop.pdf $@
 
 .PHONY: figures
 figures: $(figures.pdf)
