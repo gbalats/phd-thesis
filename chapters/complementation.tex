@@ -404,6 +404,11 @@ In brief, the contributions of our work are as follows:
   harder at the level of the type system for the source language.
 \end{itemize}
 
+
+%-------------------------------------------------------------------------------
+% Motivation
+%-------------------------------------------------------------------------------
+
 % In the next sections we detail
 \section{Motivation and Practical Setting}
 
@@ -522,6 +527,331 @@ considerations, as past approaches do.
 % unsatisfiable constraints cannot arise in
 %real-world instances of the problem, unless parts of the code have
 %changed without recompiling other, dependent parts.
+
+
+%-------------------------------------------------------------------------------
+% Multiple Inheritance
+%-------------------------------------------------------------------------------
+
+\section{Hierarchy Complementation for Multiple Inheritance}
+
+\label{multiple}
+
+We begin with a modeling of the hierarchy complementation problem in
+the setting of multiple inheritance. This means that every class in our
+output can have multiple parents.
+
+%% Formalization
+
+We can model our problem as a graph problem. Our input is a directed
+graph $G = (V,E)$, with two disjoint sets of nodes $V = V_{known} \disjunion
+V_{phantom}$ and two disjoint sets of edges $E = E_{direct} \disjunion
+E_{path}$, where $E_{direct} \subseteq V_{known} \times V$ (i.e.,
+direct edges have to originate from known nodes---the converse is not
+true, as known nodes can be inferred to subtype unknown ones due to
+assignment instructions in the bytecode). The set of nodes $V$ is a
+set of types, while the set of edges $E$ corresponds to our subtyping
+constraints. That is, an edge $(v_s,v_t)$ encodes the constraint $v_s
+<: v_t$. The $E_{direct}$ subset encodes the direct-subtype
+constraints. The output of our algorithm should be a \emph{DAG} (with
+edges from children to their parents), $G_D = (V,E')$, such that:
+\begin{enumerate}
+\item $\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
+ v_t) \in E_{direct}$ (i.e., all direct edges from known nodes are preserved
+and no new ones are added to such nodes)
+\item $(v_s,v_t) \in E_{path} \Rightarrow$ there is a path from $v_s$ to
+$v_t$ in $G_D$
+\end{enumerate}
+
+%Again, we could decouple path-edges from direct-edges by introducing
+%the input and output mappings, $f_i:V_{known} \rightarrow 2^V$,
+%$f_o:V \rightarrow 2^V$. In both cases, these two mappings map a type
+%(key) to its \emph{set} of outgoing edges (value). This way, $G_C =
+%(V,E)$ will only contain path-edges such that $\forall (x_1,x_n) \in E
+%:$ there must exist a path $(x_1,x_2,\ldots,x_n) \text{ in }
+%G_D$ (second constraint). Additionally, as in the single inheritance case, we must ensure
+%that $\forall c \in V_{known}: f_o[c] = f_i[c]$ (first constraint).
+
+Note that our only limiting constraint here is that we cannot have
+cycles in the resulting hierarchy. Moreover, since each type may have
+multiple supertypes in this setting, a directed acyclic graph is
+fitting as our intended output.
+
+%% Phantom-only case
+
+In contrast to the general case, the problem is trivial if we have a
+phantom-only input, i.e., if we ignore $V_{known}$ and
+$E_{direct}$. It suffices to employ a cycle-detection algorithm,
+and---if no cycles are present---return the input constraint graph as
+our solution: all path edges can become direct subtyping edges. If our
+input graph contains a cycle, then our problem is unsolvable.  If
+not, our solution would probably contain some redundant edges (i.e.,
+edges connecting nodes that are already connected by another path)
+that we could prune to minimize our output. In either case, our
+solution would be valid w.r.t. our constraints.
+
+%Optionally, we could prune some edges from our
+%solution without breaking any constraints, to minimize the output of
+%our algorithm for practical
+%purposes. Algorithm~\ref{alg:multiple:simple} performs such an
+%optimization, by first computing a transitive closure of the
+%constraints and then removing redundant edges, whose target can be
+%reached from another path.
+
+%% Projection Sets
+
+The problem becomes much more interesting when we take $V_{known}$
+into account. The source of the difficulty is the combination of cycle
+detection with nodes whose outgoing edge set cannot be extended.
+Consider first the pattern of Figure~\ref{fig:choice}.
+
+\begin{figure}[htp]
+  \centering \includegraphics[scale = 0.6]{figures/complementation/minimum.pdf}
+  \caption{In any solution of these constraints, either $B$ or $C$ or
+    $D$ have to be ordered below $E$, since no new outgoing edges can
+    be added to $A$ and the path constraint to $E$ needs to be
+    satisfied.}
+\label{fig:choice}
+\end{figure}
+
+This pattern is a basic instance of interesting reasoning in the case of
+multiple inheritance. We have $A \in V_{known}$ such that $(A,B),
+(A,C), (A,D) \in E_{direct}$ and $(A,E) \in E_{path}$. We cannot,
+however, satisfy the path ordering constraint by adding edges to the
+known node $A$. Therefore the output must have one of $B,C,D$ ordered
+below $E$. We refer to the set of $\{B,C,D\}$ as the \emph{projection
+  set} of node $A$, which is a more generally useful concept.
+
+\begin{defn}{\emph{Projection Set.}}
+%  Let $G = (V,E) : V = V_{known} \disjunion V_{phantom}$ and $E
+%  = E_{path} \disjunion E_{direct}$ be a constraint graph.
+  A node $t \in V_{phantom}$ belongs to the \emph{projection set} of a
+  node $s \in V_{known}$ iff $t$ is reachable from $s$ through a path
+  of \emph{direct} edges.
+  %% Redundant: (a path of direct edges will always contain known nodes
+  %% internally)
+  %% that internally contains only known nodes.
+  %%
+  %% We need the definition below since it is used in the algorithm.
+ $$ \textit{proj}(s) \equiv \{t \in V_{phantom}: (s,t) \in {E_{direct}}^+\}$$
+ with the $+$ symbol denoting transitive closure.
+  %% This is wrong!
+ %% $$ proj(s,t) \equiv \{(s,t): t \in V_{phantom} \land (s,t) \in
+ %% {E_{direct}}\}^+$$ with the $+$ symbol denoting transitive
+ %% closure.
+\end{defn}
+
+That is, for each known node we can follow its outgoing direct-edges
+recursively, ending each path when we reach a phantom node. For
+instance, in Figure~\ref{fig:proj}, the phantom projection set for
+node $A$ is $\{C,E,H\}$.
+
+% Node $I$ is not included since no path exists
+% from $A$ to $I$ through direct-edges only.
+
+Referring again to Figure~\ref{fig:proj}, we can see that if $H$ is
+chosen from the projection set of $A$ in order to satisfy the
+path-edge $(A,B)$, and therefore edge $(H,B)$ is added, then this
+would immediately create a cycle because of the existing $(B,H)$
+edge. Our algorithm should prevent such a cycle by making the correct
+choice from the relevant projection set.
+% Furthermore, we can also see why it is redundant to add $I$ in the
+% projection set of $A$. Had node $C$ created a cycle if chosen to
+% satisfy the path to node $B$ (or any other node), it would mean that
+% a path from $B$ to $C$ exists, and so it would be impossible to
+% satisfy the same constraint through $I$ (since there is also a path
+% from $B$ to $I$, through node $C$).
+
+\begin{figure}[tp]
+  \centering
+  %%\subfloat[Constraint Graph]{
+    \includegraphics[scale=0.6]{figures/complementation/projections.pdf}
+    %%\label{fig:proj:graph}
+  %%}
+  %% \subfloat[Solution]{
+  %%   \includegraphics[scale=0.4]{images/stree1-ext.pdf}
+  %%   \label{fig:cgraph1:ext}
+  %% }
+  \caption{%
+    The phantom projection set of $A$ is $\{C,E,H\}$. In order to
+    satisfy path-edge $(A,B)$ we can either add a path-edge $(C,B)$,
+    $(E,B)$, or $(H,B)$. The last one creates a cycle.
+  }
+\label{fig:proj}
+\end{figure}
+
+%% Multiple Inheritance Examples
+
+Combining this projection set choice with cycle detection leads to
+interesting search outcomes. Figure~\ref{fig:unsat} shows an example
+of unsatisfiable input. The path edge $(B,D)$ makes either $E$ or $F$
+be subtypes of $D$, and similarly the path edge $(A,C)$ makes either
+$E$ or $F$ be subtypes of $C$. Nevertheless, any choice leads to
+cycles. In contrast, Figure~\ref{fig:multipleHard} shows an input for
+which a solution is possible, and which we use to illustrate our
+algorithm.
+
+\begin{figure}[htp]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/multipleUnsat.pdf}
+    \subcaption{Unsatisfiable input}\label{fig:unsat}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/multipleEx.pdf}
+    \subcaption{Satisfiable input}\label{fig:multipleHard}
+  \end{minipage}
+  \caption{Multiple Inheritance Examples}
+\end{figure}
+
+%%% WRONG!!!
+%%%%
+% In the same vein, the example of Figure~\ref{fig:multipleHard} is
+% satisfiable, but requires some reasoning to find a solution. The path
+% edge $(B,H)$ cannot be satisfied by ordering $E$ below $H$ without
+% introducing a cycle, but can be satisfied by ordering $F$ below $H$.
+%%%%%
+
+%% Algorithm explanation
+
+Algorithm~\ref{alg:multiple:strat} solves in polynomial time (an easy bound is
+$O(|V| \cdot |E|)$) any
+instance of the hierarchy complementation problem in the multiple
+inheritance setting. The main part of the algorithm is
+function \textsc{stratify()}, which computes a stratification with the
+property that any constraint edge is facing upwards (i.e., from a
+lower to a higher stratum). Moreover, this stratification ensures
+that, for any path-edge $(s,t)$ originating from a known node, there
+will exist a phantom node $p$ in the projection set of $s$ that is
+placed lower than $t$. Given this stratification, it is easy to
+compute the final solution (as in function~\textsc{solve()}). To
+satisfy any such path-edge $(s,t)$, we add a direct-edge from $p$ to
+$t$. This respects our invariant of all edges facing upwards, thus
+ensuring that no cycles will be present in our solution.
+
+Function~\textsc{stratify()} starts from a single stratum, and then
+computes on each iteration a new stratification, $S_{i+1}$, by
+building on the stratification of the previous step, $S_{i}$, and
+advancing some nodes to a higher stratum in order to satisfy
+constraints. This process is repeated until we converge to the final
+stratification, which will respect all of our constraints
+(line~\ref{lst:line:fixpoint}). If no new node converges at some step
+(i.e., all nodes that reached a certain stratum advance to the next),
+then we can be certain that we are dealing with unsatisfiable input,
+and terminate, thus avoiding infinite recursion
+(line~\ref{lst:line:unsat}). The nodes to be advanced at each step are
+determined at line~\ref{lst:line:formula}, which captures the essence of
+the algorithm. The new stratum of a node
+$t$ will be either (i) its current stratum, (ii) the stratum right
+above the source of an edge $(s,t)$, or (iii) the one right above the
+\emph{lowest} projection node of the source of a path-edge $(s,t)$
+originating from a known node---whichever is higher. These conditions
+raise the stratum of a node to the minimum required to satisfy the
+natural constraints of the problem, per our above discussion:
+edges in the solution should be from lower to higher strata.
+
+%% Stratification Example
+
+\begin{figure*}[t]
+  \vspace{-5mm}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-0-crop.pdf}
+    \subcaption{Step 1}\label{fig:multiple:steps:0}
+  \end{minipage}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-1-crop.pdf}
+    \subcaption{Step 2}\label{fig:multiple:steps:1}
+  \end{minipage}
+  \\
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-2-crop.pdf}
+    \subcaption{Step 3}\label{fig:multiple:steps:2}
+  \end{minipage}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-3-crop.pdf}
+    \subcaption{Step 4}\label{fig:multiple:steps:3}
+  \end{minipage}
+  \\
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-4-crop.pdf}
+    \subcaption{Step 5}\label{fig:multiple:steps:4}
+  \end{minipage}
+  \begin{minipage}[b]{0.5\linewidth}
+    \centering
+    \includegraphics[scale=0.4]{figures/complementation/steps-5-crop.pdf}
+    \subcaption{Step 6}\label{fig:multiple:steps:5}
+  \end{minipage}
+  \caption{An example of the stratification produced by the
+    multiple-inheritance solver for Example~\ref{fig:multipleHard}.}
+  \label{fig:multiple:steps}
+\end{figure*}
+
+\input{algorithms/multiple/stratifying}
+
+
+Figure~\ref{fig:multiple:steps} presents an illustration of the
+algorithm's application to the example of
+Figure~\ref{fig:multipleHard}. The sets $\{C,D\}$ and $\{E,F\}$ are
+the projection sets of nodes $A$ and $B$ respectively. At the first
+step, all nodes will be placed in the lowest stratum. Note that, at
+this point, all nodes could be placed in topological order:
+Figure~\ref{fig:multiple:steps:0} is perfectly valid as the output
+of a topological sort. However, this is not a
+solution by our standards, since node $A$ cannot satisfy the edge to
+$G$ because both of its projection nodes, $D$ and $C$, are placed
+after $G$. Adding an edge from either one would be subject to creating
+cycles. At the next step, our algorithm advances every node except $A$
+and $B$, since all are edge targets. At step 3, things become more
+interesting. Nodes $D,C$ have to be advanced by the same criterion,
+since node $H$ contains edges to both, and they all reside in the same
+stratum at step 2. However, nodes $H$ and $G$ have to be advanced for
+a different reason, since they are targets of path-edges originating
+from known nodes, namely $A$ and $B$, whose projections ($\{D,C\}$ and
+$\{E,F\}$ respectively) were on the second stratum during the previous
+step. At step 4, this condition ceases to exist for node $H$, since
+nodes $E,F$ have ``stabilized'' at a lower stratum. This in turn
+causes node $D$ to stabilize at step 5. At step 6, $G$ can also stay
+put, since it is in a higher stratum than the lowest projection of
+$A$, namely $D$. No nodes are advanced at step 7 (which is omitted in
+Figure~\ref{fig:multiple:steps}), thus signifying that our
+stratification has successfully converged to its final form. It is
+therefore simple to compute a solution, by adding edges $(H,D),
+(H,C), (G,C)$, $(D,G)$ and either $(F,H)$ or $(E,H)$
+to the direct-edges $(A,C), (A,D), (B,E), (B,F)$. This set of edges
+will constitute our final solution.
+
+It is also easy to see that our algorithm would soundly detect that
+the example of Figure~\ref{fig:unsat} is unsatisfiable. At the first
+step, only known nodes $A,B$ would remain in the lowest stratum, but
+on the next iteration all remaining nodes would advance again, thus
+triggering the condition of failure (line~\ref{lst:line:unsat}), since
+an iteration passed with no progress made.
+
+% This projection set will serve as the domain for each path-edge that
+% has not been satisfied yet. That is, in order to satisfy a path-edge
+% $(s,t)$ we try to add a path-edge from a node in the projection set of
+% $s$ to $t$. This may eventually lead to a cycle when all the edges in
+% our constraint set have been transformed, in which case another
+% candidate for the path-edge that was removed last from our constraint
+% set is chosen. If none of the candidates for this path-edge succeeds,
+% then our algorithm backtracks to a previous constraint and picks
+% another node to satisfy it. If this process exhausts all combinations
+% the search for a solution fails.
+% %may end up trying all
+% %possible combinations, which results in exponential time complexity in
+% %the worst-case. In practice however, we will have to examine only a
+% %small number of constraints, so this process will hardly be a
+% %bottleneck.
+
+A detailed proof of the correctness of our algorithm can be found in
+Appendix~\ref{correctness}.
+
 
 
 %%% Local Variables:
