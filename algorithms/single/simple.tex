@@ -1,0 +1,58 @@
+\begin{algorithm} 
+  \caption{Single-inheritance phantom-only solver}
+  \label{alg:single:simple}
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{solve}{$G = (V,E)$}
+    \State{let $v_r$ be the ``\emph{root}'' node of $V$}
+    \State \Return \Call{placeUnder}{$G$, $v_r$}
+    \EndFunction
+  \end{algorithmic}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{placeUnder}{$G = (V,E)$, $n$}
+       %% \Comment $G_u$ reflects changes in $G$
+       \Let{$S$}{$\emptyset$}
+       \State remove vertex $n$ (and its incoming edges) from $G$ 
+       \Let{$V_n$}{$\left\{ x \in V : \not \exists (x,y) \in E \right\}$} \Comment all nodes with no outgoing edges
+       %% \Comment unconstrained nodes
+       %% \State $UV \gets V \setminus \left\{ x : (x,y) \in E
+       %% \right\}$
+       \While{$V_n \neq \emptyset$} 
+          \State $x \gets$ \Call{pick}{$V_n$, $n$}
+          \State $V_n \gets V_n \setminus \left\{x\right\}$ 
+          \If{$x \in V$} \Comment otherwise it has been ordered by earlier iteration
+             \Let{$S$}{$S \cup \{(x,n)\}$} \Comment add edge $(x,n)$ to solution
+             %% \Comment $x$ extends $n$
+             \State let $G_u$ be the undirected view of $G$ 
+             \State let $V'$ be the nodes of the maximally connected 
+               component of $G_u$ that contains $x$
+             \State let $G' = (V',E')$ be the restriction of $G$ to $V'$ \Comment Note: $G'$ is directed
+             \State $G \gets (V \setminus V', E \setminus E')$ \Comment remove from $G$ all nodes in $V'$ and adjacent edges
+%             \ForAll{$v \in V'$}
+%             \State remove $v$ and its adjacent edges from $G$
+%             \EndFor
+%             \Let{$S_x$}{\Call{placeUnder}{$G' = (V',E')$, $x$}} \Comment recurse for the removed subgraph
+             \Let{$S$}{$S \cup $ \Call{placeUnder}{$G' = (V',E')$, $x$}} \\
+                               \Comment recurse for removed subgraph, accumulate solution edges
+          \EndIf
+       \EndWhile
+       \If{$G$ has edges} \Comment all nodes have outgoing edge (cycle)
+         \State error: no solution  \label{lst:line:cycle}  %(graph has at least one cycle)
+       \EndIf
+       \State \Return $S$
+    \EndFunction
+  \end{algorithmic}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{pick}{$V$, $n$}
+    \State \Return random element of $V$
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm} 
+

@@ -1,0 +1,73 @@
+\begin{algorithm} 
+  \caption{Single-inheritance solver for strictly known direct-supertypes}
+  \label{alg:single:kdirect}
+  \small
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{solve}{$G = (V,E)$}
+    \State{let $R$ be the ``\emph{root}'' node of $V$}
+    \State{let $S$ be the tree of known nodes $(V_{known}, E_{direct})$}
+    \ForAll{$(s,t) \in E_{path} : s \in V_{known}$}
+      \If{$\nexists$ path $s \leadsto{} t$ in $S$}
+        \State \Return error (unsatisfiable constraint)
+      \EndIf
+      \Let{$E_{path}$}{$E_{path} \setminus \{(s,t)\}$}
+      \Comment{remove already satisfied edge}
+    \EndFor
+    \ForAll{$v \in V_{phantom}$}
+      \State\Call{makeSet}{$v$}
+      \Comment{create single-element disjoint sets}
+    \EndFor
+    \ForAll{$(s,t) \in E_{path} : t \in V_{phantom}$}
+      \State\Call{union}{$s$, $t$}
+      \Comment{merge two connected (phantom) components}
+    \EndFor
+    \Comment{result: undirected connected components (UCCs)}
+    \ForAll{$v \in V_{phantom}$}
+      \Let{$k$}{\Call{find}{$v$}}
+      \Let{$\textit{top}[k]$}{$R$}
+      \Comment{initially ``root''}
+    \EndFor \Comment{init UCC's lowest common known superclass (LCS)}
+    \ForAll{$(s,t) \in E_{path} : t \in V_{known}$} \Comment{must be $s \in V_{phantom}$}
+      \Let{$k$}{\Call{find}{$s$}}
+      \If{$\exists$ path $t \leadsto \textit{top}[k]$ in $S$}
+        \Let{$\textit{top}[k]$}{$t$}
+        \Comment{lower superclass found, update LCS}
+      \ElsIf{$\nexists$ path $\textit{top}[k] \leadsto t$ in $S$}\label{lst:line:crossover}
+        \State \Return error (unsatisfiable constraint)
+      \EndIf
+    \EndFor
+    \ForAll{$k \mapsto v$ in \textit{top}}
+    \Comment{for each UCC and its LCS}
+      \Let{$U$}{$\{(s,t) \in E_{path} : t \in V_{phantom} \land \textsc{find}(s) = k\}$}
+
+      \Comment{directed subgraph of original over nodes of this UCC}
+      \Let{$L$}{a topological order of $U$}
+      \Comment{linearize subgraph}
+      %% \ForAll{$(x,y)$ in $zip(L,tail(L))$}
+      %% \EndFor
+      \Let{$hd$}{the top node of $L$}
+      \Let{$S$}{$S \cup L \cup \{(hd,v)\}$} 
+%      \While{$L$ is not empty}
+%        \State $hd::L' = L$
+%        \Comment{unpack head-tail of list $L$}
+%        \Let{$S[hd]$}{$v$}
+%        \Comment{set $v$ as the direct-supertype of $hd$ }
+%        %% \Comment{set $v$ as the direct-supertype of $hd$}
+%        %% \State add $(v,hd)$ to $S$
+%        \Let{$v, L$}{$hd, L'$}
+%        \Comment{advance $L$ and renew $v$}
+%      \EndWhile
+    \EndFor
+    \State \Return{$S$}
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm} 
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../../doc"
+%%% End: 

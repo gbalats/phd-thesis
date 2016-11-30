@@ -1,0 +1,52 @@
+\begin{algorithm} 
+  \caption{Single-inheritance extended solver}
+  \label{alg:single:ext}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{solve}{$G = (V,E)$}
+     where $V = V_{known} \cup V_{phantom}$ and $E = E_{direct} \cup E_{path}$
+    \State \Global $f_i$ \Comment global var as convenience, to keep same args for \textsc{placeUnder}, \textsc{pick}
+    \ForAll{$(v_s,v_t) \in E_{direct}$}
+      \If{$\exists (v_s, v_{t'}) \in E_{direct}$ such that $v_t \neq v_{t'}$}
+        \State error: input not a tree
+      \Else
+        \Let{$f_i[v_s]$}{$v_t$}
+      \EndIf
+    \EndFor
+%    \ForAll{$c \in V_{known}$}
+      %% \State add edge $(c,f_i[c])$ to $E$ \label{lst:line:direct}
+      \ForAll{$(c,c_s) \in E_{path}$}
+        \While{$f_i[c] = p$} \Comment while there exists a known parent, which we shall call $p$
+          \If{$p \neq c_s$}  \Comment just for tolerating extraneous path edges in input
+            \State $E \gets E \cup \left\{(p,c_s)\right\}$ \label{lst:line:add} \Comment no need to update $E_{path}$, \textsc{placeUnder} only uses $E$
+% $E$ add edge $(p,c_s)$ to $E$ \label{lst:line:indirect}
+          \EndIf
+          \Let{$c$}{$p$}
+%          \Let{$c$}{$f_i[c]$}
+        \EndWhile
+      \EndFor
+%    \EndFor
+    \State{let $v_r$ be the ``\emph{root}'' node of $G$}
+    \State \Return \Call{placeUnder}{$G$, $v_r$} \Comment{\textsc{placeUnder} treats direct and path edges the same}
+    \EndFunction
+  \end{algorithmic}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{pick}{$V$, $n$}
+    \If{$\exists v \in V: f_i[v] = m$} \label{lst:line:priority}
+      \If{$n \neq m$}
+        \State error: crossover %% \label{lst:line:crossover}
+      \Else
+        \State \Return $v$
+      \EndIf
+    \Else
+    \State \Return random element of $V$
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm} 
+

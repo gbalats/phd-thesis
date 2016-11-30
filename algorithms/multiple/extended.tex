@@ -1,0 +1,53 @@
+\begin{algorithm} 
+  \caption{Multiple-inheritance extended solver}
+  \label{alg:multiple:ext}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{solve}{$G = (V,E)$}
+     where $V = V_{known} \cup V_{phantom}$ and $E = E_{direct} \cup E_{path}$
+      \Let{$E_C$}{$\emptyset$}
+      \ForAll{$(s,t) \in E_{path}$}
+        \If{$s \in V_{known}$}
+          \State $G \gets (V,E \setminus \left\{(s,t)\right\})$
+          \If{$\nexists$ path from $s$ to $t$ in $G$}
+            \State $E_C \gets E_C \cup \left\{(s,t)\right\}$
+          \EndIf
+        \EndIf
+      \EndFor
+      \State \Return \Call{solveAux}{$G$, $E_C$}
+    \EndFunction
+  \end{algorithmic}
+
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{solveAux}{$G = (V,E)$, $E_C$}
+     where $V = V_{known} \cup V_{phantom}$ and $E = E_{direct} \cup E_{path}$
+      \If{$E_C = \emptyset$}
+        \State \Return{\Call{simpleSolve}{$G$} }
+        \Comment subroutine for phantom-only solvers
+      \Else
+        \State pick some $(s_1,t)$ from $E_C$
+        \State $E_C \gets E_C \setminus \left\{(s_1,t)\right\}$
+        \Let{$dom$}{$\{s_k \in V_{phantom}: \exists$ 
+          path $s_1 s_2 ... s_{k-1} s_k \in {E_{direct}}^{*}$ s.t.
+          $s_i \in V_{known} \forall i = 1,...,k-1 \}$
+        }
+        %% {\Call{domainOf}{$(V,E_{direct})$, $s$}}
+        \ForAll{$x \in dom$} \Comment try every possible phantom projection
+          \State $E_{path} \gets E_{path} \cup \left\{(x,t)\right\}$ 
+          \Let{$S$}{\Call{solveAux}{$G$, $E_C$}}
+          \If{$S \neq \emptyset$}
+            \Return $S$ \Comment solution found
+          \EndIf
+          \State  $E_{path} \gets E_{path} \setminus \left\{(x,t)\right\}$ 
+        \EndFor
+        \State \Return $\emptyset$ \Comment no solution found, notify caller to backtrack or fail
+      \EndIf
+    \EndFunction
+  \end{algorithmic}
+
+\end{algorithm} 
+

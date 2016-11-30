@@ -1,0 +1,27 @@
+\begin{algorithm} 
+  \caption{Multiple-inheritance phantom-only solver}
+  \label{alg:multiple:simple}
+  \hrulefill
+
+  \begin{algorithmic}[1]
+    \Function{simpleSolve}{$G = (V,E)$}
+    \If{\Call{hasCycle}{$G$}}
+      \State \Return $\emptyset$ \Comment inform caller that cycle found
+% error (cyclic hierarchy)
+    \EndIf
+%    \If{minimizeFlag}
+%      \Let{$G^+$}{transitive closure of $G$}
+%      \ForAll{$(x,y) \in E$}
+%        \ForAll{$(x,z) \in E$ with $z \neq y$}
+%          \If{$G^+$ contains edge $(z,y)$}
+%            \State remove edge $(x,y)$ from $G$
+%          \EndIf
+%        \EndFor
+%     \EndFor
+%    \EndIf
+    \State \Return $E$
+    \EndFunction
+  \end{algorithmic}
+
+\end{algorithm} 
+
