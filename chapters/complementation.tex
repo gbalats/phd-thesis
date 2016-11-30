@@ -923,26 +923,26 @@ cases.
 
 \begin{figure*}[t]
   \vspace{-5mm}
-  \begin{minipage}[b]{0.5\linewidth}
+  \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/single-1.pdf}
     \subcaption{B and C must be subtype-related (in either
       direction).}\label{fig:single1}
   \end{minipage}
   \hspace{0.4in}
-  \begin{minipage}[b]{0.5\linewidth}
+  \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/single-2.pdf}
     \subcaption{D and E cannot be subtype-related.}\label{fig:single2}
   \end{minipage}
   \\
-  \begin{minipage}[b]{0.5\linewidth}
+  \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/single-3.pdf}
     \subcaption{A has to be a subtype of F.}\label{fig:single3}
   \end{minipage}
   \hspace{0.2in}
-  \begin{minipage}[b]{0.5\linewidth}
+  \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/single-4.pdf}
     \subcaption{A has to be a subtype of either G or
@@ -958,13 +958,15 @@ reasoning which of the $E$, $F$, $G$ nodes have to be placed
 above $A$ and which cannot.
 
 \begin{figure}
-  \centering \includegraphics[scale=0.341]{images/single-or.pdf}
-
-  \caption{Harder composite example of single-inheritance constraints.
-    The (undirected) path from $B$ to $C$ through $E,F,G$
-    implies that $(A <: E) \lor (A <: F) \lor (A <: G)$. However,
-    since $F$ is the first common known supertype of $M$ and $N$, and $A$ just a
-    supertype of both, $F <: A$, and thus $(A <: E) \lor (A <: G)$.}
+  \centering
+  \includegraphics[scale=0.7]{figures/complementation/single-or.pdf}
+  \caption[Harder composite example of single-inheritance
+  constraints]{ Harder composite example of single-inheritance
+    constraints.  The (undirected) path from $B$ to $C$ through
+    $E,F,G$ implies that $(A <: E) \lor (A <: F) \lor (A <:
+    G)$. However, since $F$ is the first common known supertype of $M$
+    and $N$, and $A$ just a supertype of both, $F <: A$, and thus
+    $(A <: E) \lor (A <: G)$. }
 \label{fig:hard:or}
 \end{figure}
 
