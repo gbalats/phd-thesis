@@ -921,6 +921,8 @@ search in the space of permutations for a valid one:
 Figures~\ref{fig:single3} and \ref{fig:single4} show some simple
 cases.
 
+% CHECK subcaption alignment everywhere!!
+
 \begin{figure*}[t]
   \vspace{-5mm}
   \begin{minipage}[t]{0.5\linewidth}
@@ -1047,22 +1049,24 @@ $F$, and $F$ respectively. Each component is then linearized, which
 generates the following complete orders that are appended to the
 output: $I <: H <: G <: B$, $K <: J <: L <: F$, and $M <: F$.
 
+% CHECK list of figure names
+
 \begin{figure}[t]
-  \centering
-  \hspace{-6mm}
-  \subfloat[Constraint Graph]{
-    \includegraphics[scale=0.34]{images/single-direct.pdf}
-    \label{fig:stree1:simple}
-  }
-  \hspace{-5mm}
-  \subfloat[Solution]{
-    \includegraphics[scale=0.34]{images/single-direct-sol.pdf}
-    \label{fig:cgraph1:simple}
-  }
-  \caption{%
-    Algorithm~\ref{alg:single:kdirect} - Example
-  }
-\label{fig:kdirect:ex}
+  % \hspace{-6mm}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-direct.pdf}
+    \subcaption{Constraint Graph}\label{fig:stree1:simple}
+  \end{minipage}
+  % \hspace{-5mm}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/single-direct-sol.pdf}
+    \subcaption{Solution}\label{fig:cgraph1:simple}
+  \end{minipage}
+  \caption[Single Inheritance Algorithm Example]{%
+    Algorithm~\ref{alg:single:kdirect} - Example. }
+  \label{fig:kdirect:ex}
 \end{figure}
 
 %% Do we care? Seems like a leftover.
