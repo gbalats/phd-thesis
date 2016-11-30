@@ -608,10 +608,10 @@ Consider first the pattern of Figure~\ref{fig:choice}.
 
 \begin{figure}[htp]
   \centering \includegraphics[scale = 0.6]{figures/complementation/minimum.pdf}
-  \caption{In any solution of these constraints, either $B$ or $C$ or
-    $D$ have to be ordered below $E$, since no new outgoing edges can
-    be added to $A$ and the path constraint to $E$ needs to be
-    satisfied.}
+  \caption[Multiple Inheritance Constraint]{In any solution of these
+    constraints, either $B$ or $C$ or $D$ have to be ordered below
+    $E$, since no new outgoing edges can be added to $A$ and the path
+    constraint to $E$ needs to be satisfied.}
 \label{fig:choice}
 \end{figure}
 
@@ -673,7 +673,7 @@ choice from the relevant projection set.
   %%   \includegraphics[scale=0.4]{images/stree1-ext.pdf}
   %%   \label{fig:cgraph1:ext}
   %% }
-  \caption{%
+  \caption[Phantom Projection Set]{%
     The phantom projection set of $A$ is $\{C,E,H\}$. In order to
     satisfy path-edge $(A,B)$ we can either add a path-edge $(C,B)$,
     $(E,B)$, or $(H,B)$. The last one creates a cycle.
@@ -788,8 +788,9 @@ edges in the solution should be from lower to higher strata.
     \includegraphics[scale=0.4]{figures/complementation/steps-5-crop.pdf}
     \subcaption{Step 6}\label{fig:multiple:steps:5}
   \end{minipage}
-  \caption{An example of the stratification produced by the
-    multiple-inheritance solver for Example~\ref{fig:multipleHard}.}
+  \caption[Stratification Example]{An example of the stratification
+    produced by the multiple-inheritance solver for
+    Example~\ref{fig:multipleHard}.}
   \label{fig:multiple:steps}
 \end{figure*}
 
