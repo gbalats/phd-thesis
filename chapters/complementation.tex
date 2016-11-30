@@ -1,0 +1,530 @@
+%-------------------------------------------------------------------------------
+% Prior abstract
+%-------------------------------------------------------------------------------
+
+We present the problem of class hierarchy complementation: given a
+partially known hierarchy of classes together with subtyping
+constraints (``A has to be a transitive subtype of B'') complete the
+hierarchy so that it satisfies all constraints. The problem has immediate
+practical application to the analysis of partial programs---e.g., it
+arises in the process of providing a sound handling of ``phantom
+classes'' in the Soot program analysis framework. We provide
+algorithms to solve the hierarchy complementation problem in the
+single inheritance and multiple inheritance settings.
+% We show that class
+% hierarchy complementation is NP-complete for multiple
+%inheritance/subtyping while there is a polynomial algorithm for single
+% subtyping hierarchies.
+We also show that the problem in a language such as Java, with single
+inheritance but multiple subtyping and distinguished class
+vs. interface types, can be decomposed into separate single- and
+multiple-subtyping instances.  We implement our algorithms in a
+tool, JPhantom, which complements partial Java bytecode programs so that
+the result is guaranteed to satisfy the Java verifier
+requirements. JPhantom is highly scalable and runs in mere seconds
+even for large input applications and complex constraints (with a maximum
+of 14s for a 19MB binary).
+
+
+%Static whole-program analysis requires the availability of every class
+%transitively referenced in a program, even if it is never used. For
+%instance, trying to analyze a program P that uses a small part of a
+%third-party library L also requires the full code of any library L'
+%that different parts of L may reference---the fact that L' is not
+%necessary for P cannot be determined before the analysis of P is
+%performed. This is a oft-encountered practical challenge, motivating
+%mechanisms such as the ``phantom class'' facility in the well-known
+%Soot analysis framework for Java.
+%
+%To address this challenge in full generality we define the problem of
+%``program complementation'': given a partial program we seek to
+%provide definitions for its missing parts so that the ``complement''
+%satisfies all static and dynamic typing requirements induced by the
+%code under analysis. This requires satisfying constraints relative to
+%methods and fields of the missing classes, as well as subtyping
+%constraints and constraints on whether a missing type has to be a
+%class or interface. We formulate the problem systematically and offer
+%an algorithm that produces solutions for the resulting constraints.
+%The result is the articulation of a novel typing problem in the OO
+%context, as well as a tool of practical interest. We show that we
+%produce practical complements of significant size in a few seconds
+%and, in this way, allow the analysis of previously un-analyzable
+%partial programs.
+
+
+%-------------------------------------------------------------------------------
+% Introduction
+%-------------------------------------------------------------------------------
+
+\section{Introduction}
+\label{intro}
+
+Whole-program static analysis is essential for clients that require
+high-precision
+%in analysis results
+and a deeper understanding of
+program behavior. Modern applications of program analysis, such as
+large scale refactoring tools \cite{Dig:2011:RAP:1920042.1920077},
+race and deadlock detectors
+\cite{NaikAikenWhaley2006}, and security vulnerability detectors \cite{livshits12,Guarnieri:2009:GMS:1855768.1855778}, are virtually
+inconceivable without whole-program analysis.
+
+For whole-program analysis to become truly practical, however, it
+needs to overcome several real-world challenges. One of the somewhat
+surprising real-world observations is that whole-program analysis
+requires the availability of much more than the ``whole program''.
+The analysis needs an overapproximation of what constitutes the
+program. Furthermore, this overapproximation is not merely
+what the analysis computes to be the ``whole program'' after it
+has completed executing. Instead, the overapproximation needs to be
+as conservative as required by any intermediate step of the analysis,
+which has not yet been able to tell, for instance, that some method
+is never called.
+
+Consider the example of trying to analyze a program $P$ that uses a
+third-party library $L$. Program $P$ will likely only need small parts
+of $L$.  However, other, entirely separate, parts of $L$ may make use
+of a second library, $L'$.  It is typically not possible to analyze
+$P$ with a whole program analysis framework without also supplying the
+code not just for $L$ but also for $L'$, which is an unreasonable
+burden. In modern languages and runtime systems, $L'$ is usually not
+necessary in order to either compile $P$ or run it under any
+input. The problem is exacerbated in the current era of large-scale
+library reuse.  In fact, it is often the case that the user is not
+even aware of the existence of $L'$ until trying to analyze $P$.
+
+Unsurprisingly, the issue has arisen before, in different guises.  The
+FAQ document\footnote{http://www.sable.mcgill.ca/soot/faq.html} of the
+well-known Soot framework for Java
+analysis \cite{vall99soot,valleerai00optimizing} contains the
+question:
+
+\vspace{-1mm}
+\begin{quote}
+\emph{How do I modify the code in
+order to enable soot to continue loading a class even if it doesn't
+find some of it[s] references? Can I create a dummy soot class so it can
+continue with the load? How?}
+\end{quote}
+
+\noindent This frequently asked question does not lead to a solution. The answer
+provided is:
+\begin{quote}
+\emph{You can try -use-phantom-refs but often that
+does not work because not all analyses can cope with such
+references. The best way to cope with the problem is to find the
+missing code and provide it to Soot.}
+\end{quote}
+
+The ``phantom refs'' facility of Soot, referenced in the above answer,
+attempts to model missing classes (\emph{phantom classes}) by
+providing dummy implementations of their methods referenced in the
+program under analysis. However, there is no guarantee that the
+modeling is in any way sound, i.e., that it satisfies the well-formedness
+requirements that the rest of the program imposes on the phantom
+class.
+
+Our research consists precisely of addressing the above need in full
+generality. \emph{Given a set of Java class and interface definitions,
+in bytecode form, we compute a ``program complement'', i.e., skeletal
+versions of any referenced missing classes and interfaces so that the
+combined result constitutes verifiable Java bytecode.} Our solution to
+this practical problem has two parts:
+
+\begin{asparaitem}[$\cdot$]
+\item A \emph{program analysis} part, requiring analysis of bytecode and techniques
+similar to those employed by the Java verifier and Java
+decompilers. This analysis computes constraints involving the missing
+types. For instance, if a variable of a certain type $C$ is
+direct-assigned to a variable of a type $S$, then $C$ must be a subtype of
+$S$.
+%, as well as constraints on members (e.g., we may know from
+%available bytecode that a missing class has a method with a given
+%signature)
+
+\item An \emph{algorithmic} part, solving a novel typing problem, which we call
+  the \emph{class hierarchy complementation}, or
+  simply \emph{hierarchy complementation}, problem. The problem
+  consists of computing a type hierarchy that satisfies a set of
+  subtyping constraints \emph{without} changing the direct parents of
+  known types.
+\end{asparaitem}
+
+
+%We model all requirements on missing classes or interfaces
+%(which we call ``phantom types'', alluding to the Soot terminology) as
+%a set of typing constraints.
+
+The algorithmic part of our solution, i.e., solving the hierarchy
+complementation problem, constitutes the main novelty of our
+approach. The problem appears to be fundamental, and even of a certain
+interest in purely graph-theoretic terms. For a representative special
+case, consider an object-oriented language with multiple inheritance
+(or, equivalently, an interface-only hierarchy in Java or
+C\#).\footnote{We avoid the terms ``subclassing'' or ``inheritance''
+as synonyms for ``direct subtyping'' to prevent confusion with other
+connotations of these terms. In our context, we only care about the
+concept of subtyping, i.e., of a (monomorphic) type as a special case
+of another. Subtyping can be direct (e.g., when a Java class is
+declared to ``extend'' another or ``implement'' an interface) or
+indirect, i.e., transitive. We do, however, use the compound terms
+``single inheritance'' and ``multiple inheritance'' as they are more
+common in the classification of languages than ``single subtyping''
+and ``multiple subtyping''.}  A partial hierarchy, augmented with
+constraints, can be represented as a graph, as shown in
+Figure~\ref{fig:ex0:problem}. The known part of the hierarchy is shown
+as double circles and solid edges. Unknown (i.e., missing) classes are
+shown as single circles. Dashed edges represent subtyping constraints,
+i.e., indirect subtyping relations that have to hold in the resulting
+hierarchy. In graph-theoretic terms, a dashed edge means that there is
+a path in the solution between the two endpoints. For instance, the
+dashed edge from $C$ to $D$ in Figure~\ref{fig:ex0:problem} means that
+the unknown part of the class hierarchy has a path from $C$ to
+$D$. This path cannot be a direct edge from $C$ to $D$, however: $C$
+is a known class, so the set of its supertypes is fixed.
+
+\begin{figure}[t]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/cgraph2.pdf}
+    \subcaption{Constraint Graph}\label{fig:ex0:problem}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/cgraph2-solution.pdf}
+    \subcaption{Solution}\label{fig:ex0:solution}
+  \end{minipage}
+  \caption{ Example of constraints in a multiple inheritance
+    setting. Double-circles signify known classes, single circles
+    signify unknown classes. Solid edges (``known edges'') signify
+    direct subtyping, dashed edges signify transitive subtyping.  }
+  \label{fig:ex0}
+\end{figure}
+
+In order to solve the above problem instance, we need to compute a
+directed acyclic graph (DAG) over the same nodes,\footnote{Inventing
+extra nodes does not contribute to a solution in this problem.} so
+that it preserves all known nodes and edges, and adds edges \emph{only
+to unknown nodes} so that all dashed-edge constraints are
+satisfied. That is, the solution will not contain dashed edges
+(indirect subtyping relationships), but every dashed edge in the input
+will have a matching directed path in the solution
+graph. Figure~\ref{fig:ex0:solution} shows one such possible solution.
+As can be seen, solving the constraints (or determining that they are
+unsatisfiable) is not trivial. In this example, any solution has to
+include an edge from $B$ to $E$, for reasons that are not immediately
+apparent. Accordingly, if we change the input of
+Figure~\ref{fig:ex0:problem} to include an edge from $E$ to $B$, then
+the constraints are not satisfiable---any attempted solution
+introduces a cycle. The essence of the algorithmic difficulty of the
+problem (compared to, say, a simple topological sort) is that we
+cannot add extra direct parents to known classes $A$ and $C$---any
+subtyping constraints over these types have to be satisfied via
+existing parent types. This corresponds directly to our high-level
+program requirement: we want to compute definitions for the missing
+types only, without changing existing code.
+
+% We show that computing whether such a DAG exists is an
+% NP-complete problem, for the case of multiple subtyping.
+
+For a language with single inheritance, the problem is similar, with
+one difference: the solution needs to be a tree instead of a DAG. (Of
+course, the input in Figure~\ref{fig:ex0:problem} already violates the
+tree property since it contains known nodes with multiple known
+parents.) We offer an algorithm that solves the problem by
+either detecting unsatisfiability or always ordering the nodes in a
+tree that respects all constraints.
+
+%\footnote{Although this is true only because we are accepting any
+%legal bytecode as input. As we discuss later, if we assume that the
+%input is produced by following specific compiler conventions
+%then...}
+
+The practical version of the hierarchy complementation problem is more
+complex. Mainstream OO languages often distinguish between classes and
+interfaces and only allow single direct subtyping among classes and
+multiple direct subtyping from a class/interface to an interface---a
+combination often called ``single-inheritance, multiple
+subtyping''. In this case, the graph representation of the problem is
+less intuitive. Consider Figure~\ref{fig:real-example:problem} that
+gives a problem instance. (A possible solution for these constraints
+is in Figure~\ref{fig:real-example:solution}, but is given purely for
+reference, as it is not central to our discussion.) There are now
+several node types: classes, interfaces (both known and unknown), as
+well as undetermined nodes. There are also more implicit constraints
+on them: classes can only have an edge to one other class, interfaces
+can only have edges to other interfaces.  The latter constraint, for
+instance, forces $D$ to be an interface and $H$ to be a class. Thus, we
+see that the full version of the problem requires additional
+reasoning. We show that such reasoning can be performed as a
+pre-processing step. The problem can be subsequently broken up into
+two separate instances of the aforementioned single- and
+multiple-inheritance versions of hierarchy complementation.
+
+%merely refines locally the algorithms for solving the
+%problem versions for multiple inheritance and
+
+\begin{figure}[t]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/cgraph3.pdf}
+    \subcaption{Constraint Graph}\label{fig:real-example:problem}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{figures/complementation/solution3.pdf}
+    \subcaption{Solution}\label{fig:real-example:solution}
+  \end{minipage}
+  \caption{Example of full-Java constraint graph. Double circles
+    denote known classes/interfaces, whose outgoing edges in the
+    solution are already determined (solid input edges). White nodes
+    are classes, black nodes are interfaces, grey nodes are unknown
+    types that are initially undetermined (i.e., the input does not
+    explicitly identify them as classes or interfaces, although
+    constraint reasoning may do so later).}
+  \label{fig:real-example}
+\end{figure}
+
+
+
+% Subsequently, we offer an algorithm for
+% solving program complementation constraints. We implement our solution
+% for Java, at the bytecode level. Our resulting tool accepts as
+% input a set of Java bytecode files and produces a jar file with
+% appropriate definitions of all phantom types.
+
+%% The well-formedness guarantee of our solution to the program
+%% complementation problem is that we produce classes that could have
+%% been produced by the front-end Java compiler (javac) for \emph{some}
+%% definition of phantom classes. This offers no guarantee that the
+%% resulting original program + complement will not exhibit dynamic type
+%% errors, but such a guarantee is not required: the assumption is that
+%% phantom classes are indeed \emph{not used} in a meaningful way, and
+%% all we want is for them to be consistent with the rest of the
+%% program. For instance, a key consistency property of our solution
+%% relative to the Soot phantom class treatment is that we respect
+%% subtyping: if a subtyping relationship involving a phantom class
+%% (or interface) can be inferred from the code then it is satisfied
+%% in the complement that we output.
+
+% To see why the problem has interesting depth and complexity, consider
+% a simple fragment of Java bytecode and the constraints it
+% induces. Our convention throughout the paper is that single-letter
+% class names at the lower end of the alphabet (\code{A}, \code{B},
+% ...)  correspond to known types, while class names at the high end
+% of the alphabet (\code{X}, \code{Y}, \code{Z}) denote phantom types.
+% We present bytecode in a slightly condensed form, to make clear what
+% method names or type names are referenced in every instruction.
+%
+% \begin{smallnolinecode}
+% \begin{verbatim}
+% public void foo(X, Y);
+%  0: aload_2     // load on stack 2nd argument (of type Y)
+%  1: aload_1     // load on stack 1st argument (of type X)
+%  2: invokevirtual X.bar:(LA;)LZ; //method 'Z bar(A)' in X
+%  3: checkcast B // cast the result of the call to B
+%  ...
+% \end{verbatim}
+% \end{smallnolinecode}
+%
+% Although the above fragment is merely four bytecode instructions
+% long, it induces several interesting constraints for our phantom
+% types \code{X}, \code{Y}, and \code{Z}:
+%
+% \begin{bullets}
+% \item \code{X} has to support a method \code{bar} accepting an
+%   argument of type \code{A} and returning a value of type \code{Z}.
+%
+% \item \code{Y} has to be a subtype of \code{A}, since an actual
+%   argument of declared type \code{Y} is passed to \code{bar}, which
+%   has a formal parameter of type \code{A}. This constraint also
+%   means that if \code{A} is known to be a class (and not an
+%   interface) then \code{Y} is also a class.
+%
+% \item \code{Z} is either a subtype of \code{B} or a supertype of
+%   \code{B}.  The reason is that we have a cast from a reference of
+%   type \code{Z} to one of type \code{B} and our well-formedness
+%   requirements dictate that no dynamic type error (class cast
+%   exception) be produced by such a cast. A naive view would suggest
+%   that the real constraint induced by the cast is that \code{Z} be a
+%   supertype of \code{B} (since the existence of a dynamic cast check
+%   implies a narrowing conversion) but the bytecode may elide any
+%   number of intermediate casts that existed in the source code. For
+%   instance, the source code may have cast the return value of
+%   \code{bar} to \code{java.lang.Object} (a cast that is always safe
+%   and thus disappears in the bytecode) before casting it to
+%   \code{B}. Thus, the real constraint is that \code{Z} (which is
+%   only the static type of the reference, and therefore a supertype
+%   of the dynamic type of the object) is either a subtype or
+%   supertype of \code{B}.
+% \end{bullets}
+%
+% Our approach will create skeletal versions of \code{X}, \code{Y},
+% and \code{Z} so that all the above requirements are
+% satisfied. Clearly, there can be unsatisfiable instances of the
+% above constraints (e.g., cyclic subtyping requirements), and these
+% are detected by our algorithm. However, unsatisfiable constraints
+% cannot arise in real-world instances of the problem, unless parts of
+% the code have changed without recompiling other, dependent parts.
+
+In brief, the contributions of our work are as follows:
+
+\begin{itemize}[--]
+\item We introduce a new typing problem, motivated by real-world needs
+  for whole program analysis. To our knowledge, the hierarchy
+  complementation problem has not been studied before, in any context.
+\item We produce algorithms that solve the problem in three different
+  settings: single inheritance, multiple inheritance, and mixture of
+  the two, as in Java or C\#.
+%  For a single inheritance setting, we
+%  offer a simple algorithm, possibly of wider applicability to other
+%  domains (e.g., partially-ordered sets for which the concept of
+%  ``direct predecessor'' needs to be distinguished from merely ``in
+%  order''). Based on similar insights, we adapt the algorithm to a
+%  multiple inheritance setting.
+%  For the practical setting of a single-inheritance,
+%  multiple-subtyping language, we offer an algorithm that decomposes
+%  the problem into the previous two versions.
+%, and also prove
+% that the problem is NP-complete.
+%  we offer an algorithm
+%  that has exponential complexity in the worst case.
+\item We implement our algorithms in JPhantom: a practical tool for
+  Java program complementation that addresses the soundness
+  shortcomings of previous Java ``phantom class'' approaches. We show
+  that JPhantom scales well and takes only a few seconds to process
+  even large benchmarks with complex constraints---e.g., less than
+  6sec for a 3.2MB binary that induces more than 100 constraints.
+%, encountering no exponential complexity
+%  in practice.
+\item We discuss the problem of hierarchy complementation in more
+  general settings. The simplicity of our approach is a result of only
+  assuming (for the input) and satisfying (for the output) the fairly
+  weak Java bytecode requirements. We show that the problem becomes
+  harder at the level of the type system for the source language.
+\end{itemize}
+
+% In the next sections we detail
+\section{Motivation and Practical Setting}
+
+We next discuss the practical setting that gives rise to the hierarchy
+complementation problem.
+
+Our interest in hierarchy complementation arose from efforts to
+complement existing Java bytecode in a way that satisfies the
+soundness guarantees of the Java verifier. Consider a small fragment
+of known Java bytecode and the constraints it induces over unknown
+types. (We present bytecode in a slightly condensed form, to make
+clear what method names or type names are referenced in every
+instruction.) In this code, classes \code{A} and \code{B} are
+available, while types \code{X}, \code{Y}, and \code{Z} are phantom,
+i.e., their definition is missing.
+
+\begin{bytecode}
+public void foo(X, Y)
+0: aload_2     // load on stack 2nd argument (of type Y)
+1: aload_1     // load on stack 1st argument (of type X)
+2: invokevirtual X.bar:(LA;)LZ; // method 'Z bar(A)' in X
+3: invokevirtual B.baz:()V;     // method 'void baz()' in B
+ ...
+\end{bytecode}
+
+The instructions of this fragment induce several constraints for our phantom
+types. For instance:
+
+\begin{itemize}[--]
+\item \code{X} has to be a class (and not an interface) since it
+  contains a method called via the \code{invokevirtual} bytecode
+  instruction.
+\item \code{X} has to support a method \code{bar} accepting an
+  argument of type \code{A} and returning a value of type \code{Z}.
+\item \code{Y} has to be a subtype of \code{A}, since an actual
+  argument of declared type \code{Y} is passed to \code{bar}, which
+  has a formal parameter of type \code{A}. This constraint also means
+  that if \code{A} is known to be a class (and not an interface) then
+  \code{Y} is also a class.
+\item \code{Z} has to be a subtype of \code{B}, since a method of
+  \code{B} is invoked on an object of declared type \code{Z} (returned
+  on top of the stack by the earlier invocation).
+\end{itemize}
+
+The goal of our JPhantom tool is to satisfy all such constraints and
+generate definitions of phantom types \code{X}, \code{Y}, and \code{Z}
+that are compatible with the bytecode that is available to the tool
+(i.e., exists in known classes). Compatibility with existing bytecode
+is defined as satisfying the requirements of the Java verifier, which
+concern type well-formedness.
+
+Of these constraints, the hardest to satisfy are those involving
+subtyping.  Constraints on members (e.g., \code{X} has to contain a
+``\code{Z bar(A)}'') are easy to satisfy by just adding type-correct
+dummy members to the generated classes. This means that the problem in
+the core of JPhantom is solving the class hierarchy complementation
+problem, as presented in the introduction and defined rigorously in
+later sections. The binding of the problem to practical circumstances
+deserves some discussion, however.
+
+First, note that, in our setting of the problem, we explicitly
+disallow modification of known code, e.g., in order to remove
+dependencies, or to add a supertype or a member to it. Such
+modifications would have a cascading effect and make it hard to argue
+about what properties are really preserved. Additionally, we do not
+assume any restrictions on the input, other than the well-formedness
+condition of being legal Java bytecode (according to the
+verifier). Strictly speaking, our well-formedness condition for the
+input is defined as follows: \emph{a legal input is bytecode that can
+  be complemented (by only adding extra class and interface
+  definitions) so that it passes the Java verifier}. Note that this
+well-formedness condition does not depend on the program complement
+that our approach produces: an input is legal if there is \emph{some}
+complement for it, not necessarily the one that JPhantom computes.
+
+%%% We later use this. Better not emphasize it.
+%Notably, this well-formedness condition does
+%not assume that known classes have known superclasses---e.g.,
+%Figure~\ref{fig:real-example:problem} offered an instance where a
+%superclass was a phantom type. Of course, an actual usage setting of
+%JPhantom can impose this or other restrictions on the input.
+
+% There
+%are several good reasons for this decision: First, modification of
+%existing code would likely
+%-we cannot modify existing code. E.g., adding a supertype induces
+%constraints that are not satisfied (e.g., an interface method may not be
+%implemented).
+
+A final interesting point concerns the practical impact of the
+JPhantom soundness condition. For most program analyses, omitting
+parts of the code introduces unsoundness, if we make no other
+assumptions about the program or the omitted part. E.g., it is
+impossible to always soundly compute points-to information, or
+may-happen-in-parallel information when part of the program is
+missing. Therefore, guaranteed soundness for all clients is inherently
+unachievable for \emph{any} partial program analysis approach. The
+practical reality is that there is a large need for facilities for
+handling partial programs. For instance, the Soot phantom class
+machinery has been one of the most common sources of discussion and
+questions on the Soot support lists, and it has been a central part of
+several Soot revisions.\footnote{Even the most recent Soot release,
+2.5.0, lists improved support for phantom classes and excluding
+methods from an analysis as one of the major changes in the release
+notes.} The only ``correctness condition'' that Soot phantom class
+support is trying to achieve, however, is the low-level ``the analyzer
+should not crash''.
+
+Given the practical interest for the solution of a worst-case
+unsolvable problem, we believe that our soundness guarantee makes a
+valuable contribution: it is much better to analyze a partial program
+in a way such that the Java verifier requirements (for type-level
+well-formedness) are satisfied than to ignore any correctness
+considerations, as past approaches do.
+
+% unsatisfiable constraints cannot arise in
+%real-world instances of the problem, unless parts of the code have
+%changed without recompiling other, dependent parts.
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:
