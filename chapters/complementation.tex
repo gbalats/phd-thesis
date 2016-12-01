@@ -1369,6 +1369,168 @@ w.r.t. our constraint edges (both path and direct).
 \end{comment}
 
 
+%-------------------------------------------------------------------------------
+% Single Inheritance, Multiple Subtyping
+%-------------------------------------------------------------------------------
+
+\section{Single Inheritance, Multiple Subtyping: Classes and Interfaces}
+\label{java}
+
+It is easy to combine the single- and multiple-inheritance
+approaches of the last two sections in the context of a language that
+has single inheritance but multiple subtyping.  It is a common case
+for strongly-typed languages to allow multiple inheritance only for a
+subset of types.
+%, which are mostly used to denote structural conformance, instead of
+%providing an actual implementation.
+Java and C\#
+interfaces \cite{Gosling:2005:JLS:1036643,Hejlsberg:2003:CLS:861332},
+and Scala traits \cite{scala-overview-tech-report} are such examples.
+
+In order to support such a separation, we have to introduce a new
+dimension to our problem that can be simulated as a graph coloring
+variant. Each node in $V$ can be assigned a color denoting its
+inheritance type. A \emph{black} node can have many direct supertypes
+(i.e., multiple inheritance), while a \emph{white} node can only have
+one (i.e., single inheritance). We will use the terms ``white node''
+(resp.~``black node'') and ``class'' (resp.~``interface'')
+interchangeably.
+
+Note that, initially, our input may not fully determine the final
+color for each of its types. Thus, we have to introduce a new color
+(\emph{grey}) to refer to the subset of nodes whose color is yet
+undetermined. In the end, our solution should soundly determine a safe
+color (black or white) for each of the (grey) input nodes, so that no
+constraints of the verifier will be violated.
+
+Therefore, our solution in this new setting is a synthesis of a single
+inheritance and a multiple inheritance solution. That is, the output
+of our algorithm should be a \emph{DAG} that satisfies the same
+conditions as those in the multiple inheritance setting, $G_S =
+(V,E')$, and a function $f_c:V \rightarrow \{black, white\}$, such
+that the restriction of $G_S$ to $\{v \in V: f_c(v) = white\}$ (i.e.,
+white nodes) is a tree.
+
+To safely decompose our problem into two different subproblems (one
+for single and one for multiple inheritance), we assign colors to all
+nodes as a preprocessing step. There are two kinds of constraints that
+lead to restricting the colors of a node. First, we have local
+constraints: we may get a node color from the initial input---i.e., an
+observed bytecode instruction (such as \code{invokeinterface}) may
+directly restrict the color of a phantom type. (More constraints of
+this form are discussed in Section~\ref{jphantom}.) Second, we may get
+transitive constraints, due to restrictions on subtyping. Interfaces
+can only subtype interfaces (except for the \code{Object} class in
+Java). This leads to two types of transitive constraints: If a black
+node $s$ has a path to node $t$, then $t$ must also be black
+(interfaces can only extend interfaces). Symmetrically, if a node $s$
+has a path to a white node $t$, then $s$ must also be white (classes
+can only be extended by other classes).
+
+%% Old text. I don't think it applies any more.
+%Based on the above, the observation that leads to a safe decomposition
+%of the coloring from the subsequent solving is the following: only
+%phantom nodes whose incoming edges are all path edges can have their
+%colors determined transitively. (A phantom node with a known direct
+%subtype takes its color locally, from the kind of subtyping declared.)
+%By examining all algorithms in our earlier sections we see that no
+%extra edges are added to phantom nodes with only path edges
+%incoming. Therefore, executing any of our solvers for the hierarchy
+%complementation problem will not affect the coloring of any type
+%relative to the coloring constraints of the original input.
+
+% The only interaction of this logic with the algorithms of the previous
+% sections is in case the solution creates paths that did not exist in
+% the original inputs. Our multiple inheritance algorithm never does so.
+% The single inheritance algorithm can also avoid introducing paths
+% between previously unreachable nodes if we use a weaker ordering
+% (producing a tree and not a linear list) in place of the topological
+% sort step of Algorithm~\ref{alg:single:kdirect}. Such a sort makes two
+% nodes ordered only if there was a path between them in the original
+% input. The algorithm is straightforward but tedious and we elide it
+% for lack of space.
+% %% REVIEW! We need to think about this.
+
+%For instance, for the input of Figure~\ref{fig:kdirect:ex}
+
+Furthermore, phantom nodes with no color constraints can be safely
+assumed to be interfaces (black), for maximum flexibility in solving
+other constraints. It is always easier to satisfy a given set
+of constraints in a multiple inheritance setting instead of a single
+inheritance setting, since the conditions of single inheritance are
+stricter (a tree is a DAG).
+
+As a result of the above observations, we can color all nodes by
+applying local or transitive constraints to the original input before
+solving a single and a multiple inheritance hierarchy complementation
+problem separately.  That is, we can follow every possible path from
+any node whose color has already been set and mark the nodes we find
+along the way accordingly. The color of our source node determines the
+direction of movement (i.e., from white source nodes, we have to go
+backwards). When this process is over, we can assign the color black
+to all remaining undetermined (in terms of color) nodes.  An example
+of this process can be seen in our earlier
+Figure~\ref{fig:real-example}. Once we have assigned a
+\emph{black-or-white} color to every node, we can split our constraint
+graph into two subgraphs by isolating white-to-white edges (and
+feeding them to a single inheritance solver). After we have determined
+our class hierarchy, we can proceed with satisfying the rest of the
+edges using multiple inheritance rules.
+
+The key to this approach is that the single inheritance solver does
+not need the output of the multiple inheritance solver to compute a
+solution, and vice versa. All we need to ensure (for the multiple
+inheritance solver) is that we take into account class supertypes that
+are reachable through direct edges of a known class when determining
+the class's \emph{projection set}. Thus, the class/interface
+decomposition indeed produces two independent subproblems that can be
+solved separately. The composition of the two solutions will certainly
+not create any cycles, if its two subparts do not contain any. If that
+was not the case, then there would be a cycle that contained at least
+one class and one interface, which is impossible since no interface
+can be a subtype of a class (other than \code{Object}) in Java.
+
+As for our arbitrary choice of defaulting undetermined nodes to
+interfaces, suppose that a solution exists if a subset $U$ of those
+undetermined nodes were treated as classes. We could then transform
+this solution to another one where these nodes were interfaces
+instead. The single inheritance solution could be produced by
+replacing each node in $U$ with its parent (in the former single
+inheritance solution), w.r.t. its incoming edges, and then removing
+it, until no nodes in $U$ were present. This process would still
+satisfy all constraints on the remaining class nodes. A multiple
+inheritance solution also exists. Consider the union of the former
+multiple plus single inheritance solution. The result is a DAG that
+respects all of the multiple inheritance setting constraints. Again,
+we can erase any edges to class-determined nodes (i.e., all class nodes
+that are not in $U$) in a way that all subtype relations involving the
+rest of the nodes remain unaltered, i.e., by iteratively replacing an
+edge to a class-determined node with edges to all of its direct
+supertypes, until no edges to class-determined nodes are left. This
+process would yield a valid multiple inheritance solution that can be
+safely combined with the single inheritance one. Therefore, marking
+undetermined nodes as interfaces does not affect the outcome of our
+algorithm, i.e., no solution will be found if and only if no solution
+existed.
+
+
+% A single inheritance solution for the class subset would
+% still exist (since removing some nodes from a tree---representing the
+% former single inheritance solution---by replacing them with their
+% parent (w.r.t adjacent edges) satisfies all constraints on the
+% remaining nodes). A multiple inheritance solution also exists.
+% Consider the union of the former multiple inheritance solution and the
+% relevant part of the former single inheritance solution that contains
+% exactly these undetermined nodes and their adjacent edges. The result
+% is a DAG that respects all of the multiple inheritance setting
+% constraints. Again, we can erase any edges to class-determined nodes
+% in a way that all subtype relations involving the rest of the nodes
+% remain unaltered, i.e. by iteratively replacing an edge to a
+% class-determined node with edges to all of its direct supertypes until
+% no edges to class-determined nodes are left. The outcome will be a
+% valid multiple inheritance solution that can be safely combined with
+% the single inheritance one.
+
 
 %%% Local Variables:
 %%% mode: latex
