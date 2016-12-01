@@ -2114,6 +2114,175 @@ constraints. Some interesting points are that:%
 \end{inparaenum}
 
 
+%-------------------------------------------------------------------------------
+% Discussion
+%-------------------------------------------------------------------------------
+
+\section{Discussion}
+\label{discussion}
+
+We next discuss the problem of hierarchy complementation speculatively,
+in settings different from ours. The general problem is that of
+complementing programs so that they respect static well-formedness
+requirements. Thus, the problem applies to language-level type
+systems, static analyses (e.g., ``complement this program so that it
+passes this analysis, defined a priori'') and other settings more
+general than our Java bytecode domain. Indeed, much of our ability to
+solve the problem effectively has to do with the simple type
+checking performed by the Java bytecode verifier. The verifier
+effectively checks monomorphic types, i.e., that a reference to an
+object is statically guaranteed to refer to memory with the expected
+layout.
+
+If we were to transpose the problem to the domain of Java source code,
+the constraints to be derived are richer and more complex than
+the ones we encountered.
+%\footnote{Complex constraints mean that the
+%  problem can easily be shown to be NP-hard or worse.}
+%: One can imagine
+%  undecidable variants where a constraint can be satisfied only by
+%  inventing ``new'' unknown types.}
+The Java language-level type system has intricate requirements
+relative to overriding, casts, exceptions, and more.  By way of
+example, we discuss some of these complications below.
+
+\begin{itemize}[--]
+\item Exception handling at the Java language level immediately
+  introduces very powerful constraints for types. The Java language
+  requires that a method that overrides another may throw an exception
+  only if it was already declared to be thrown. Consider two methods:
+
+  \begin{javacode}
+    class S {
+      void foo() throws A, B {...}
+    }
+
+    class C  extends S {
+      void foo() throws X, Y, Z {...}
+    }
+  \end{javacode}
+
+  The requirement in this case is hard to reason about without an
+  exhaustive search. It can be stated as: ``for \code{C.foo} to be a
+  valid overriding of \code{S.foo}, \code{X}, \code{Y} and \code{Z}
+  have to be subtypes of either \code{A} or \code{B}.''  Consider how
+  this rich constraint would affect our ability to solve the hierarchy
+  complementation problem at the source level. Imagine that \code{S}
+  is a known class while \code{C}, \code{X}, \code{Y}, and \code{Z}
+  are phantom classes. If the language allowed us to infer through
+  observation of other code that \code{C} is a subtype of \code{S} and
+  that it provides a method ``\code{void foo() throws X, Y, Z}'' then
+  in order to generate a complement we would need to satisfy the
+  following:
+  $\code{C} <: \code{S} \Rightarrow \forall t \in \{\code{X,Y,Z}\}: (t
+  <: \code{A} \lor t <: \code{B})$.
+
+  % This kind of constraint expression immediately gives us the
+  % ability to express disjunction subtyping constraints. Such
+  % expressive constraints lead to intractable handling in the worst
+  % case (e.g., it is easy to prove NP-hardness for the satisfiability
+  % problem of this and other constraint kinds below).
+
+  In contrast, the bytecode verifier only ensures a much simpler
+  constraint: that a type declared to be thrown by a method is a
+  subtype of \code{Throwable}.
+
+\item A similar kind of constraint at the Java language level is also
+  produced by the overriding rule for return types. Java (5 and above)
+  allows overriding methods to have a covariant return type. That is,
+  the overriding method can declare to return a subtype of the
+  overridden method's return type. Much as in the case of exceptions,
+  this induces complex constraints, especially when combined with
+  search to examine whether a type can be a subtype of another.
+  Consider the following case:
+
+  \begin{javacode}
+    interface S {
+      R foo();
+    }
+    // R,X,Y phantom types
+    // we know X contains method "Y foo()"
+  \end{javacode}
+
+  For phantom types \code{R} and \code{X}, if some other constraint
+  (e.g., of the kind induced in the case of multiple inheritance in
+  Section~\ref{multiple}) can be satisfied by making \code{X} a
+  sybtype of \code{S}, then we get the additional constraint: ``if
+  \code{X} becomes a subtype of \code{S} then \code{Y} must be a
+  subtype of \code{R}''. This is again a very expressive constraint
+  kind and, consequently, hard to reason about. For instance, the
+  above constraint allows us to determine that two phantom types
+  cannot be subtype-related. If two types declare methods with
+  identical argument types but guaranteed-incompatible return types
+  (e.g., \code{void} and \code{Object}), then the types are guaranteed
+  to not be ordered by the subtyping relation, in either direction.
+
+  At the bytecode level, subtyping together with signature conformance
+  does not imply other subtyping relationships, in the above
+  manner. By merely having a method with the same argument types, we
+  are not guaranteed that it overrides the respective superclass
+  method. Instead, overloading is perfectly legal among methods that
+  differ only in their return types. The bytecode method call
+  resolution procedure does not rely on name/type lookup but on direct
+  identifiers of methods.
+
+\item Casts yield no constraints at the bytecode level although they
+  do at the source level. The reason is that the bytecode elides all
+  unnecessary casts (i.e., upcasts). For instance, at the source
+  level, upon seeing in code that passes the type checker a statement
+  of the form ``\code{(X) new C()}'' we can be certain that (assuming
+  \code{X} and \code{C} are both classes) the classes \code{X} and
+  \code{C} are subtype-related: the cast can be either an upcast or a
+  downcast, otherwise it would fail statically. At the bytecode level,
+  however, a corresponding ``\code{checkcast X}'' instruction, when
+  the object at the top of the argument stack is of static type
+  \code{C}, allows no inference. The corresponding source code could
+  well have been ``\code{(X)((Object) c)}'', with the intervening
+  upcast elided during compilation to bytecode.
+
+\item Constraints can be induced not just by varying the requirements
+  for the output but also by varying the assumptions for the input.
+  In our setting, we only assumed that the input is legal Java
+  bytecode when complemented with some extra definitions. This is
+  distinctly different from assuming that the input has been produced
+  by the translation of Java source code. (Bytecode could well have
+  been produced via compilers for other high-level languages or via
+  bytecode generators.) For instance, the Java language maintains
+  types for all local variables. At the source level, if we call
+  methods on the outcome of a conditional expression, we are
+  guaranteed to be able to assign a type to it. Consider:
+
+  \begin{javacode}
+    A a;
+    B b;
+    x = (foo()? a : b);
+    x.meth();  // I::meth()
+    x.meth2(); // J::meth2()
+  \end{javacode}
+
+  In Java source, the above code means that there exists some type
+  \code{X} (the type given to variable \code{x}) such that \code{X} is
+  a subtype of \code{I} and \code{X} is a subtype of \code{J}, while
+  also \code{A} and \code{B} are subtypes of \code{X}. An equivalent
+  conditional in bytecode form does not need to assign a type to
+  \code{X}. The constraints will be merely: \code{A} and \code{B} are
+  subtypes of both \code{I} and \code{J}, without allowing us to infer
+  the existence of such an unknown type \code{X}. Our constraint
+  solving process is significantly simplified by the fact that we
+  never need to infer the existence of more types.
+
+\end{itemize}
+
+The above is just a sampling of complications that arise if the
+hierarchy complementation problem is transposed to other domains,
+requiring the satisfaction of different static requirements. The
+effectiveness and efficiency of our approach is largely due to
+the simplicity of the Java bytecode verification requirements.
+However, other domains give rise to challenging problems,
+with a wealth of different constraints, possibly appropriate for
+future work.
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
