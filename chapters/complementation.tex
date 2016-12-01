@@ -2285,6 +2285,101 @@ with a wealth of different constraints, possibly appropriate for
 future work.
 
 
+%-------------------------------------------------------------------------------
+% Related Work
+%-------------------------------------------------------------------------------
+
+\section{Related Work}
+The hierarchy complementation problem is in principle new, although
+indirectly related to various other pieces of work in the literature.
+
+From a theory standpoint, our problem is an attempt to more fully
+determine the structure of a partially ordered set. There is no exact
+counterpart of our algorithms in the literature. However, there has
+been work on sorting a poset, i.e., completely determining the partial
+order \cite{soda/DaskalakisKMRV09}.  The challenge in such algorithmic
+research, however, is to perform the sorting with a minimal number of
+queries. None of the interesting devices of our algorithms are
+present. Specifically, the device of the single inheritance case (if a
+node can reach two others, they have to be ordered relative to each
+other) does not apply, and neither does the interesting constraint of
+the multiple inheritance case (we cannot add direct supertypes to a
+known node).
+
+Complementing a program so that the result respects static properties
+is analogous to analyzing only parts of a program but giving
+guarantees on the result. There are few examples of program analyses
+of this nature. Notably, \citeauthor{ecoop/AliL12} recently introduced
+a technique \cite{ecoop/AliL12} for analyzing an application
+separately from a library, while keeping enough information (from the
+library analysis) to guarantee that the application-level call-graph
+is correct. Furthermore, the Averroes system \cite{ecoop/AliL13} uses
+the assumption that the missing code is independently developed in
+order to produce a worst-case skeletal library. That is, Averroes
+takes an existing library and strips away the implementation, keeping
+only the interface between the library and the application. The
+implementation is replaced with code (at the bytecode level) that
+performs worst-case actions on the arguments passed into the library,
+for the purposes of call-graph construction (i.e., the generated code
+calls all methods the eliminated original code could ever
+call). Averroes is related to JPhantom but at rather opposite ends of
+the spectrum: Averroes produces worst-case skeletal implementations,
+while JPhantom produces minimal, best-case implementations that still
+respect well-formedness at the type level.  At the same time, Averroes
+assumes the library interface is available and just tries to avoid
+analyzing library implementations, while JPhantom applies precisely
+when the library is completely missing. Thus, JPhantom truly applies
+to the case of partial programs, whereas Averroes analyzes a partial
+program but under the assumption that the whole program was available
+to begin with. It would be interesting to treat a partial program
+first with JPhantom and then apply Averroes to the JPhantom-produced
+program complement to obtain the worst-case behavior of a plausible
+interface for the missing code.
+
+
+Our hierarchy complementation problem bears a superficial resemblance
+to the \emph{principal typings} problem
+\cite{popl/AnconaZ04,popl/AnconaDDZ05,Ancona04even}.  The principal
+typings problem consists of computing types for a Java module in
+complete isolation from every other module it references. I.e.,
+principal typings aim to achieve a more aggressive form of separate
+compilation, by computing the minimal type information on other
+classes that a class needs in order to typecheck and compile. Thus,
+the motivation is fairly similar to ours, but the technical problem is
+quite different.  First, in our setting we already have the result of
+compilation in the form of bytecode, and bytecode only. Second, our
+emphasis is on satisfying constraints instead of capturing them as a
+rich type. Finally, our constraints are of a very different nature
+from any in the principal typings literature. As discussed in
+Section~\ref{discussion}, the input and output language assumptions
+crucially determine the essence of an incomplete program analysis
+problem.
+
+
+%-------------------------------------------------------------------------------
+% Conclusions
+%-------------------------------------------------------------------------------
+
+\section{Conclusions}
+
+We introduced the class hierarchy complementation problem. The problem
+consists of finding definitions to complement an existing partial
+class hierarchy together with extra subtyping constraints, so that the
+resulting hierarchy satisfies all constraints. In the context of Java
+bytecode and the constraints of the bytecode verifier, our problem is
+the core challenge of complementing partial programs soundly, i.e., so
+that they pass the checks of the verifier when loaded together with
+the generated complement. We offered algorithms for the hierarchy
+complementation problem in both the single and the multiple
+inheritance setting, and linked it to practice with our JPhantom
+bytecode complementation tool.
+
+We believe that the hierarchy complementation problem is fundamental
+and is likely to arise in different settings in the future, hopefully
+aided by our modeling of the problem and some of its solution avenues.
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
