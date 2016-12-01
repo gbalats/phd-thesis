@@ -101,19 +101,19 @@ question:
 
 \vspace{-1mm}
 \begin{quote}
-\emph{How do I modify the code in
-order to enable soot to continue loading a class even if it doesn't
-find some of it[s] references? Can I create a dummy soot class so it can
-continue with the load? How?}
+  \emph{How do I modify the code in order to enable soot to continue
+    loading a class even if it doesn't find some of it[s] references?
+    Can I create a dummy soot class so it can continue with the load?
+    How?}
 \end{quote}
 
-\noindent This frequently asked question does not lead to a solution. The answer
-provided is:
+\noindent This frequently asked question does not lead to a
+solution. The answer provided is:
 \begin{quote}
-\emph{You can try -use-phantom-refs but often that
-does not work because not all analyses can cope with such
-references. The best way to cope with the problem is to find the
-missing code and provide it to Soot.}
+  \emph{You can try -use-phantom-refs but often that does not work
+    because not all analyses can cope with such references. The best
+    way to cope with the problem is to find the missing code and
+    provide it to Soot.}
 \end{quote}
 
 The ``phantom refs'' facility of Soot, referenced in the above answer,
@@ -126,22 +126,21 @@ class.
 
 Our research consists precisely of addressing the above need in full
 generality. \emph{Given a set of Java class and interface definitions,
-in bytecode form, we compute a ``program complement'', i.e., skeletal
-versions of any referenced missing classes and interfaces so that the
-combined result constitutes verifiable Java bytecode.} Our solution to
-this practical problem has two parts:
+  in bytecode form, we compute a ``program complement'', i.e.,
+  skeletal versions of any referenced missing classes and interfaces
+  so that the combined result constitutes verifiable Java bytecode.}
+Our solution to this practical problem has two parts:
 
 \begin{asparaitem}[$\cdot$]
-\item A \emph{program analysis} part, requiring analysis of bytecode and techniques
-similar to those employed by the Java verifier and Java
-decompilers. This analysis computes constraints involving the missing
-types. For instance, if a variable of a certain type $C$ is
-direct-assigned to a variable of a type $S$, then $C$ must be a subtype of
-$S$.
-%, as well as constraints on members (e.g., we may know from
-%available bytecode that a missing class has a method with a given
-%signature)
-
+\item A \emph{program analysis} part, requiring analysis of bytecode
+  and techniques similar to those employed by the Java verifier and
+  Java decompilers. This analysis computes constraints involving the
+  missing types. For instance, if a variable of a certain type $C$ is
+  direct-assigned to a variable of a type $S$, then $C$ must be a
+  subtype of $S$.
+  % , as well as constraints on members (e.g., we may know from
+  % available bytecode that a missing class has a method with a given
+  % signature)
 \item An \emph{algorithmic} part, solving a novel typing problem, which we call
   the \emph{class hierarchy complementation}, or
   simply \emph{hierarchy complementation}, problem. The problem
@@ -162,15 +161,15 @@ interest in purely graph-theoretic terms. For a representative special
 case, consider an object-oriented language with multiple inheritance
 (or, equivalently, an interface-only hierarchy in Java or
 C\#).\footnote{We avoid the terms ``subclassing'' or ``inheritance''
-as synonyms for ``direct subtyping'' to prevent confusion with other
-connotations of these terms. In our context, we only care about the
-concept of subtyping, i.e., of a (monomorphic) type as a special case
-of another. Subtyping can be direct (e.g., when a Java class is
-declared to ``extend'' another or ``implement'' an interface) or
-indirect, i.e., transitive. We do, however, use the compound terms
-``single inheritance'' and ``multiple inheritance'' as they are more
-common in the classification of languages than ``single subtyping''
-and ``multiple subtyping''.}  A partial hierarchy, augmented with
+  as synonyms for ``direct subtyping'' to prevent confusion with other
+  connotations of these terms. In our context, we only care about the
+  concept of subtyping, i.e., of a (monomorphic) type as a special
+  case of another. Subtyping can be direct (e.g., when a Java class is
+  declared to ``extend'' another or ``implement'' an interface) or
+  indirect, i.e., transitive. We do, however, use the compound terms
+  ``single inheritance'' and ``multiple inheritance'' as they are more
+  common in the classification of languages than ``single subtyping''
+  and ``multiple subtyping''.}  A partial hierarchy, augmented with
 constraints, can be represented as a graph, as shown in
 Figure~\ref{fig:ex0:problem}. The known part of the hierarchy is shown
 as double circles and solid edges. Unknown (i.e., missing) classes are
@@ -427,12 +426,12 @@ available, while types \code{X}, \code{Y}, and \code{Z} are phantom,
 i.e., their definition is missing.
 
 \begin{bytecode}
-public void foo(X, Y)
-0: aload_2     // load on stack 2nd argument (of type Y)
-1: aload_1     // load on stack 1st argument (of type X)
-2: invokevirtual X.bar:(LA;)LZ; // method 'Z bar(A)' in X
-3: invokevirtual B.baz:()V;     // method 'void baz()' in B
- ...
+  public void foo(X, Y)
+  0: aload_2     // load on stack 2nd argument (of type Y)
+  1: aload_1     // load on stack 1st argument (of type X)
+  2: invokevirtual X.bar:(LA;)LZ; // method 'Z bar(A)' in X
+  3: invokevirtual B.baz:()V;     // method 'void baz()' in B
+   ...
 \end{bytecode}
 
 The instructions of this fragment induce several constraints for our phantom
@@ -556,21 +555,24 @@ constraints. That is, an edge $(v_s,v_t)$ encodes the constraint $v_s
 constraints. The output of our algorithm should be a \emph{DAG} (with
 edges from children to their parents), $G_D = (V,E')$, such that:
 \begin{enumerate}
-\item $\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
- v_t) \in E_{direct}$ (i.e., all direct edges from known nodes are preserved
-and no new ones are added to such nodes)
-\item $(v_s,v_t) \in E_{path} \Rightarrow$ there is a path from $v_s$ to
-$v_t$ in $G_D$
+\item
+  $\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
+  v_t) \in E_{direct}$ (i.e., all direct edges from known nodes are
+  preserved and no new ones are added to such nodes)
+\item $(v_s,v_t) \in E_{path} \Rightarrow$ there is a path from $v_s$
+  to $v_t$ in $G_D$
 \end{enumerate}
 
-%Again, we could decouple path-edges from direct-edges by introducing
-%the input and output mappings, $f_i:V_{known} \rightarrow 2^V$,
-%$f_o:V \rightarrow 2^V$. In both cases, these two mappings map a type
-%(key) to its \emph{set} of outgoing edges (value). This way, $G_C =
-%(V,E)$ will only contain path-edges such that $\forall (x_1,x_n) \in E
-%:$ there must exist a path $(x_1,x_2,\ldots,x_n) \text{ in }
-%G_D$ (second constraint). Additionally, as in the single inheritance case, we must ensure
-%that $\forall c \in V_{known}: f_o[c] = f_i[c]$ (first constraint).
+% Again, we could decouple path-edges from direct-edges by introducing
+% the input and output mappings, $f_i:V_{known} \rightarrow 2^V$,
+% $f_o:V \rightarrow 2^V$. In both cases, these two mappings map a
+% type (key) to its \emph{set} of outgoing edges (value). This way,
+% $G_C = (V,E)$ will only contain path-edges such that
+% $\forall (x_1,x_n) \in E :$ there must exist a path
+% $(x_1,x_2,\ldots,x_n) \text{ in } G_D$ (second
+% constraint). Additionally, as in the single inheritance case, we
+% must ensure that $\forall c \in V_{known}: f_o[c] = f_i[c]$ (first
+% constraint).
 
 Note that our only limiting constraint here is that we cannot have
 cycles in the resulting hierarchy. Moreover, since each type may have
@@ -590,13 +592,12 @@ edges connecting nodes that are already connected by another path)
 that we could prune to minimize our output. In either case, our
 solution would be valid w.r.t. our constraints.
 
-%Optionally, we could prune some edges from our
-%solution without breaking any constraints, to minimize the output of
-%our algorithm for practical
-%purposes. Algorithm~\ref{alg:multiple:simple} performs such an
-%optimization, by first computing a transitive closure of the
-%constraints and then removing redundant edges, whose target can be
-%reached from another path.
+% Optionally, we could prune some edges from our solution without
+% breaking any constraints, to minimize the output of our algorithm
+% for practical purposes. Algorithm~\ref{alg:multiple:simple} performs
+% such an optimization, by first computing a transitive closure of the
+% constraints and then removing redundant edges, whose target can be
+% reached from another path.
 
 %% Projection Sets
 
@@ -611,7 +612,7 @@ Consider first the pattern of Figure~\ref{fig:choice}.
     constraints, either $B$ or $C$ or $D$ have to be ordered below
     $E$, since no new outgoing edges can be added to $A$ and the path
     constraint to $E$ needs to be satisfied.}
-\label{fig:choice}
+  \label{fig:choice}
 \end{figure}
 
 This pattern is a basic instance of interesting reasoning in the case of
@@ -623,8 +624,8 @@ below $E$. We refer to the set of $\{B,C,D\}$ as the \emph{projection
   set} of node $A$, which is a more generally useful concept.
 
 \begin{defn}{\emph{Projection Set.}}
-%  Let $G = (V,E) : V = V_{known} \disjunion V_{phantom}$ and $E
-%  = E_{path} \disjunion E_{direct}$ be a constraint graph.
+  % Let $G = (V,E) : V = V_{known} \disjunion V_{phantom}$ and $E
+  % = E_{path} \disjunion E_{direct}$ be a constraint graph.
   A node $t \in V_{phantom}$ belongs to the \emph{projection set} of a
   node $s \in V_{known}$ iff $t$ is reachable from $s$ through a path
   of \emph{direct} edges.
@@ -633,12 +634,12 @@ below $E$. We refer to the set of $\{B,C,D\}$ as the \emph{projection
   %% that internally contains only known nodes.
   %%
   %% We need the definition below since it is used in the algorithm.
- $$ \textit{proj}(s) \equiv \{t \in V_{phantom}: (s,t) \in {E_{direct}}^+\}$$
- with the $+$ symbol denoting transitive closure.
+  $$ \textit{proj}(s) \equiv \{t \in V_{phantom}: (s,t) \in {E_{direct}}^+\}$$
+  with the $+$ symbol denoting transitive closure.
   %% This is wrong!
- %% $$ proj(s,t) \equiv \{(s,t): t \in V_{phantom} \land (s,t) \in
- %% {E_{direct}}\}^+$$ with the $+$ symbol denoting transitive
- %% closure.
+  %% $$ proj(s,t) \equiv \{(s,t): t \in V_{phantom} \land (s,t) \in
+  %% {E_{direct}}\}^+$$ with the $+$ symbol denoting transitive
+  %% closure.
 \end{defn}
 
 That is, for each known node we can follow its outgoing direct-edges
@@ -665,7 +666,7 @@ choice from the relevant projection set.
 \begin{figure}[tp]
   \centering
   %%\subfloat[Constraint Graph]{
-    \includegraphics[scale=0.6]{figures/complementation/projections.pdf}
+  \includegraphics[scale=0.6]{figures/complementation/projections.pdf}
     %%\label{fig:proj:graph}
   %%}
   %% \subfloat[Solution]{
@@ -677,7 +678,7 @@ choice from the relevant projection set.
     satisfy path-edge $(A,B)$ we can either add a path-edge $(C,B)$,
     $(E,B)$, or $(H,B)$. The last one creates a cycle.
   }
-\label{fig:proj}
+  \label{fig:proj}
 \end{figure}
 
 %% Multiple Inheritance Examples
@@ -878,10 +879,11 @@ $E = E_{direct} \disjunion E_{path}$, where $E_{direct} \subseteq V_{known}
 be a directed \emph{tree} (instead of a DAG), $G_T = (V,E')$, such
 that the same conditions as in the earlier case are satisfied:
 \begin{enumerate}
-\item $\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
- v_t) \in E_{direct}$
-\item $(v_s,v_t) \in E_{path} \Rightarrow$ there is a path from $v_s$ to
-$v_t$ in $G_T$
+\item
+  \(\forall v_s \in V_{known}: (v_s,v_t) \in E' \Leftrightarrow (v_s,
+  v_t) \in E_{direct}\)
+\item \((v_s,v_t) \in E_{path} \Rightarrow\) there is a path from
+  \(v_s\) to \(v_t\) in \(G_T\)
 \end{enumerate}
 
 Without loss of generality, we assume that there exists a ``root''
@@ -1321,7 +1323,7 @@ conflict with $f_i$, and would be captured by our
   \caption{%
     Algorithm~\ref{alg:single:ext} - Example
   }
-\label{fig:ex1:ext}
+  \label{fig:ex1:ext}
 \end{figure}
 
 \paragraph{Correctness Proof Sketch:}
@@ -1431,30 +1433,32 @@ has a path to a white node $t$, then $s$ must also be white (classes
 can only be extended by other classes).
 
 %% Old text. I don't think it applies any more.
-%Based on the above, the observation that leads to a safe decomposition
-%of the coloring from the subsequent solving is the following: only
-%phantom nodes whose incoming edges are all path edges can have their
-%colors determined transitively. (A phantom node with a known direct
-%subtype takes its color locally, from the kind of subtyping declared.)
-%By examining all algorithms in our earlier sections we see that no
-%extra edges are added to phantom nodes with only path edges
-%incoming. Therefore, executing any of our solvers for the hierarchy
-%complementation problem will not affect the coloring of any type
-%relative to the coloring constraints of the original input.
+% Based on the above, the observation that leads to a safe
+% decomposition of the coloring from the subsequent solving is the
+% following: only phantom nodes whose incoming edges are all path
+% edges can have their colors determined transitively. (A phantom node
+% with a known direct subtype takes its color locally, from the kind
+% of subtyping declared.)  By examining all algorithms in our earlier
+% sections we see that no extra edges are added to phantom nodes with
+% only path edges incoming. Therefore, executing any of our solvers
+% for the hierarchy complementation problem will not affect the
+% coloring of any type relative to the coloring constraints of the
+% original input.
 
-% The only interaction of this logic with the algorithms of the previous
-% sections is in case the solution creates paths that did not exist in
-% the original inputs. Our multiple inheritance algorithm never does so.
-% The single inheritance algorithm can also avoid introducing paths
-% between previously unreachable nodes if we use a weaker ordering
-% (producing a tree and not a linear list) in place of the topological
-% sort step of Algorithm~\ref{alg:single:kdirect}. Such a sort makes two
-% nodes ordered only if there was a path between them in the original
+% The only interaction of this logic with the algorithms of the
+% previous sections is in case the solution creates paths that did not
+% exist in the original inputs. Our multiple inheritance algorithm
+% never does so.  The single inheritance algorithm can also avoid
+% introducing paths between previously unreachable nodes if we use a
+% weaker ordering (producing a tree and not a linear list) in place of
+% the topological sort step of
+% Algorithm~\ref{alg:single:kdirect}. Such a sort makes two nodes
+% ordered only if there was a path between them in the original
 % input. The algorithm is straightforward but tedious and we elide it
 % for lack of space.
 % %% REVIEW! We need to think about this.
 
-%For instance, for the input of Figure~\ref{fig:kdirect:ex}
+% For instance, for the input of Figure~\ref{fig:kdirect:ex}
 
 Furthermore, phantom nodes with no color constraints can be safely
 assumed to be interfaces (black), for maximum flexibility in solving
@@ -1567,79 +1571,78 @@ an input jar file by JPhantom.
 %% two-column mode. We have to manually place the figure below.
 
 \begin{figure}[thp]
-\centering
-\small
-\begin{savenotes}
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}>{\footnotesize\ttfamily}l@{\hspace{1em}}l@{\hspace{1em}}l@{\hspace{1em}}l@{}}
-  \toprule
-  \normalfont{\small\emph{Opcode}}
-                  & \emph{Types}
-                  & \emph{Stack Types}
-                  & \emph{Constraints} \\
-  \hline
-  AASTORE         &
-                  & $a:E[] \: \; i:int \; \: v:V$
-                  & $V <: E$
-  \\
-  ARETURN         &
-                  & $\textit{obj}:S$
-                  & $S <:R_m$
-  \\
-  ASTORE          & $T$
-                  & $\textit{obj}:S$
-                  & $S <: T$
-  \\
-  ATHROW          &
-                  & $\textit{obj}:S$
-                  & $S <:$ ``\code{java.lang.Throwable}''
-  \\
-  GETFIELD        & $T.F$
-                  & $\textit{obj}:S$
-                  & $\textit{isClass}(T) \land S <: T$
-  \\
-  PUTFIELD        & $T.F$
-                  & $\textit{obj}:S \; \: v:U$
-                  & $\textit{isClass}(T) \land S <:T \land U <: F$
-  \\
-  PUTSTATIC       & $T.F$
-                  & $v:U$
-                  & $\textit{isClass}(T) \land U <: F$
-  \\
-  INVOKEINTERFACE & $T.(\overline{A})R$
-                  & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
-                  & $\textit{isIface}(T) \land S_0 <: T$
-  \\
-  INVOKEVIRTUAL   & $T.(\overline{A})R$
-                  & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
-                  & $\textit{isClass}(T) \land S_0 <: T$
-  \\
-  INVOKESPECIAL   & $T.(\overline{A})R$
-                  & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
-                  & $\textit{name} =$ ``\code{<init>}'' $\Rightarrow \textit{isClass}(T) \land S_0 <: T$
-  \\
-  INVOKESTATIC    & $T.(\overline{A})R$
-                  & $\textit{arg}_1:S_1$ \ldots
-                  & $\textit{isClass}(T)$
-  \\
-  INVOKE*         & $T.(\overline{A})R$
-                  & $(\textit{arg}_0:S_0) \;\: \textit{arg}_1:S_1$ \ldots
-                  & $S_i <: A_i, \forall i=1,...$
-  \\
-  \bottomrule
-\end{tabular}
-\end{savenotes}
-\caption[Generated Bytecode Constraints]{%
-    \emph{Generated Bytecode Constraints}. At this point, our analyzer has
-    already computed the (sets of) types for every stack and local
+  \centering
+  \small
+  \begin{savenotes}
+  \renewcommand{\arraystretch}{1.3}
+  \begin{tabular}{@{}>{\footnotesize\ttfamily}l@{\hspace{1em}}l@{\hspace{1em}}l@{\hspace{1em}}l@{}}
+    \toprule
+    \normalfont{\small\emph{Opcode}}
+                    & \emph{Types}
+                    & \emph{Stack Types}
+                    & \emph{Constraints} \\
+    \hline
+    AASTORE         &
+                    & $a:E[] \: \; i:int \; \: v:V$
+                    & $V <: E$
+    \\
+    ARETURN         &
+                    & $\textit{obj}:S$
+                    & $S <:R_m$
+    \\
+    ASTORE          & $T$
+                    & $\textit{obj}:S$
+                    & $S <: T$
+    \\
+    ATHROW          &
+                    & $\textit{obj}:S$
+                    & $S <:$ ``\code{java.lang.Throwable}''
+    \\
+    GETFIELD        & $T.F$
+                    & $\textit{obj}:S$
+                    & $\textit{isClass}(T) \land S <: T$
+    \\
+    PUTFIELD        & $T.F$
+                    & $\textit{obj}:S \; \: v:U$
+                    & $\textit{isClass}(T) \land S <:T \land U <: F$
+    \\
+    PUTSTATIC       & $T.F$
+                    & $v:U$
+                    & $\textit{isClass}(T) \land U <: F$
+    \\
+    INVOKEINTERFACE & $T.(\overline{A})R$
+                    & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
+                    & $\textit{isIface}(T) \land S_0 <: T$
+    \\
+    INVOKEVIRTUAL   & $T.(\overline{A})R$
+                    & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
+                    & $\textit{isClass}(T) \land S_0 <: T$
+    \\
+    INVOKESPECIAL   & $T.(\overline{A})R$
+                    & $\textit{arg}_0:S_0 \;\: \textit{arg}_1:S_1$ \ldots
+                    & $\textit{name} =$ ``\code{<init>}'' $\Rightarrow \textit{isClass}(T) \land S_0 <: T$
+    \\
+    INVOKESTATIC    & $T.(\overline{A})R$
+                    & $\textit{arg}_1:S_1$ \ldots
+                    & $\textit{isClass}(T)$
+    \\
+    INVOKE*         & $T.(\overline{A})R$
+                    & $(\textit{arg}_0:S_0) \;\: \textit{arg}_1:S_1$ \ldots
+                    & $S_i <: A_i, \forall i=1,...$
+    \\
+    \bottomrule
+  \end{tabular}
+  \end{savenotes}
+  \caption[Generated Bytecode Constraints]{%
+    \emph{Generated Bytecode Constraints}. At this point, our analyzer
+    has already computed the (sets of) types for every stack and local
     variable at every point of execution (bytecode in method). For
     simplicity, we assume that each set of reference types contains a
     single element (3rd column). Each bytecode may involve some
     declared types (2nd column) by references in the constant pool or
     by entries in the local variable table (if such exists). Also, let
-    $R_m$ be the containing method's return type.
-}
-\label{fig:constraints}
+    $R_m$ be the containing method's return type.  }
+  \label{fig:constraints}
 \end{figure}
 
 %% Is this a leftover???
@@ -1686,9 +1689,8 @@ bytecode by following every possible execution path, while computing
 the types of stack and local variables. This is necessary because, in
 general, bytecodes receive some untyped arguments whose types we need
 to infer, in order to extract our constraints. This process is
-analogous to Pass~3
-\cite[Section~4.9.2]{Lindholm:1999:JVM:553607} of the bytecode
-verification process.
+analogous to Pass~3 \cite[Section~4.9.2]{Lindholm:1999:JVM:553607} of
+the bytecode verification process.
 
 When computing such type information for stack and local variables,
 there are points where we have to merge two different paths of
@@ -1713,25 +1715,25 @@ it is easy to see that storing a set of reference types fits our needs
 well. Consider the following case:
 
 \begin{multicols}{2}
-\begin{javacode}
-class Test {
-   A foo(B b, C c) {
-      return (b == null) ?
-         c : b;
-   }
-}
-\end{javacode}
-\columnbreak
-\begin{bytecode}
-A foo(B, C);
-  Code:
-   0:       aload_1
-   1:       ifnonnull 8
-   4:       aload_2
-   5:       goto 9
-   8:       aload_1
-   9:       areturn
-\end{bytecode}
+  \begin{javacode}
+    class Test {
+      A foo(B b, C c) {
+        return (b == null) ?
+        c : b;
+      }
+    }
+  \end{javacode}
+  \columnbreak
+  \begin{bytecode}
+  A foo(B, C);
+    Code:
+     0:       aload_1
+     1:       ifnonnull 8
+     4:       aload_2
+     5:       goto 9
+     8:       aload_1
+     9:       areturn
+  \end{bytecode}
 \end{multicols}
 
 Our analyzer will compute that the stack contains a single item with
