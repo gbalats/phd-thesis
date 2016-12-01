@@ -48,6 +48,7 @@
 % Additional Local packages
 \usepackage{styles/mathpartir}
 
+% For footnotes inside tabular environment. See footnote package
 \makesavenoteenv{tabular}
 
 %%%--------------------------------------------------------------
@@ -266,12 +267,13 @@
 \begin{center}
 	\renewcommand{\arraystretch}{1.5}
 	\begin{longtable}{ l @{\qquad} l }
-	\toprule
-	RDF    & Resource Description Framework \\
-	SPARQL & SPARQL Protocol and RDF Query Language \\
-	OWL    & Web Ontology Language \\
-	OGC    & Open Geospatial Consortium \\
-	\bottomrule
+      \toprule
+      JVM    & Java Virtual Machine \\
+      RDF    & Resource Description Framework \\
+      SPARQL & SPARQL Protocol and RDF Query Language \\
+      OWL    & Web Ontology Language \\
+      OGC    & Open Geospatial Consortium \\
+      \bottomrule
 	\end{longtable}
 \end{center}
 
