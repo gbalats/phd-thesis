@@ -741,15 +741,18 @@ stratification, which will respect all of our constraints
 then we can be certain that we are dealing with unsatisfiable input,
 and terminate, thus avoiding infinite recursion
 (line~\ref{lst:line:unsat}). The nodes to be advanced at each step are
-determined at line~\ref{lst:line:formula}, which captures the essence of
-the algorithm. The new stratum of a node
-$t$ will be either (i) its current stratum, (ii) the stratum right
-above the source of an edge $(s,t)$, or (iii) the one right above the
-\emph{lowest} projection node of the source of a path-edge $(s,t)$
-originating from a known node---whichever is higher. These conditions
-raise the stratum of a node to the minimum required to satisfy the
-natural constraints of the problem, per our above discussion:
-edges in the solution should be from lower to higher strata.
+determined at line~\ref{lst:line:formula}, which captures the essence
+of the algorithm. The new stratum of a node $t$ will be either%
+\begin{inparaenum}[(i)]
+\item its current stratum,
+\item the stratum right above the source of an edge $(s,t)$, or
+\item the one right above the \emph{lowest} projection node of the
+  source of a path-edge $(s,t)$ originating from a known node%
+\end{inparaenum}%
+---whichever is higher.  These conditions raise the stratum of a node
+to the minimum required to satisfy the natural constraints of the
+problem, per our above discussion: edges in the solution should be
+from lower to higher strata.
 
 %% Stratification Example
 
@@ -1643,11 +1646,6 @@ use the existing class hierarchy and declared members (step 1), to
 perform member lookup for the purpose of determining if a member is
 missing and where it should be added.
 
-%% \begin{inparaenum}[(1)]
-%% \item first pass that reads existing class hierarchy (type signatures only)
-%% \item second pass
-%% \end{inparaenum}
-
 The most interesting aspects of the above steps have to do with
 analyzing the bytecode to produce the constraints (step 3) used as
 input to the hierarchy complementation algorithm. In order to extract
@@ -1824,30 +1822,34 @@ following issues:
   analysis performed by Doop.
 
   Figure~\ref{fig:venn} presents a Venn diagram over the sets of
-  reachable methods as computed by Doop for three different inputs:
-  (i) the original \emph{antlr} jar, (ii) our synthetic
-  benchmark, \emph{antlr-minus}, and (iii) the output of JPhantom
-  after analyzing \emph{antlr-minus}, that is, a transformed version
-  of the \emph{antlr-minus} jar with no phantom references. The
-  original jar yields $52,357$ reachable methods, out of which only
-  $42,337$ are detected in the presence of phantom references
+  reachable methods as computed by Doop for three different
+  inputs:%
+  \begin{inparaenum}[(i)]
+  \item the original \emph{antlr} jar,
+  \item our synthetic benchmark, \emph{antlr-minus}, and
+  \item the output of JPhantom after analyzing \emph{antlr-minus},
+    that is, a transformed version of the \emph{antlr-minus} jar with
+    no phantom references.
+  \end{inparaenum}
+  The original jar yields $52,357$ reachable methods, out of which
+  only $42,337$ are detected in the presence of phantom references
   (\emph{antlr-minus}), without using JPhantom. Additionally, phantom
   references introduce $500$ false positives that correspond to
   non-existing methods.\footnote{It may seem surprising that
-  eliminating code can introduce new (falsely) reachable methods. The
-  reason is that a non-existent method $m$ in class $C$ may be
-  reported reachable, based on method signature information on the
-  call-site alone, whereas in the original code the true reachable
-  method $m$ was defined in a, now missing, superclass $S$ of $C$, and
-  not in $C$.} After employing JPhantom to alleviate the effect of
-  phantom references, Doop manages to find $7,392$ of the $10,020$
-  missing reachable methods, resulting in $73.77\%$ recall (over the
-  missing methods alone, or $95\%$ over all methods). The false
-  positives of directly analyzing \emph{antlr-minus} disappear but
-  $681$ new ones emerge, yielding a precision of $98.65\%$. Even so,
-  this allows us to discover almost 3 out of every 4 missing reachable
-  methods, which originally constituted $19.14\%$ of the total
-  reachable methods, dropping this percentage to just $5.02\%$.
+    eliminating code can introduce new (falsely) reachable
+    methods. The reason is that a non-existent method $m$ in class $C$
+    may be reported reachable, based on method signature information
+    on the call-site alone, whereas in the original code the true
+    reachable method $m$ was defined in a, now missing, superclass $S$
+    of $C$, and not in $C$.} After employing JPhantom to alleviate the
+  effect of phantom references, Doop manages to find $7,392$ of the
+  $10,020$ missing reachable methods, resulting in $73.77\%$ recall
+  (over the missing methods alone, or $95\%$ over all methods). The
+  false positives of directly analyzing \emph{antlr-minus} disappear
+  but $681$ new ones emerge, yielding a precision of $98.65\%$. Even
+  so, this allows us to discover almost 3 out of every 4 missing
+  reachable methods, which originally constituted $19.14\%$ of the
+  total reachable methods, dropping this percentage to just $5.02\%$.
 
   It is notable that this high recall is achieved although recall
   could, in principle, be arbitrarily low. JPhantom is trying to guess
@@ -1888,18 +1890,25 @@ We use a 64-bit machine with a quad-core Intel i7 2.8GHz CPU. The
 machine has 8GB of RAM. We ran our experiments using JDK 1.7
 (64-bit).
 
-Our benchmarks consist of (1) \emph{antlr}, a parser generator, (2)
-\emph{antlrworks}, the GUI Development Environment for antlr, (3)
-\emph{c3p0}, a library that provides extensions to traditional JDBC
-drivers, (4) \emph{jruby} and (5) \emph{jython}, implementations of
-Ruby and Python programming languages respectively that run on top of
-the JVM, (6) logback-classic and (7) logback-core, two modules of the
-\emph{logback} logging framework, (8) \emph{pmd}, a Java source code
-analyzer, (9) \emph{postgres}, the PosgreSQL JDBC driver, (10)
-\emph{sablecc}, a compiler generator, and (11) \emph{antlr-minus},
-a synthetic benchmark described in the previous section.
-%in order to increase the number of constraints it
-%produces.
+Our benchmarks consist of%
+\begin{inparaenum}[(1)]
+\item \emph{antlr}, a parser generator,
+\item \emph{antlrworks}, the GUI Development Environment for antlr,
+\item \emph{c3p0}, a library that provides extensions to traditional
+  JDBC drivers,
+\item \emph{jruby} and
+\item \emph{jython}, implementations of Ruby and Python programming
+  languages respectively that run on top of the JVM,
+\item logback-classic and
+\item logback-core, two modules of the \emph{logback} logging
+  framework,
+\item \emph{pmd}, a Java source code analyzer,
+\item \emph{postgres}, the PosgreSQL JDBC driver,
+\item \emph{sablecc}, a compiler generator, and
+\item \emph{antlr-minus}, a synthetic benchmark described in the
+  previous section.
+\end{inparaenum}
+% in order to increase the number of constraints it produces.
 Every benchmark is just a jar file that serves as JPhantom's
 input, which then detects all phantom references and generates the
 complemented jar.
@@ -2057,16 +2066,19 @@ Interface Hierarchy
 \end{alltt}
 
 It is evident that the final hierarchy respects all of the reported
-constraints. Some interesting points are that: (i)
-\code{org.apache.bsf.BSFEngine} defaults to interface since no
-constraint determines whether it is actually an interface or a class,
-(ii) \code{org.osgi.framework.BundleException} is inferred to be a
-class since it is a subtype of the class \code{Throwable}, and (iii)
-two known classes, \code{org.jruby.javasupport.bsf.JRubyEngine} and
-\code{org.jruby.embed.bsf.JRubyEngine}, used as subtypes of interface
-\code{org.apache.bsf.BSFEngine}, add the latter to the supertypes of
-their phantom projection, \code{org.apache.bsf.util.BSFEngineImpl}.
-
+constraints. Some interesting points are that:%
+\begin{inparaenum}[(i)]
+\item \code{org.apache.bsf.BSFEngine} defaults to interface since no
+  constraint determines whether it is actually an interface or a
+  class,
+\item \code{org.osgi.framework.BundleException} is inferred to be a
+  class since it is a subtype of the class \code{Throwable}, and
+\item two known classes, \code{org.jruby.javasupport.bsf.JRubyEngine}
+  and \code{org.jruby.embed.bsf.JRubyEngine}, used as subtypes of
+  interface \code{org.apache.bsf.BSFEngine}, add the latter to the
+  supertypes of their phantom projection,
+  \code{org.apache.bsf.util.BSFEngineImpl}.
+\end{inparaenum}
 
 
 %%% Local Variables:
