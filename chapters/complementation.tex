@@ -2100,16 +2100,17 @@ Interface Hierarchy
 It is evident that the final hierarchy respects all of the reported
 constraints. Some interesting points are that:%
 \begin{inparaenum}[(i)]
-\item \code{org.apache.bsf.BSFEngine} defaults to interface since no
+\item \javaclass{org.apache.bsf.BSFEngine} defaults to interface since no
   constraint determines whether it is actually an interface or a
   class,
-\item \code{org.osgi.framework.BundleException} is inferred to be a
-  class since it is a subtype of the class \code{Throwable}, and
-\item two known classes, \code{org.jruby.javasupport.bsf.JRubyEngine}
-  and \code{org.jruby.embed.bsf.JRubyEngine}, used as subtypes of
-  interface \code{org.apache.bsf.BSFEngine}, add the latter to the
-  supertypes of their phantom projection,
-  \code{org.apache.bsf.util.BSFEngineImpl}.
+\item \javaclass{org.osgi.framework.BundleException} is inferred to be a
+  class since it is a subtype of the class \javaclass{Throwable}, and
+\item two known classes,
+  \javaclass{org.jruby.javasupport.bsf.JRubyEngine} and
+  \javaclass{org.jruby.embed.bsf.JRubyEngine}, used as subtypes of
+  interface \javaclass{org.apache.bsf.BSFEngine}, add the latter to
+  the supertypes of their phantom projection,
+  \javaclass{org.apache.bsf.util.BSFEngineImpl}.
 \end{inparaenum}
 
 
