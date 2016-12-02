@@ -126,5 +126,6 @@ $(thesis.pdf): $(dependencies)
 setup:
 	git submodule update --init
 
+.PHONY: update-submodules
 update-submodules:
 	git submodule update --remote --merge
