@@ -182,7 +182,7 @@ the unknown part of the class hierarchy has a path from $C$ to
 $D$. This path cannot be a direct edge from $C$ to $D$, however: $C$
 is a known class, so the set of its supertypes is fixed.
 
-\begin{figure}[t]
+\begin{figure}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph2.pdf}
@@ -264,7 +264,7 @@ multiple-inheritance versions of hierarchy complementation.
 %merely refines locally the algorithms for solving the
 %problem versions for multiple inheritance and
 
-\begin{figure}[t]
+\begin{figure}[ht]
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph3.pdf}
@@ -606,7 +606,7 @@ into account. The source of the difficulty is the combination of cycle
 detection with nodes whose outgoing edge set cannot be extended.
 Consider first the pattern of Figure~\ref{fig:choice}.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
   \centering \includegraphics[scale = 0.6]{figures/complementation/cgraph-min.pdf}
   \caption[Multiple Inheritance Constraint]{In any solution of these
     constraints, either $B$ or $C$ or $D$ have to be ordered below
@@ -663,7 +663,7 @@ choice from the relevant projection set.
 % satisfy the same constraint through $I$ (since there is also a path
 % from $B$ to $I$, through node $C$).
 
-\begin{figure}[tp]
+\begin{figure}
   \centering
   %%\subfloat[Constraint Graph]{
   \includegraphics[scale=0.6]{figures/complementation/projections.pdf}
@@ -692,7 +692,7 @@ cycles. In contrast, Figure~\ref{fig:multipleHard} shows an input for
 which a solution is possible, and which we use to illustrate our
 algorithm.
 
-\begin{figure}[htp]
+\begin{figure}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/mult-inh-unsat.pdf}
@@ -757,7 +757,7 @@ from lower to higher strata.
 
 %% Stratification Example
 
-\begin{figure*}[t]
+\begin{figure*}[tp]
   \vspace{-5mm}
   \begin{minipage}[b]{0.5\linewidth}
     \centering
@@ -930,7 +930,7 @@ cases.
 
 % CHECK subcaption alignment everywhere!!
 
-\begin{figure*}[t]
+\begin{figure*}[htb]
   \vspace{-5mm}
   \begin{minipage}[t]{0.5\linewidth}
     \centering
@@ -1572,7 +1572,7 @@ an input jar file by JPhantom.
 %% LaTeX sucks when deciding placement of single-column figures in
 %% two-column mode. We have to manually place the figure below.
 
-\begin{figure}[thp]
+\begin{figure}[th]
   \centering
   \small
   \begin{savenotes}
@@ -1969,7 +1969,7 @@ constraints detected, create the phantom classes with the required
 members and supertypes, augment the input jar and flush its contents
 to disk.
 
-\begin{figure}[htp]
+\begin{figure}
 \centering
 \small
 \begin{savenotes}
