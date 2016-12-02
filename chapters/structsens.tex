@@ -394,7 +394,7 @@ There are several issues with this approach:
   fields (whose types we statically know to be completely different).
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[ht]
 \begin{lcppcode}
 /* Allocate N bytes of memory dynamically, with error checking. */
 void * xmalloc (size_t n) {
@@ -552,7 +552,7 @@ $P$, which stands for \emph{pointer variables} (i.e., any entity whose
 value may hold some memory address). Our analysis only introduces the
 set of abstract objects $O$, that correspond to memory locations.
 
-\begin{figure}
+\begin{figure}[ht]
   \centering
   \begin{tabular}{l@{\quad}l}
     \toprule
@@ -595,7 +595,7 @@ that corresponds to either a field or an array element. (Only
 we have call and return instructions. Call instructions may also
 accept a variable (function pointer), as their first argument.
 
-\begin{figure}
+\begin{figure}[t]
   \centering
   \begin{tabular}{l@{\quad}l@{\qquad}l}
     \toprule
@@ -1048,7 +1048,7 @@ different index. Conversely, when loading from a variable index, the
 analysis has to return all three addresses, since the index could be
 equal to any constant.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
 \begin{cppcode}
 int i, j, k, idx;
 ...
@@ -1115,7 +1115,7 @@ its constant array indices with ``$*$''. Figure~\ref{fig/poset} gives
 an example of such ordering. The direction of
 the edges is from the less to the more general object.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
   \centering
   \includegraphics[clip,width=0.80\linewidth]{figures/structsens/Partial-Order.pdf}
   \caption[Abstract Object Ordering]{%
@@ -1137,7 +1137,7 @@ anything in the points-to set of not just the object we load from
 (such as $\alloc{o[c]}$). In this way, the general and specific points-to
 sets are kept distinct, while their subset relationship is maintained.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
   % \begin{math}
   %   \inferrule*
   %   {\alloc{o} \in O}
@@ -1259,7 +1259,7 @@ dispatch, through virtual methods. Virtual-tables are represented as
 constant arrays of function pointers, and virtual calls are, in turn,
 translated to a series of indirect access instructions.
 
-\begin{figure}[htp]
+\begin{figure}[ht]
   \begin{minipage}[b]{.5\linewidth}
 %define void @func() {
 % %b=alloca %class.B, // B b;
