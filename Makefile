@@ -75,6 +75,7 @@ print:
 $(figures.svg:%.svg=%.pdf): %.pdf: %.svg
 	$(INKSCAPE) $< --export-pdf=$@
 	$(PDFCROP) $@
+	$(RM) $@
 	$(MV) $*-crop.pdf $@
 
 $(figures.eps:%.eps=%.pdf): %.pdf: %.eps
@@ -84,7 +85,7 @@ $(figures.dot:%.dot=%.pdf): %.pdf: %.dot
 	$(DOT) $< -Tpdf -o $@
 
 $(figures.odg:%.odg=%.pdf): %.pdf: %.odg
-	unoconv $< -o $@
+	unoconv -f pdf $<
 	$(PDFCROP) $@
 	$(RM) $@
 	$(MV) $*-crop.pdf $@
