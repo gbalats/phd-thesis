@@ -41,6 +41,24 @@ analysis is aiming to eventually compute (be it the identification of
 complex bug patterns or the opportunities for effective
 optimizations).
 
+In this dissertation we argue that there is implicit structural
+information in the program, about the memory it will allocate, that
+can improve the quality of the abstract memory model constructed by
+static analysis. We provide a number of techniques that recover such
+lost memory structure, in two different settings:%
+\begin{inparaenum}[(1)]
+\item in C/C++ programs, as a typical case of low-level code, where
+  the program's memory structure is often lost due to specific
+  programming idioms and the inherent low-level nature of the
+  language, and
+\item in Java programs, where despite its high-level nature,
+  structural information may be lost for \emph{partial programs}
+  (i.e., libraries or any programs that lack some of their parts),
+  which, in the form of Java Archives (JARs), constitute the main
+  distributable code entity of this managed language.
+\end{inparaenum}
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
