@@ -1,0 +1,47 @@
+Static program analysis is a vast field with broad uses; an umbrella
+term for many different methodologies (Hoare logic, pointer analysis,
+model checking, symbolic execution, abstract interpretation, data-flow
+analysis, and so on) that aim to automatically obtain an understanding
+of a program's behavior, without running it. Nowadays, one form or
+another of static analysis can be found in many different contexts:
+compilers, IDEs, editors, linters, or even dedicated static analysis
+tools or frameworks. The ends of a static analysis tool are equally
+diversified, ranging from bug finding and program verification, to
+optimization, or even aided program comprehension.
+
+Along with static analysis tools, the programming languages have
+evolved as well, becoming more high-level throughout the years,
+introducing many layers of abstraction, before eventually translating
+the program to the machine's native opcodes. High-level languages are
+appealing because they are easier to program in, and maintain. Less
+programming effort (e.g., in terms of lines of code) is needed to
+express some computation. Virtual machines have even abstracted away
+the platform where the code will run. Instead, programs of managed
+languages are translated to machine code for some virtual machine, and
+hence may run on any platform that provides a backend that emulates
+this virtual machine.
+
+Software has evolved too. Complex design patterns, immense libraries,
+frameworks implementing inversion of control, over-involved build
+tools, and many other complicacies pose significant challenges to
+program understanding.
+
+As one would expect, static analyses have struggled to keep up with
+the ever-increasing complexity of the software and the programming
+languages it is written in; the very task of automated program
+understanding has become daunting, yet even more valuable.
+
+The most promising and powerful of existing static analysis techniques
+rely on the creation of some \emph{abstract memory model} of the
+program. What objects will the memory contain, at some state of
+execution? What will their structure be like?  A faithful abstract
+representation of the actual memory is, however, a demanding task; its
+precision often detrimental to the value of whatever the static
+analysis is aiming to eventually compute (be it the identification of
+complex bug patterns or the opportunities for effective
+optimizations).
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:
