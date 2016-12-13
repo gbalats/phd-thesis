@@ -1,13 +1,13 @@
 Static program analysis is a vast field with broad uses; an umbrella
 term for many different methodologies (Hoare logic, pointer analysis,
 model checking, symbolic execution, abstract interpretation, data-flow
-analysis, and so on) that aim to automatically obtain an understanding
-of a program's behavior, without running it. Nowadays, one form or
-another of static analysis can be found in many different contexts:
-compilers, IDEs, editors, linters, or even dedicated static analysis
-tools or frameworks. The ends of a static analysis tool are equally
-diversified, ranging from bug finding and program verification, to
-optimization, or even aided program comprehension.
+analysis, and so on), that aim to automatically obtain an
+understanding of a program's behavior, without running it. Nowadays,
+one form or another of static analysis can be found in many different
+contexts: compilers, IDEs, editors, linters, or even dedicated static
+analysis tools or frameworks. The ends of a static analysis tool are
+equally diversified, ranging from bug finding and program
+verification, to optimization, or even aided program comprehension.
 
 Along with static analysis tools, the programming languages have
 evolved as well, becoming more high-level throughout the years,
@@ -17,9 +17,9 @@ appealing because they are easier to program in, and maintain. Less
 programming effort (e.g., in terms of lines of code) is needed to
 express some computation. Virtual machines have even abstracted away
 the platform where the code will run. Instead, programs of managed
-languages are translated to machine code for some virtual machine, and
-hence may run on any platform that provides a backend that emulates
-this virtual machine.
+languages are translated to machine code for some \emph{virtual
+  machine}, and hence may run on any platform that provides a backend
+that emulates this virtual machine.
 
 Software has evolved too. Complex design patterns, immense libraries,
 frameworks implementing inversion of control, over-involved build
@@ -27,7 +27,7 @@ tools, and many other complicacies pose significant challenges to
 program understanding.
 
 As one would expect, static analyses have struggled to keep up with
-the ever-increasing complexity of the software and the programming
+the ever-increasing complexity of software and the programming
 languages it is written in; the very task of automated program
 understanding has become daunting, yet even more valuable.
 
@@ -41,10 +41,14 @@ analysis is aiming to eventually compute (be it the identification of
 complex bug patterns or the opportunities for effective
 optimizations).
 
-In this dissertation we argue that there is implicit structural
-information in the program, about the memory it will allocate, that
+In this dissertation we argue that there is \emph{implicit structural
+  information} in the program, about the memory it will allocate, that
 can improve the quality of the abstract memory model constructed by
-static analysis. We provide a number of techniques that recover such
+static analysis. This structural information is not readily available,
+but may be recovered via inference, primarily by tracking the use of
+static types in the program.
+
+We provide a number of techniques that recover such
 lost memory structure, in two different settings:%
 \begin{inparaenum}[(1)]
 \item in C/C++ programs, as a typical case of low-level code, where
