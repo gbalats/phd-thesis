@@ -74,6 +74,53 @@ lost memory structure, in two different settings:%
 \end{inparaenum}
 
 
+\section{Impact}
+
+\subsection{Scientific}
+
+A weakly-typed language, such as C or C++, exposes pointers as numeric
+values and allows the programmer to perform arbitrary arithmetic on
+them. These \emph{pointer arithmetic} capabilities can be used to
+bypass the language's type system. Also, objects may be allocated on
+memory without any local information about their intended type, at the
+allocation site. In fact, most heap-allocating routines (e.g.,
+\code{malloc()}) return just an array of bytes. These allocations,
+while in this \emph{untyped state}, flow to various other instructions
+and may be even stored to type-agnostic raw pointer
+variables. Normally, when such an allocation was intended to create an
+object of type \(T\), a cast instruction or an implicit conversion
+will be used prior to any other instruction that expected an object of
+this specific type.
+
+In the case of C/C++ programs, the main scientific contributions of
+this work comprise a number of techniques that enhance pointer
+analysis precision by ``dynamically'' associating and maintaining type
+information for all abstract objects in memory.
+
+\emph{Pointer analysis} is a static program analysis that determines
+the values of pointer variables or expressions. For each pointer, it
+computes a set of memory allocations that the pointer may point to. We
+refer to this as the \emph{points-to set} of a variable. Since
+computing an exact model of memory is undecidable, a static analysis
+needs to sacrifice performance for computability. Thus, the memory
+allocations of pointer analysis are mere abstractions; a single
+allocation may represent many concrete objects at some program
+execution. One such popular abstraction represents memory objects by
+their allocation sites. Hence, any number of concrete objects
+allocated at the same instruction correspond to a single abstract
+object.
+
+By the term ``dynamically'', we mean that any object-type association
+is performed simultaneously with the pointer analysis itself (in a
+manner similar to \emph{on-the-fly} call-graph construction). The
+pointer analysis uses the inferred types of abstract objects to
+produce new points-to facts or filter spurious inferences due to type
+incompatibility. The points-to sets, on the other hand, drive the
+creation of new object-type associations that may again alter the
+produced points-to sets, and so on---all partaking in an
+interdependent recursive cycle of computation.
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
