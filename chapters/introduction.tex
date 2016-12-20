@@ -76,26 +76,24 @@ lost memory structure, in two different settings:%
 
 \section{Impact}
 
-\subsection{Scientific}
+In this section, we will briefly explain the main contributions of
+this dissertation, from both a scientific and a practical perspective.
+
+\subsection{Scientific Contributions}
 
 A weakly-typed language, such as C or C++, exposes pointers as numeric
 values and allows the programmer to perform arbitrary arithmetic on
 them. These \emph{pointer arithmetic} capabilities can be used to
-bypass the language's type system. Also, objects may be allocated on
-memory without any local information about their intended type, at the
-allocation site. In fact, most heap-allocating routines (e.g.,
-\code{malloc()}) return just an array of bytes. These allocations,
-while in this \emph{untyped state}, flow to various other instructions
-and may be even stored to type-agnostic raw pointer
+bypass the language's type system. Objects may be allocated on memory
+without any local information about their intended type, at the
+allocation site. In fact, the norm for most heap-allocating routines
+(e.g., \code{malloc()}) is to return just an array of bytes. These
+allocations, while in this \emph{untyped state}, flow to various other
+instructions and may be even stored to type-agnostic raw pointer
 variables. Normally, when such an allocation was intended to create an
 object of type \(T\), a cast instruction or an implicit conversion
 will be used prior to any other instruction that expected an object of
 this specific type.
-
-In the case of C/C++ programs, the main scientific contributions of
-this work comprise a number of techniques that enhance pointer
-analysis precision by ``dynamically'' associating and maintaining type
-information for all abstract objects in memory.
 
 \emph{Pointer analysis} is a static program analysis that determines
 the values of pointer variables or expressions. For each pointer, it
@@ -110,15 +108,69 @@ their allocation sites. Hence, any number of concrete objects
 allocated at the same instruction correspond to a single abstract
 object.
 
-By the term ``dynamically'', we mean that any object-type association
-is performed simultaneously with the pointer analysis itself (in a
-manner similar to \emph{on-the-fly} call-graph construction). The
-pointer analysis uses the inferred types of abstract objects to
-produce new points-to facts or filter spurious inferences due to type
-incompatibility. The points-to sets, on the other hand, drive the
-creation of new object-type associations that may again alter the
-produced points-to sets, and so on---all partaking in an
-interdependent recursive cycle of computation.
+In the case of C/C++ programs, the first scientific contribution is a
+\emph{revised abstract memory model} that differs from the classic
+allocation-site abstraction approach, by introducing many more
+abstract objects (not just one per allocation site). Such a finer
+granularity, in terms of memory abstraction, is a key step for the
+analysis to maintain strong type information for its abstract
+objects. After all, the same allocation site can be used in C to
+create allocations of more than one distinct types. Also, as will be
+explained later, C allows a pointer variable to point to some field of
+an allocated object. We tackle this by representing fields and array
+indices of abstract objects as separate abstract (sub-)objects with
+their own points-to sets. Hence, the pointer analysis can
+differentiate between pointing to some abstract object, and pointing
+to one of its fields (or array indices). This is commonly known as
+\emph{field-sensitivity}. Due to C's expos\'{e} of pointers, a
+field-sensitive pointer analysis is much harder to implement, than in
+a language that doesn't provide direct memory access (e.g., Java). Our
+revised memory model aims to extend the domain of abstract objects to
+naturally express field sensitivity for C and C++.
+
+The second scientific contribution in the C/C++ setting of this work
+is a technique to enhance pointer analysis precision by
+``dynamically'' associating and maintaining type information for all
+abstract objects in memory.  By the term ``dynamically'', we mean that
+any object-type association is performed simultaneously with the
+pointer analysis itself (in a manner similar to \emph{on-the-fly}
+call-graph construction). The pointer analysis uses the inferred types
+of abstract objects to produce new points-to facts or filter spurious
+inferences due to type incompatibility. The points-to sets, on the
+other hand, drive the creation of new object-type associations that
+may again alter the produced points-to sets, and so on---all partaking
+in an interdependent recursive cycle of computation.
+
+We use this technique to collect type hints---indications that some
+abstract object has type \(T\)---and for each type discovered we
+(dynamically again) create a new (typed) variant of the original
+abstract object. Thus, the same allocation site may produce multiple
+abstract objects for different types, while those types will be
+determined on-the-fly (i.e., through the pointer analysis itself). The
+plethora of abstract objects generated by this technique is in line
+with the fine-grained property of our revised abstract memory model.
+
+As an example of a type hint, which demonstrates how these two
+techniques interact, consider a field access \code{((P*) p)->f}. Due
+to analysis imprecision, the analysis may be unable to reason about
+the type of the abstract object(s) that \code{p} points to (as it
+could have been allocated via a generic \code{malloc()} call with no
+type indication). Or, it may even have computed that \code{p} points
+to objects of incompatible type (that do not contain any \code{f}
+field, whatsoever). However, given the present static type
+information, the analysis will mark \code{P} as one of the possible
+types of the base abstract object \(\alloc{obj}\) (for any
+\(\alloc{obj}\) that \code{p} may point to), if the type of the latter
+is yet unknown. Other objects with known yet incompatible types will
+be filtered out. Thus, the analysis will create a new \emph{typed}
+abstract object \(\alloc{obj}_P\) of type \code{P}, which will also
+flow to the points-to set of variable \code{p}. This object will now
+be eligible as the base address for accessing field \code{f} (type
+compatibility is guaranteed by the compiler). Finally, the analysis
+will compute that the expression \code{p->f} points to the (typed)
+abstract subobject that represents field \code{f} of
+\(\alloc{obj}_P\). Hence, at field accesses the analysis will always
+be able to recover potentially lost structural information.
 
 
 %%% Local Variables:
