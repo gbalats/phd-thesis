@@ -172,6 +172,18 @@ abstract subobject that represents field \code{f} of
 \(\alloc{obj}_P\). Hence, at field accesses the analysis will always
 be able to recover potentially lost structural information.
 
+In the realm of Java, the challenges are quite different. Java is a
+statically and strongly typed language that doesn't expose
+pointers. All objects (except that of primitive types) are allocated
+in the heap, and accessed via references (allocated on the
+stack). References are the disciplined equivalent of a C pointer, and
+allow no pointer arithmetic at all. All heap allocations of Java have
+a single (dynamic) type, declared at the allocation site. Objects of
+composite types can only contain references to other objects and there
+is no way to store a reference to an object's field. Hence, pointer
+analysis can be expressed via a much simple memory model, based on the
+allocation-site abstraction.
+
 
 %%% Local Variables:
 %%% mode: latex
