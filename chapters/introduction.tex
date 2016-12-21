@@ -181,8 +181,18 @@ allow no pointer arithmetic at all. All heap allocations of Java have
 a single (dynamic) type, declared at the allocation site. Objects of
 composite types can only contain references to other objects and there
 is no way to store a reference to an object's field. Hence, pointer
-analysis can be expressed via a much simple memory model, based on the
+analysis can be expressed via a much simpler memory model, based on the
 allocation-site abstraction.
+
+However, Java has another crucial difference from C/C++: it is a
+managed language. All Java code is translated to a
+platform-independent IR, which is Java bytecode, to be executed by a
+Java Virtual Machine (JVM). Using just-in-time (JIT) compilation, the
+JVM will translate the bytecode to machine code---more precisely, the
+JVM will jit-compile some parts of the bytecode, specifically, the
+most frequently called methods or methods with long-running loops
+(also known as \emph{hot spots}), and interpret the rest of it
+\cite{journals/taco/KotzmannWMRRC08}.
 
 
 %%% Local Variables:
