@@ -244,8 +244,8 @@ in Java. To list a few complications:
   loading is shared libraries (or dynamic-link libraries (DLLs), in
   Windows). However, those have their own pitfalls. For instance, a
   single unresolved symbol (missing DLL) will forbid the program from
-  executing at all. Due to complex dependency chains, identifying the
-  missing DLL isn't always necessarily an easy and simple task.
+  executing at all. Due to complex dependency chains, even identifying
+  the missing DLL is often a difficult task.
   % DLL Hell vs Jar Hell
 \end{itemize}
 
@@ -264,6 +264,44 @@ This raises the question:
   programs, as in the form of JAR files, or any non-complete
   (w.r.t. the whole program) collection of class files?
 \end{displayquote}
+
+One of the main challenges is that any partial program may fail to
+satisfy even basic soundness guarantees, as those presumed by the Java
+verifier itself. Static analysis tools are rarely robust enough to
+analyze such programs without risking a great disruptive effects to
+their results---that is, if they succeed at running at all. Handling
+\emph{phantom types} (e.g., classes referenced in the partial program,
+with missing definitions), for which no structural information exists,
+can throw off even basic assumptions or invariants of a static
+analyzer.
+
+The most vital aspect of the missing structural information is the
+\emph{class hierarchy}, the knowledge of subtyping relationships among
+the various types defined in the program. A partial program provides
+only a part of the complete class hierarchy; however, many more
+subtyping relationships are implied in the code itself. For instance,
+calling a known method that expects a parameter of type \code{A}, with
+an argument of type \code{AImpl}, implies that \code{AImpl} is a
+(transitive) subtype of \code{A}, even in the case that any of the
+definitions of these two class types are missing. The original and
+complete class hierarchy would be guaranteed to satisfy this
+constraint.
+
+Hence, we outline the problem of \emph{class hierarchy
+  complementation} of partial Java programs:
+\begin{displayquote}
+  Given a partial program, to be able to compute a complete class
+  hierarchy that satisfies any implied type constraint, as expressed
+  in the Java bytecode specification \cite{Lindholm:1999:JVM:553607}.
+\end{displayquote}
+
+To compute such a complete class hierarchy is far from trivial, as one
+may initially expect. If not done correctly, we could easily end up
+introducing cyclic dependencies between types, which would violate the
+language semantics. We can express this problem in pure
+graph-theoretic terms. The result is two interesting, if not
+fundamental, graph-theoretic problems that could as well arise in
+completely different settings due to their genericity.
 
 
 %%% Local Variables:
