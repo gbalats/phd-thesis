@@ -301,8 +301,23 @@ introducing cyclic dependencies between types, which would violate the
 language semantics. We can express this problem in pure
 graph-theoretic terms. The result is two interesting, if not
 fundamental, graph-theoretic problems that could as well arise in
-completely different settings due to their genericity.
+completely different settings due to their genericity:
 
+\begin{description}
+\item[Multiple Inheritance.] Given a directed acyclic graph, with a
+  subset of ``fixed'' nodes, and a set of binary path constraints, we
+  must extend the graph by adding new edges that do not originate from
+  the ``fixed'' nodes, so that%
+  \begin{inparaenum}[(i)]
+  \item the graph remains acyclic, and
+  \item all path constraints are satisfied (i.e., for each constraint
+    between nodes \(X\) and \(Y\), there exists a path from \(X\) to
+    \(Y\)).
+  \end{inparaenum}
+\item [Single Inheritance.] Same as in the previous setting, with one
+  more constraint: the output graph should be a directed \emph{tree}
+  (instead of a DAG).
+\end{description}
 
 %%% Local Variables:
 %%% mode: latex
