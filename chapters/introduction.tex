@@ -214,10 +214,11 @@ management and distribution of compiled artifacts is not as common as
 in Java. To list a few complications:
 \begin{itemize}[--]
 \item A C/C++ library would also need to distribute its header files,
-  to be able to compile against it. There are no header files in Java.
+  so that one would be able to compile against it. There are no header
+  files in Java.
 \item Aside from providing several versions of a library for different
   platforms, one would have to provide many versions for different
-  binary compatibility standards as well.
+  binary compatibility standards as well (Itanium, MSVC8, MSVC9, etc).
 \item Due to ABI changes, even different versions of the language
   (e.g., C++98 vs C++11) can break binary compatibility in some cases,
   for code compiled by different compilers or even from different
@@ -226,7 +227,10 @@ in Java. To list a few complications:
   few kilobytes at most). For instance, size is one of the main
   reasons why Java bytecode is a stack-based representation (i.e., it
   uses a stack instead of variables to contain the operands of each
-  instruction).
+  instruction). C++ object files are considerably less compact. An
+  alternative IR, specifically designed to reduce code size, could be
+  a necessity, to be able to maintain repositories that contain vast
+  collections of precompiled libraries.
 \item Java has no explicit link phase that combines compilation units
   to form an executable program. All classes are linked dynamically in
   Java (via class loaders), when they are loaded into the JVM. Classes
@@ -235,6 +239,14 @@ in Java. To list a few complications:
   class against one version of a library, but provide another version
   at runtime, as long as the relevant signatures match.  In C++,
   compilation involves linking as well.
+
+  The only practice that remotely resembles Java's dynamic class
+  loading is shared libraries (or dynamic-link libraries (DLLs), in
+  Windows). However, those have their own pitfalls. For instance, a
+  single unresolved symbol (missing DLL) will forbid the program from
+  executing at all. Due to complex dependency chains, identifying the
+  missing DLL isn't always necessarily an easy and simple task.
+  % DLL Hell vs Jar Hell
 \end{itemize}
 
 All these limitations would make distributing compiled artifacts of
@@ -243,12 +255,14 @@ C/C++ marginally better than to distribute the code itself.
 However, JARs can also be thought of as partial programs, since they
 only contain a subset of the program's classes. For a static analysis
 to require a whole program to analyze, would be too restrictive in the
-Java world, where JARs are the most easily obtainable artifact. This
-raises the question:
+Java world, where JARs are the most easily obtainable artifact, for
+the aforementioned reasons.
+
+This raises the question:
 \begin{displayquote}
   What are the challenges of statically analyzing partial Java
   programs, as in the form of JAR files, or any non-complete
-  (w.r.t. the whole program) collection of class-files?
+  (w.r.t. the whole program) collection of class files?
 \end{displayquote}
 
 
