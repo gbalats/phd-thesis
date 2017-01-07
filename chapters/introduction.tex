@@ -319,6 +319,22 @@ completely different settings due to their genericity:
   (instead of a DAG).
 \end{description}
 
+As to the solution of the class hierarchy complementation problem, we
+provide algorithms to solve it in both the multiple and single
+inheritance cases. More specifically, we present a polynomial-time
+algorithm that solves any instance of the problem in the multiple
+inheritance setting, as well as a proof of correctness. For the single
+inheritance setting, we provide a polynomial-time algorithm for a
+slightly simplified setting (yet practically quite common): that where
+no phantom supertypes for fixed (i.e., \emph{non-phantom}) nodes are
+allowed. For the general (single inheritance) case, we provide an
+algorithm that may perform an exponential search in the worst case,
+but with many heuristics to improve its performance. Also, for
+languages such as Java, with single inheritance but multiple subtyping
+and distinguished class vs.  interface types, we demonstrate how the
+problem can be decomposed into separate single- and multiple-subtyping
+instances.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
