@@ -1,0 +1,86 @@
+\paragraph{CFL reachability formulation.} In
+Chapter~\ref{chapter:structsens}, we formulated pointer analysis
+algorithms in Datalog. Employing a restricted language not only offers
+guarantees of termination and complexity bounds, but also permits more
+aggressive optimization of the language features.
+
+Along these lines, pointer analysis and other related analyses have
+been formulated as a \emph{context-free language (CFL) reachability}
+problem. The idea is that we may encode an input program as a labeled
+graph, and a specific analysis corresponds to the definition of a
+context-free grammar, \(G\). The relation being computed holds for two
+nodes of the graph if and only if there exists a path from one node to
+the other, such that the concatenation of the labels of edges along
+the path belongs in the language \(L(G)\) defined by \(G\).
+
+Specifically, the input graph normally consists of nodes representing
+program elements such as variables, types, methods, statements, and so
+on. Edges represent relations between those program elements. For
+instance, an edge \((s,\,t)\) may represent that there exists an
+assignment from variable \(s\) to variable \(t\). Moreover, edges may
+encode field accesses (load/store), method invocations, pointer
+dereferences, etc, and hence may even connect different \emph{kinds}
+of program elements. The exact choice of domains depends on the
+specific analysis being run and the problem it addresses. Since we
+want to express many input relations, we need many types of edges,
+represented as labels (e.g., we can label a field access edge by some
+symbol denoting field access plus the name of the field).  For a given
+analysis, a context-free grammar \(G\) encodes the desired computed
+relations (e.g., which pointers are memory aliases) as non-terminal
+symbols, and supplies production rules that express how they relate to
+the simpler relations represented by graph edges (terminals). The CFL
+reachability answer is then commonly computed by employing a dynamic
+programming algorithm.
+
+The first application of such a framework in program analysis was
+designed to solve various interprocedural dataflow-analysis problems
+\cite{popl/RepsHS95}, but CFL reachability has since been used in a
+wide range of problems, such as:
+\begin{inparaenum}[(i)]
+\item the computation of points-to relations
+  \cite{journals/infsof/Reps98},
+\item the (demand-driven) computation of may-alias pairs for a C-like
+  language \cite{popl/ZhengR08},
+\item Andersen-style pointer analysis for Java
+  \cite{oopsla/SridharanGSB05}.
+\end{inparaenum}
+
+Any CFL reachability problem can be converted to a Datalog program
+\cite{journals/infsof/Reps98}, but the inverse is not true (i.e., CFL
+reachability corresponds to a restricted class of Datalog programs,
+the so-called ``chain programs''). Thus, the primary advantage of CFL
+reachability is that it permits more efficient implementations.
+
+A \emph{chain program} consists of rules of the form:
+
+\[p(X, Y) \leftarrow q_0(X,Z_1),\, q_1(Z_1, Z_2),\, \dots,\, q_k(Z_k,
+  Y). \]
+
+We can express a CFL reachability problem in Datalog by using such a
+chain rule to represent the following production of grammar \(G\):
+
+\[p \rightarrow q_0\; q_1\; \dots\; q_k \]
+
+where a Datalog fact \(e(m, n)\) represents an edge \((m, n)\) labeled
+\(e\) in the graph.
+
+An even more restrictive variant, \emph{Dyck-CFL reachability}, can be
+obtained by restricting the underlying CFL to a Dyck language, i.e.,
+one that generates balanced-parentheses expressions. Although
+restrictive, this approach still suffices for some simple pointer
+analysis algorithms, while allowing very aggressive optimization,
+often with impressive performance gains \cite{pldi/ZhangLYS13}.
+
+% -CFL formulations (Dyck-CFL PLDI'13, Rugina, Bodik)
+% \citep{pldi/ZhangLYS13}             % fast Dyck-CFL
+% \citep{popl/ZhengR08}               % demand-driven; may-alias pairs
+% \citep{journals/infsof/Reps98}      % also published in SLP' 1997; points-to relations
+% \citep{popl/RepsHS95}               % interprocedural dataflow-analysis problems
+% \citep{cc/Reps94}                   % magic-sets transformation -> demand-driven
+% \citep{oopsla/SridharanGSB05}       % Java; demand-driven; balanced parentheses (field accesses)
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End:
