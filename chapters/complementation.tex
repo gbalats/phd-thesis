@@ -743,7 +743,7 @@ then we can be certain that we are dealing with unsatisfiable input,
 and terminate, thus avoiding infinite recursion
 (line~\ref{lst:line:unsat}). The nodes to be advanced at each step are
 determined at line~\ref{lst:line:formula}, which captures the essence
-of the algorithm. The new stratum of a node $t$ will be either%
+of the algorithm. The new stratum of a node $t$ will be either
 \begin{inparaenum}[(i)]
 \item its current stratum,
 \item the stratum right above the source of an edge $(s,t)$, or
@@ -1859,7 +1859,7 @@ following issues:
 
   Figure~\ref{fig:venn} presents a Venn diagram over the sets of
   reachable methods as computed by \doop{} for three different
-  inputs:%
+  inputs:
   \begin{inparaenum}[(i)]
   \item the original \emph{antlr} jar,
   \item our synthetic benchmark, \emph{antlr-minus}, and
@@ -1926,7 +1926,7 @@ We use a 64-bit machine with a quad-core Intel i7 2.8GHz CPU. The
 machine has 8GB of RAM. We ran our experiments using JDK 1.7
 (64-bit).
 
-Our benchmarks consist of%
+Our benchmarks consist of
 \begin{inparaenum}[(1)]
 \item \emph{antlr}, a parser generator,
 \item \emph{antlrworks}, the GUI Development Environment for antlr,
@@ -2102,7 +2102,7 @@ Interface Hierarchy
 \end{alltt}
 
 It is evident that the final hierarchy respects all of the reported
-constraints. Some interesting points are that:%
+constraints. Some interesting points are that:
 \begin{inparaenum}[(i)]
 \item \javaclass{org.apache.bsf.BSFEngine} defaults to interface since no
   constraint determines whether it is actually an interface or a
