@@ -252,11 +252,13 @@ in Java. To list a few complications:
 All these limitations would make distributing compiled artifacts of
 C/C++ marginally better than to distribute the code itself.
 
-However, JARs can also be thought of as partial programs, since they
-only contain a subset of the program's classes. For a static analysis
-to require a whole program to analyze, would be too restrictive in the
-Java world, where JARs are the most easily obtainable artifact, for
-the aforementioned reasons.
+Now that we have established some of the reasons that account for the
+prevalence of JARs, we can now switch our focus to static analysis
+again. As far as static analysis is considered, JARs can be thought of
+as \emph{partial programs}, since they only contain a subset of the
+program's classes. For a static analysis to require a whole program to
+analyze, would be too restrictive in the Java world, where JARs are
+the most easily obtainable artifact, for the aforementioned reasons.
 
 This raises the question:
 \begin{displayquote}
@@ -323,19 +325,28 @@ completely different settings due to their genericity:
 
 As to the solution of the class hierarchy complementation problem, we
 provide algorithms to solve it in both the multiple and single
-inheritance cases. More specifically, we present a polynomial-time
-algorithm that solves any instance of the problem in the multiple
-inheritance setting, as well as a proof of correctness. For the single
-inheritance setting, we provide a polynomial-time algorithm for a
-slightly simplified setting (yet practically quite common): that where
-no phantom supertypes for fixed (i.e., \emph{non-phantom}) nodes are
-allowed. For the general (single inheritance) case, we provide an
-algorithm that may perform an exponential search in the worst case,
-but with many heuristics to improve its performance. Also, for
-languages such as Java, with single inheritance but multiple subtyping
-and distinguished class vs.  interface types, we demonstrate how the
-problem can be decomposed into separate single- and multiple-subtyping
-instances.
+inheritance cases. More specifically,
+\begin{inparaenum}[(1)]
+\item we present a polynomial-time algorithm that solves any instance
+  of the problem in the multiple inheritance setting, as well as a
+  proof of correctness.
+  %
+  For the single inheritance setting,
+\item we provide a polynomial-time algorithm for a slightly simplified
+  setting (yet practically quite common): that where no phantom
+  supertypes for fixed (i.e., \emph{non-phantom}) nodes are allowed.
+  %
+  For the general (single inheritance) case,
+\item we provide an algorithm that may perform an exponential search
+  in the worst case, but with many heuristics to improve its
+  performance.
+  %
+  Also, for languages such as Java, with single inheritance but
+  multiple subtyping and distinguished class vs.  interface types,
+\item we demonstrate how the problem can be decomposed into separate
+  single- and multiple-subtyping instances.
+\end{inparaenum}
+
 
 %%% Local Variables:
 %%% mode: latex
