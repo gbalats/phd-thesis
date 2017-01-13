@@ -91,6 +91,45 @@ often with impressive performance gains \cite{pldi/ZhangLYS13}.
 
 \paragraph{Shape Analysis.}
 
+So far, the techniques we have presented for pointer analysis have
+been based on the allocation sites as the primary source for inventing
+new abstract objects in memory. Despite our deviation from the
+standard allocation-site abstraction, where a single abstract object
+will be allocated per allocation site, even our own techniques
+described in Chapter~\ref{chapter:structsens} will use the allocation
+site as the basis of abstraction (but may create multiple objects per
+site, nonetheless). A different approach altogether is that of the
+techniques termed as \emph{shape analysis}
+\cite{toplas/SagivRW02,popl/SagivRW99,sas/ManevichSRF04,sas/Lev-AmiS00,toplas/SagivRW98,sefm/FerraraFJ12}.
+The primary goal of standard shape analysis is to be able to infer the
+\emph{shapes} of objects in memory. E.g., to be able to detect if some
+objects form a list or a tree, if some list may contain cycles, if a
+subtree or a portion of a list may be shared, and so on.
+
+To achieve such a feat, shape analysis associates a list of properties
+to each abstract memory object (e.g., \emph{pointed by variable
+  \var{v}}, \emph{transitively reachable by variable \var{r}}, and so
+on) and uses Kleene's three-valued logic to differentiate between must
+and may information. For instance, if the ``\emph{pointed by variable}
+\(\var{v}\)'' property of an abstract object \(\alloc{obj}\) has the
+value 1 at some memory state, it means that variable \var{v}
+\emph{must} point to this object (at the given state), whereas the
+value \(1\over{2}\) would represent our familiar \emph{may} notion of
+points-to. Hence, shape analysis performs an amalgam of must and may
+analysis simultaneously.
+
+Moreover, at each memory state the analysis has computed, it tends to
+create multiple memory states, by trying to collapse \(1\over{2}\)
+values of properties to either 0 or 1 (thus, to eliminate
+uncertainty)---via the so called \emph{focus operation}. An abstract
+object is defined only by the values it has for the basic properties
+(called \emph{abstraction properties}) defined by the particular
+analysis. Therefore, the upper bound for the number of abstract
+objects in memory is exponential with respect to the number of
+abstraction predicates defined. Inconsistent states are then discarded
+at the \emph{coerce operation}.
+
+
 \cite{toplas/SagivRW02,popl/SagivRW99}
 \cite{sas/ManevichSRF04}
 \cite{sas/Lev-AmiS00}
