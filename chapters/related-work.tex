@@ -104,7 +104,8 @@ techniques termed as \emph{shape analysis}
 The primary goal of standard shape analysis is to be able to infer the
 \emph{shapes} of objects in memory. E.g., to be able to detect if some
 objects form a list or a tree, if some list may contain cycles, if a
-subtree or a portion of a list may be shared, and so on.
+subtree or a portion of a list may be shared (i.e., be reachable from
+multiple objects), and so on.
 
 To achieve such a feat, shape analysis associates a list of properties
 to each abstract memory object (e.g., \emph{pointed by variable
@@ -118,16 +119,25 @@ value \(1\over{2}\) would represent our familiar \emph{may} notion of
 points-to. Hence, shape analysis performs an amalgam of must and may
 analysis simultaneously.
 
-Moreover, at each memory state the analysis has computed, it tends to
-create multiple memory states, by trying to collapse \(1\over{2}\)
-values of properties to either 0 or 1 (thus, to eliminate
-uncertainty)---via the so called \emph{focus operation}. An abstract
-object is defined only by the values it has for the basic properties
-(called \emph{abstraction properties}) defined by the particular
-analysis. Therefore, the upper bound for the number of abstract
-objects in memory is exponential with respect to the number of
-abstraction predicates defined. Inconsistent states are then discarded
-at the \emph{coerce operation}.
+At each memory state the analysis has computed, it tries to collapse
+\(1\over{2}\) values of properties to either 0 or 1, via the so called
+\emph{focus operation}. Inconsistent states are then discarded at the
+\emph{coerce operation}. Thus, the analysis dynamically tries to
+eliminate uncertainty by \emph{focusing} on the values of some core
+predicates (and statement-specific formulas), at the expense of
+possible memory state explosion---the abstract interpretation of each
+program statement tends to create multiple output states for each one
+of its input states.  As for abstract objects, they are defined only
+by the values they have for some basic properties (called
+\emph{abstraction properties}) of the particular analysis. Therefore,
+the upper bound for the number of abstract objects in memory is
+exponential with respect to the number of abstraction predicates
+defined. The latter will almost certainly include a predicate per each
+program variable.
+
+By applying these techniques, and choosing the right abstraction
+predicates, the analysis will be able to carve out the \emph{shapes}
+of objects.
 
 
 \cite{toplas/SagivRW02,popl/SagivRW99}
