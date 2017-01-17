@@ -137,7 +137,22 @@ program variable.
 
 By applying these techniques, and choosing the right abstraction
 predicates, the analysis will be able to carve out the \emph{shapes}
-of objects.
+of objects. For instance, given an input memory state where variable
+\var{v} points to the head of some list \(l\) with at least two
+elements, the abstract interpretation of instruction ``\code{v =
+  v->next}'' will create multiple output memory states where either:
+\begin{inparaenum}[(i)]
+\item \var{v} points to a new head of a list with a non-empty tail
+  (corresponding to the case where \(l\) contained at least three
+  elements), or
+\item \var{v} points to the single element of a list with no tail at
+  all (corresponding to the case where \(l\) contained exactly two
+  elements).
+\end{inparaenum}
+In both output memory states, the analysis will compute values of 1
+for the predicate ``\emph{pointed by variable \var{v}}''; hence, it
+will know exactly where \var{v} points to and not lose any precision,
+at the expense of increasing the possible memory states by 1.
 
 
 \cite{toplas/SagivRW02,popl/SagivRW99}
