@@ -137,9 +137,9 @@ program variable.
 
 By applying these techniques, and choosing the right abstraction
 predicates, the analysis will be able to carve out the \emph{shapes}
-of objects. For instance, given an input memory state where variable
-\var{v} points to the head of some list \(l\) with at least two
-elements, the abstract interpretation of instruction ``\code{v =
+of objects in memory. For instance, given an input memory state where
+variable \var{v} points to the head of some list \(l\) with at least
+two elements, the abstract interpretation of instruction ``\code{v =
   v->next}'' will create multiple output memory states where either:
 \begin{inparaenum}[(i)]
 \item \var{v} points to a new head of a list with a non-empty tail
@@ -154,12 +154,14 @@ for the predicate ``\emph{pointed by variable \var{v}}''; hence, it
 will know exactly where \var{v} points to and not lose any precision,
 at the expense of increasing the possible memory states by 1.
 
-
-\cite{toplas/SagivRW02,popl/SagivRW99}
-\cite{sas/ManevichSRF04}
-\cite{sas/Lev-AmiS00}
-\cite{toplas/SagivRW98}
-\cite{sefm/FerraraFJ12}
+\citeauthor{popl/SagivRW99} initiated the field of parametric shape
+analysis via 3-valued logic
+\cite{toplas/SagivRW98,popl/SagivRW99,toplas/SagivRW02}, and
+\citeauthor{sas/Lev-AmiS00} presented the TVLA framework for shape
+analysis \cite{sas/Lev-AmiS00}. Since then, there has been work on
+various extensions such as a more economic heap abstraction
+\cite{sas/ManevichSRF04}, or the incorporation of a value analysis
+into the shape analysis algorithm~\cite{sefm/FerraraFJ12}.
 
 
 
