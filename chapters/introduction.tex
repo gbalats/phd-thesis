@@ -366,6 +366,48 @@ this dissertation in both the C/C++ and Java settings:
 \end{itemize}
 
 
+\subsection{Practical Contributions}
+
+Aside from the scientific contributions of this work, there are
+significant practical aspects as well. A crucial engineering choice of
+any static analysis framework is to determine its interaction with the
+language's build system(s), if any, and the exact point when the
+analyzer can intervene in the software's build cycle in order to
+analyze it. This will also have direct repercussions on the nature of
+the analysis inputs.
+
+For instance, a static analysis tool may choose to completely ignore
+the compilation and build process, and directly analyze source
+code---this is an approach most often followed by tools performing
+superficial (mostly syntactic) analysis, such as linters. Being able
+to analyze software by requiring (only) its source code, can be a
+blessing or a curse. From a technical standpoint, source code is often
+very difficult to analyze, given that a language is most often
+designed to be expressive and may contain a large number of (possibly
+redundant) syntactic constructs (plain \emph{syntactic sugar}). A much
+more minimal core, with the same expressiveness, yet easier to
+analyze, can often be obtained by some transformation. In fact, the
+technique of \emph{lowering} the source language, in a series of
+steps, to a more fundamental form with simpler syntax each time is a
+standard strategy of compilers, before finally transforming the end
+result (which, near the end, should be a very simple IR) to machine
+code. Thus, a static analysis tool that directly analyzes source code
+could benefit greatly by hooking to the compiler or performing
+analysis post compilation.
+%
+On the other hand, being close to the source code can be valuable for
+the tool if it needs to report its findings to the end user. The
+identification of a bug can have little to no value, if the programmer
+is not able to easily understand how and where it can manifest. Thus,
+reporting a bug by identifying it in some low-level IR (that the
+programmer knows nothing about) is meaningless, unless the problem can
+be traced back to the original source code.
+%
+Apart from technical matters, another thing to consider is the
+availability of the source code. A programmer that uses a static
+analysis tool may not be able, or not willing to provide source code
+in the first place.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
