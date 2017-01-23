@@ -377,23 +377,23 @@ analyze it. This will also have direct repercussions on the nature of
 the analysis inputs.
 
 For instance, a static analysis tool may choose to completely ignore
-the compilation and build process, and directly analyze source
-code---this is an approach most often followed by tools performing
+the compilation and build process, and directly analyze \emph{source
+  code}---this is an approach most often followed by tools performing
 superficial (mostly syntactic) analysis, such as linters. Being able
 to analyze software by requiring (only) its source code, can be a
 blessing or a curse. From a technical standpoint, source code is often
 very difficult to analyze, given that a language is most often
 designed to be expressive and may contain a large number of (possibly
-redundant) syntactic constructs (plain \emph{syntactic sugar}). A much
-more minimal core, with the same expressiveness, yet easier to
-analyze, can often be obtained by some transformation. In fact, the
-technique of \emph{lowering} the source language, in a series of
-steps, to a more fundamental form with simpler syntax each time is a
-standard strategy of compilers, before finally transforming the end
-result (which, near the end, should be a very simple IR) to machine
-code. Thus, a static analysis tool that directly analyzes source code
-could benefit greatly by hooking to the compiler or performing
-analysis post compilation.
+redundant) syntactic constructs; plain syntactic sugar. A much more
+minimal core, with the same expressiveness, yet easier to analyze, can
+often be obtained by some transformation. In fact, the technique of
+\emph{lowering} the source language, in a series of steps, to a more
+fundamental form with simpler syntax each time is a standard strategy
+of compilers, before they finally transform the end result (which,
+near the end, should be a very simple IR) to machine code. Thus, a
+static analysis tool that directly analyzes source code could benefit
+greatly by hooking to the compiler or performing analysis post
+compilation.
 %
 On the other hand, being close to the source code can be valuable for
 the tool if it needs to report its findings to the end user. The
@@ -408,6 +408,23 @@ availability of the source code. A programmer that uses a static
 analysis tool may not be able, or not willing to provide source code
 in the first place.
 
+A diametrically opposed alternative is to analyze the final product of
+the build process: an \emph{executable binary}. There are more
+advantages to such an approach, other than code
+(un)availability. First, the WYSINWYX phenomenon (i.e., ``What You See
+Is Not What You eXecute'') may account for many missed bugs and
+vulnerabilities, when the analysis is performed on source code
+\cite{toplas/BalakrishnanR10}. The main reasons for such
+discrepancies, are:
+\begin{compactitem}[$\cdot$]
+\item platform-specific compiler choices
+\item post-compilation modifications to programs
+\item (strictly) undefined behavior that is, however, allowed by the
+  compiler
+\item dynamically linked libraries (DLLs), which are typically not
+  available in source-code form
+\item inlined assembly code
+\end{compactitem}
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
