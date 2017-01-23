@@ -416,7 +416,7 @@ Is Not What You eXecute'') may account for many missed bugs and
 vulnerabilities, when the analysis is performed on source code
 \cite{toplas/BalakrishnanR10}. The main reasons for such
 discrepancies, are:
-\begin{compactitem}[$\cdot$]
+\begin{compactitem}[\(\cdot\)]
 \item platform-specific compiler choices
 \item post-compilation modifications to programs
 \item (strictly) undefined behavior that is, however, allowed by the
@@ -425,6 +425,29 @@ discrepancies, are:
   available in source-code form
 \item inlined assembly code
 \end{compactitem}
+Also, analyzing binaries has, in general, wider applicability, since
+the same analysis can handle any number of compiled language(s).
+
+Finally, there is a range of options depending on the language being
+analyzed, that lie between analyzing source code and binaries. That
+is, a static analyzer may opt to target an intermediate representation
+(IR), such as Java Bytecode for languages running on the
+JVM~\cite{Lindholm:1999:JVM:553607}. The advantages of analyzing Java
+bytecode, for instance, are the following:
+\begin{compactitem}[\(\cdot\)]
+\item Java Bytecode is, syntactically, much simpler than Java and
+  hence easier to analyze
+\item most libraries are available in bytecode format; thus, the
+  analysis does not need to provide stubs that model library behavior
+\item the analysis may, in principle, support any language that runs
+  on the JVM (since it will be compiled to bytecode)
+\end{compactitem}
+However, it shares many of the downsides of both the source-code and
+binary approaches. The WYSINWYX phenomenon may still arise, and
+requiring to have a working build for a project may be too optimistic
+in some cases. Hence, all three approaches have their respective
+benefits and limitations; none is clearly superior to another.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
