@@ -459,6 +459,40 @@ Chapter~\ref{chapter:structsens}. Hence, instead of analyzing source
 or binaries, we chose this IR as our analysis target for reasons
 similar to those presented for preferring Java bytecode.
 
+Besides field-sensitivity and our revised abstract memory model to
+fully support it, Chapter~\ref{chapter:structsens} introduces a
+limited form of array sensitivity, so that the analysis can
+differentiate between different array indices in some cases. The
+combination of these techniques, all implemented in \cclyzer{}, are
+powerful enough to allow analyzing C/C++ programs as though written in
+a higher-level language, while maintaining a good level of
+precision. Consider the invocation of a virtual method in C++. In LLVM
+bitcode, or in any object layout that adheres to the Itanium C++ ABI
+\cite{itanium:cxx_abi} for that matter, virtual tables are represented
+as constant arrays of function pointers. Also, an object (i.e., class
+instance) contains a v-pointer field to its respective v-table. Thus,
+a virtual call is translated to a series of instructions:
+\begin{compactitem}[\(\cdot\)]
+\item a load instruction that dereferences the object's v-pointer to
+  get its v-table
+\item an instruction that adds a relative offset to the start of the
+  v-table, to go to the v-table slot that corresponds to the declared
+  method of the call
+\item a second load instruction that dereferences this specific
+  v-table slot to get the actual (possibly overriden) method that will
+  be called
+\end{compactitem}
+
+A virtual call in Java bytecode would instead by translated to an
+\code{invokevirtual} instruction, without exposing the object layout
+internals or the implementation of dynamic dispatch. However, due to
+the low-level nature of C/C++, this is not an option for any IR
+generic enough to support the full spectrum of the language. Our
+analysis is able to precisely resolve the method being called, given
+such translations, as long as it can determine the dynamic type of the
+receiver object. This is the same level of precision, as one would
+expect by a typical points-to analysis targeting Java.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
