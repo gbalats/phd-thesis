@@ -448,6 +448,17 @@ requiring to have a working build for a project may be too optimistic
 in some cases. Hence, all three approaches have their respective
 benefits and limitations; none is clearly superior to another.
 
+The first major practical contribution of this work is an
+implementation of our techniques for analyzing C/C++ programs in
+\cclyzer{}\footnote{\cclyzer{} is publicly available at
+  \url{https://github.com/plast-lab/cclyzer}}, a static analysis tool
+for LLVM bitcode. LLVM bitcode is a low-level RISK-like intermediate
+representation, used by the LLVM compiler infrastructure
+\cite{cgo/LattnerA04} that we will thoroughly present in
+Chapter~\ref{chapter:structsens}. Hence, instead of analyzing source
+or binaries, we chose this IR as our analysis target for reasons
+similar to those presented for preferring Java bytecode.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
