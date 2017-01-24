@@ -491,7 +491,19 @@ generic enough to support the full spectrum of the language. Our
 analysis is able to precisely resolve the method being called, given
 such translations, as long as it can determine the dynamic type of the
 receiver object. This is the same level of precision, as one would
-expect by a typical points-to analysis targeting Java.
+expect from a typical points-to analysis targeting Java.
+
+Regarding the Java setting and the class hierarchy complementation
+problem, we have implemented JPhantom, a tool that accepts any partial
+Java program in the form of a JAR file, and generates a complete
+program containing skeletal versions of any referenced missing classes
+and interfaces so that the combined result constitutes verifiable Java
+bytecode with a complete class hierarchy. This tool does not depend on
+a specific analysis being run. Rather, it can be used as a
+preprocessing step for any static analysis tool, to allow the analysis
+of any partial Java program without having to provide custom solutions
+for the class hierarchy complementation problem or deal with missing
+references at all.
 
 %%% Local Variables:
 %%% mode: latex
