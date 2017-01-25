@@ -176,6 +176,47 @@ among others.
 %% -----------------------------------------------------------------------------
 
 \paragraph{Separation Logic.}
+Points-to analysis provides a model of the heap (or of memory in
+general, for a language such as C). Other approaches for heap analysis
+that can be used to prove pointer safety are based on the field of
+\emph{separation logic}. Separation logic, in turn, can be viewed as
+an extension of Hoare logic
+\cite{journals/cacm/Hoare69,floyd1967assigning,lics:2002/Reynolds,csl/OHearnRY01}.
+Hoare logic is a formal system for reasoning about the correctness of
+programs, by encoding the programming language's semantics in
+\emph{Hoare tiples}. A Hoare triple has the form \(\{P\}\, C\, \{Q\}\)
+and describes how the execution of a command changes the state of the
+computation. Specifically, it states that whenever the assertion \(P\)
+holds, before executing command \(C\), then assertion \(Q\) will hold
+afterwards (if \(C\) terminates). The \(P,\, Q\) assertions can
+express conditions on program variables, written by using standard
+mathematical notations together with logical operators (or, in
+general, some form of calculus like \emph{first-order logic}).
+
+Hoare logic provides two ways to generate verification conditions:
+\begin{inparaenum}[(i)]
+\item either forwards, by starting from a precondition and
+  generating formulas to prove a postcondition
+\item or backwards, by starting from a postcondition and trying to
+  prove a precondition.
+\end{inparaenum}
+Either way, in the general case, it cannot provide fully automated
+reasoning but may require; building a proof may require human
+guidance.
+
+% Even though there has been effort in increasing the level of
+% automation (e.g., for the (semi-)automatic inference of loop
+% invariants)
+
+Separation logic extends Hoare logic by introducing additional
+operators in the syntax of assertions, that facilitate local
+reasoning. Namely, the \emph{separating conjunction} \(\,P * \,Q\)
+asserts that \(P\) and \(Q\) hold for separate portions of memory, and
+thus can be used on program-proof rules to provide modular reasoning
+about programs. Note that, these operators do not increase the
+``completeness'' of Hoare logic---what can be proven in separation
+logic can also be proven in Hoare logic. Rather, they merely simplify
+the specifications and proofs.
 
 \cite{lics:2002/Reynolds}
 \cite{csl/OHearnRY01}
