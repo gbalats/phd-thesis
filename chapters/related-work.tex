@@ -208,15 +208,22 @@ guidance.
 % automation (e.g., for the (semi-)automatic inference of loop
 % invariants)
 
-Separation logic extends Hoare logic by introducing additional
-operators in the syntax of assertions, that facilitate local
-reasoning. Namely, the \emph{separating conjunction} \(\,P * \,Q\)
-asserts that \(P\) and \(Q\) hold for separate portions of memory, and
-thus can be used on program-proof rules to provide modular reasoning
-about programs. Note that, these operators do not increase the
-``completeness'' of Hoare logic---what can be proven in separation
-logic can also be proven in Hoare logic. Rather, they merely simplify
-the specifications and proofs.
+Separation logic \cite{lics:2002/Reynolds} extends Hoare logic by
+introducing additional operators in the syntax of assertions, that
+facilitate local reasoning. Namely, the \emph{separating conjunction}
+\(\,P * \,Q\) asserts that \(P\) and \(Q\) hold for separate portions
+of memory, and thus can be used on program-proof rules to provide
+modular reasoning about programs. Additional operators include the
+separating implication, \(P \sep Q\), which asserts that if the
+current heap is extended with a disjoint part in which \(P\) holds,
+then \(Q\) will hold in the extended heap, and more. Note that, these
+operators do not increase the ``completeness'' of Hoare logic---what
+can be proven in separation logic can also be proven in Hoare
+logic. Rather, they merely simplify the specifications and proofs.
+
+% citation needed
+% Peter O'Hearn
+% A Primer on Separation Logic (and Automatic Program Verification and Analysis)
 
 \cite{lics:2002/Reynolds}
 \cite{csl/OHearnRY01}
