@@ -201,33 +201,53 @@ Hoare logic provides two ways to generate verification conditions:
   prove a precondition.
 \end{inparaenum}
 Either way, in the general case, it cannot provide fully automated
-reasoning but may require; building a proof may require human
-guidance.
+reasoning; building a proof may require human guidance.
 
 % Even though there has been effort in increasing the level of
 % automation (e.g., for the (semi-)automatic inference of loop
 % invariants)
 
-Separation logic \cite{lics:2002/Reynolds} extends Hoare logic by
-introducing additional operators in the syntax of assertions, that
-facilitate local reasoning. Namely, the \emph{separating conjunction}
-\(\,P * \,Q\) asserts that \(P\) and \(Q\) hold for separate portions
-of memory, and thus can be used on program-proof rules to provide
-modular reasoning about programs. Additional operators include the
-separating implication, \(P \sep Q\), which asserts that if the
-current heap is extended with a disjoint part in which \(P\) holds,
-then \(Q\) will hold in the extended heap, and more. Note that, these
-operators do not increase the ``completeness'' of Hoare logic---what
-can be proven in separation logic can also be proven in Hoare
-logic. Rather, they merely simplify the specifications and proofs.
+Separation logic
+\cite{lics:2002/Reynolds,csl/OHearnRY01,popl/IshtiaqO01,Reynolds00intuitionisticreasoning}
+extends Hoare logic by introducing additional operators in the syntax
+of assertions, that facilitate local reasoning. Namely, the
+\emph{separating conjunction} \(\,P * \,Q\) asserts that \(P\) and
+\(Q\) hold for separate portions of memory, and thus can be used on
+program-proof rules to provide modular reasoning about
+programs. Additional operators include the separating implication,
+\(P \sep Q\), which asserts that if the current heap is extended with
+a disjoint part in which \(P\) holds, then \(Q\) will hold in the
+extended heap, and more. Note that, these operators do not increase
+the ``completeness'' of Hoare logic---what can be proven in separation
+logic can also be proven in Hoare logic. Rather, they merely simplify
+the specifications and proofs.
 
 % citation needed
 % Peter O'Hearn
 % A Primer on Separation Logic (and Automatic Program Verification and Analysis)
 
-\cite{lics:2002/Reynolds}
-\cite{csl/OHearnRY01}
-\cite{popl/CalcagnoDOY09}
+\citeauthor{popl/CalcagnoDOY09} present a compositional shape analysis
+\cite{popl/CalcagnoDOY09} to be used in (lightweight) program
+verification that builds on these concepts of separation logic
+(instead of the TVLA approach of \citeauthor{popl/SagivRW99}). In
+classical logic, \emph{abduction} stands for the inference of
+``missing'' assumptions \(M\), such that, given another assumption
+\(A\) and a goal \(G\), one can prove \(G\) by synthesizing \(A\) and
+\(M\):
+\[A \,\land M\, \;\vdash\; G \]
+
+A similar problem can be phrased by using separating conjunction
+instead of classical conjunction, which partitions the premises:
+\[A \;*\; ??\, \;\vdash\; G \]
+
+This finally leads to the more general problem of \emph{bi-abduction},
+if we allow for leftover portions of state (the frame):
+\[A \,*\, \textit{?anti-frame} \;\vdash\; G \,*\, \textit{?frame} \]
+
+The notion of bi-abduction is used as the basis of a new compositional
+interprocedural shape analysis algorithm.
+
+
 
 %%% Local Variables:
 %%% mode: latex
