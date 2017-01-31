@@ -105,7 +105,12 @@ The primary goal of standard shape analysis is to be able to infer the
 \emph{shapes} of objects in memory. E.g., to be able to detect if some
 objects form a list or a tree, if some list may contain cycles, if a
 subtree or a portion of a list may be shared (i.e., be reachable from
-multiple objects), and so on.
+multiple objects), and so on.\footnote{The term shape analysis is
+  quite generic (i.e., any analysis designed to infer the shapes of
+  objects) and has been examined in many different contexts
+  \cite{popl/GhiyaH96}. Here, we focus on \emph{parametric shape
+    analysis via 3-valued logic}, as one of the most notable
+  methodologies in that area.}
 
 To achieve such a feat, shape analysis associates a list of properties
 to each abstract memory object (e.g., \emph{pointed by variable
@@ -237,7 +242,7 @@ classical logic, \emph{abduction} stands for the inference of
 \[A \,\land M\, \;\vdash\; G \]
 
 A similar problem can be phrased by using separating conjunction
-instead of classical conjunction, which partitions the premises:
+instead of classical conjunction, which also partitions the premises:
 \[A \;*\; ??\, \;\vdash\; G \]
 
 This finally leads to the more general problem of \emph{bi-abduction},
