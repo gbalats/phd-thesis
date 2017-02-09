@@ -42,7 +42,7 @@ order to achieve precision.
 Yet, static whole-program analysis suffers in the presence of common
 dynamic features, especially reflection. When a Java program accesses
 a class by supplying its name as a run-time string, via the
-\code{Class.forName} library call, the static analysis
+\javasignature{Class.forName} library call, the static analysis
 %has very few
 %available courses of action: It 
 needs to either conservatively
@@ -177,7 +177,7 @@ Java 7).
 %%\code{somePackage.EventHandler} can be returned at that
 %%point. Similarly, if the \code{"Handler"} string (however augmented by
 %%concatenations) flows to the site of a reflective call (such as
-%%\code{Class.getMethod}) that attempts to retrieve a method from a class
+%%\javasignature{Class.getMethod}) that attempts to retrieve a method from a class
 %%object containing method \code{callbackHandler}, the analysis will
 %%compute that the call may return the reflection object for this
 %%method.
@@ -221,8 +221,8 @@ Java 7).
 %%m.invoke(o, ...);
 %
 %%If we know that the object held by \code{o} is the result of a reflection
-%%operation (e.g., the return value of a \code{Field.get} or a
-%%\code{Method.invoke} call) then we immediately get information on the
+%%operation (e.g., the return value of a \javasignature{Field.get} or a
+%%\javasignature{Method.invoke} call) then we immediately get information on the
 %%reflection call that produced \code{o}, by assuming that the cast is
 %%intended to succeed. 
 %
@@ -253,8 +253,8 @@ Java 7).
 %%operation not only to be in the same method as the \code{newInstance}
 %%(or other similarly treated calls) but also to post-dominate
 %%it. Second, we leverage use-based information from strings, and not
-%%just from casts. For instance, a \code{Class.getMethod} or
-%%\code{Class.getField} call with a constant string parameter gives
+%%just from casts. For instance, a \javasignature{Class.getMethod} or
+%%\javasignature{Class.getField} call with a constant string parameter gives
 %%information that can narrow down what the receiver \code{Class} object
 %%may be. Lastly, we introduce ``invented'' objects that fully
 %%materialize at the point of a cast and participate in the analysis
@@ -425,15 +425,16 @@ We consider the core of the analysis algorithm, which is
 representative and handles the most common features, illustrated in
 our above example: creating a reflective object representing a class
 (a \emph{class object}) given a name string (library method
-\code{Class.forName}), creating a new object given a class object
-(library method \code{Class.newInstance}), retrieving a reflective
-method object given a class object and a signature (library method
-\code{Class.getMethod}), and reflectively calling a virtual method on
-an object (library method \code{Method.invoke}). This treatment
-ignores several other APIs, which are handled similarly. These
-include, for instance, fields, constructors, other kinds of method
-invocations (static, special), reflective access to arrays, other ways
-to get class objects, and more.
+\javasignature{Class.forName}), creating a new object given a class
+object (library method \javasignature{Class.newInstance}), retrieving
+a reflective method object given a class object and a signature
+(library method \javasignature{Class.getMethod}), and reflectively
+calling a virtual method on an object (library method
+\javasignature{Method.invoke}). This treatment ignores several other
+APIs, which are handled similarly. These include, for instance,
+fields, constructors, other kinds of method invocations (static,
+special), reflective access to arrays, other ways to get class
+objects, and more.
 
 
 \begin{figure}[tb]
@@ -910,8 +911,12 @@ one of the few parts of a static analysis that are typically
 Our first use-based reflection analysis technique back-propagates
 information from the use-site of a reflective result \emph{to the
   original reflection call that got under-approximated}. Such an
-under-approximated call can be a \code{Class.forName},
-\code{Class.get[Declared]Method}, \code{Class.get[Declared]Field},
+under-approximated call can be a
+\begin{inparablank}
+\item \javasignature{Class.forName},
+\item \javasignature{Class.get[Declared]Method},
+\item \javasignature{Class.get[Declared]Field},
+\end{inparablank}
 etc. call, which returns a dynamic representation of a class, method,
 or field, given a string name.
 
@@ -976,21 +981,22 @@ pattern. The high-level structure of our technique (for this pattern)
 is as follows:
 
 \begin{itemize}
-\item At the site of a \code{forName} call, create a marker
-  object (of type \code{java.lang.Class}), to stand for all unknown
+\item At the site of a \code{forName} call, create a marker object (of
+  type \javasignature{java.lang.Class}), to stand for all unknown
   objects that the invocation may return.
 \item The special object flows freely through the points-to analysis,
   taking full advantage of inter-procedural reasoning facilities.
-\item At the site of a \code{newInstance} invocation, if the receiver is
-  our special object, the result of \code{newInstance} is also a special
-  object (of type \code{java.lang.Object} this time) that remembers its
-  \code{forName} origins.
-\item This second special object also flows freely through the points-to analysis,
-  taking full advantage of inter-procedural reasoning facilities.
-\item If the second special object (of type \code{java.lang.Object})
-  reaches the site of a cast, then the original \code{forName}
-  invocation is retrieved and augmented to return the cast type or its
-  subtypes as class objects.
+\item At the site of a \code{newInstance} invocation, if the receiver
+  is our special object, the result of \code{newInstance} is also a
+  special object (of type \javasignature{java.lang.Object} this time)
+  that remembers its \code{forName} origins.
+\item This second special object also flows freely through the
+  points-to analysis, taking full advantage of inter-procedural
+  reasoning facilities.
+\item If the second special object (of type
+  \javasignature{java.lang.Object}) reaches the site of a cast, then
+  the original \code{forName} invocation is retrieved and augmented to
+  return the cast type or its subtypes as class objects.
 \end{itemize}
 
 %(This object receives a
@@ -1033,9 +1039,9 @@ the points-to analysis.
 \noindent According to this rule, when analyzing a \code{newInstance}
 call, if the receiver is a special object that was produced by a
 \code{forName} invocation, \args{i}, then the result of the
-\code{newInstance} will be another special object (of appropriate type---determined
-by the contents of \code{ReifiedNewInstance})
-that will identify the \code{forName} call.
+\code{newInstance} will be another special object (of appropriate
+type---determined by the contents of \code{ReifiedNewInstance}) that
+will identify the \code{forName} call.
 
 The final rule uses input relation \pred{Cast}{v': V, v: V, t: T} (with
 \args{v'} being the variable to which the cast result is stored and
@@ -1088,8 +1094,8 @@ Field f = c2.getField(fieldName);
 
 In this case, the value of the \code{fieldName} string can inform the
 analysis result for the earlier \code{forName} call. We apply this
-idea to the 4 API calls \code{Class.get[Declared]Method} and
-\code{Class.get[Declared]Field}.
+idea to the 4 API calls \javasignature{Class.get[Declared]Method} and
+\javasignature{Class.get[Declared]Field}.
 
 \paragraph{Contrasting approaches.}
 
@@ -1263,9 +1269,9 @@ an object derived from reflection operations.
 
 The algorithm for object invention in the analysis is again recursive
 with the main points-to logic. We illustrate for the case of
-\code{Class.newInstance}, although similar logic applies to reflection
-calls such as \code{Constructor.newInstance}, as well as
-\code{Method.invoke} and \code{Field.get}.
+\javasignature{Class.newInstance}, although similar logic applies to
+reflection calls such as \javasignature{Constructor.newInstance}, as
+well as \javasignature{Method.invoke} and \javasignature{Field.get}.
 
 As in the back-propagating analysis, we use special marker
 objects.  These are represented by input relations
@@ -1397,15 +1403,15 @@ information. For instance, if a cast is found, it is used to
 back-propagate reflective information only when there are up to a
 constant, $c$, class types that can satisfy the cast (i.e., at most
 $c$ subtypes of the cast type). Intuitively, a cast of the form
-``\code{(Event)}'' is much more informative when \code{Event} is a class
-with only a few subclasses, rather than when \code{Event} is an
+``\code{(Event)}'' is much more informative when \code{Event} is a
+class with only a few subclasses, rather than when \code{Event} is an
 interface that many tens of classes implement. Similarly, if string
 information (e.g., a method name) is used to determine what class
-object could have been returned by a \code{Class.forName}, the
-back-propagation takes place only when the string name matches methods
-of at most $d$ different types. This threshold approach minimizes the
-potential for noise back-propagating and polluting all subsequent
-program paths that depend on the original reflection call.
+object could have been returned by a \javasignature{Class.forName},
+the back-propagation takes place only when the string name matches
+methods of at most $d$ different types. This threshold approach
+minimizes the potential for noise back-propagating and polluting all
+subsequent program paths that depend on the original reflection call.
 
 A second technique for employing back-propagation without sacrificing
 precision and scalability adjusts the flow of special objects (i.e.,
@@ -1978,14 +1984,14 @@ examples but they only apply it to small benchmarks.
 %discover hundreds of missing edges in several of the DaCapo
 %2006-10-MR2 benchmarks.  However, their experiments do not integrate
 %the vastly improved support for reflection (e.g., modeling of
-%\code{Object.getClass}) offered by \textsc{Elf} or
+%\javasignature{Object.getClass}) offered by \textsc{Elf} or
 %our current work. 
 
 %were performed
 %before numerous engineering improvements in the \textsc{Doop}
 %framework. 
 %These improvements handle many common API calls, such as
-%\code{Object.getClass}. 
+%\javasignature{Object.getClass}.
 %Furthermore, some benchmarks could not be run with reflection enabled
 %due to scalability issues. Therefore, o
 %%SPACE
