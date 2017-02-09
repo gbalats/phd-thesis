@@ -57,7 +57,7 @@ of 14s for a 19MB binary).
 %-------------------------------------------------------------------------------
 
 \section{Introduction}
-\label{intro}
+\label{hiercomp/intro}
 
 Whole-program static analysis is essential for clients that require
 high-precision
@@ -171,13 +171,13 @@ C\#).\footnote{We avoid the terms ``subclassing'' or ``inheritance''
   common in the classification of languages than ``single subtyping''
   and ``multiple subtyping''.}  A partial hierarchy, augmented with
 constraints, can be represented as a graph, as shown in
-Figure~\ref{fig:ex0:problem}. The known part of the hierarchy is shown
+Figure~\ref{hiercomp/fig:ex0:problem}. The known part of the hierarchy is shown
 as double circles and solid edges. Unknown (i.e., missing) classes are
 shown as single circles. Dashed edges represent subtyping constraints,
 i.e., indirect subtyping relations that have to hold in the resulting
 hierarchy. In graph-theoretic terms, a dashed edge means that there is
 a path in the solution between the two endpoints. For instance, the
-dashed edge from $C$ to $D$ in Figure~\ref{fig:ex0:problem} means that
+dashed edge from $C$ to $D$ in Figure~\ref{hiercomp/fig:ex0:problem} means that
 the unknown part of the class hierarchy has a path from $C$ to
 $D$. This path cannot be a direct edge from $C$ to $D$, however: $C$
 is a known class, so the set of its supertypes is fixed.
@@ -186,19 +186,19 @@ is a known class, so the set of its supertypes is fixed.
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph2.pdf}
-    \subcaption{Constraint Graph}\label{fig:ex0:problem}
+    \subcaption{Constraint Graph}\label{hiercomp/fig:ex0:problem}
   \end{minipage}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph2-solution.pdf}
-    \subcaption{Solution}\label{fig:ex0:solution}
+    \subcaption{Solution}\label{hiercomp/fig:ex0:solution}
   \end{minipage}
   \caption[Example of constraints in a multiple inheritance setting]{%
     Example of constraints in a multiple inheritance
     setting. Double-circles signify known classes, single circles
     signify unknown classes. Solid edges (``known edges'') signify
     direct subtyping, dashed edges signify transitive subtyping.}
-  \label{fig:ex0}
+  \label{hiercomp/fig:ex0}
 \end{figure}
 
 In order to solve the above problem instance, we need to compute a
@@ -209,12 +209,12 @@ to unknown nodes} so that all dashed-edge constraints are
 satisfied. That is, the solution will not contain dashed edges
 (indirect subtyping relationships), but every dashed edge in the input
 will have a matching directed path in the solution
-graph. Figure~\ref{fig:ex0:solution} shows one such possible solution.
+graph. Figure~\ref{hiercomp/fig:ex0:solution} shows one such possible solution.
 As can be seen, solving the constraints (or determining that they are
 unsatisfiable) is not trivial. In this example, any solution has to
 include an edge from $B$ to $E$, for reasons that are not immediately
 apparent. Accordingly, if we change the input of
-Figure~\ref{fig:ex0:problem} to include an edge from $E$ to $B$, then
+Figure~\ref{hiercomp/fig:ex0:problem} to include an edge from $E$ to $B$, then
 the constraints are not satisfiable---any attempted solution
 introduces a cycle. The essence of the algorithmic difficulty of the
 problem (compared to, say, a simple topological sort) is that we
@@ -229,7 +229,7 @@ types only, without changing existing code.
 
 For a language with single inheritance, the problem is similar, with
 one difference: the solution needs to be a tree instead of a DAG. (Of
-course, the input in Figure~\ref{fig:ex0:problem} already violates the
+course, the input in Figure~\ref{hiercomp/fig:ex0:problem} already violates the
 tree property since it contains known nodes with multiple known
 parents.) We offer an algorithm that solves the problem by
 either detecting unsatisfiability or always ordering the nodes in a
@@ -246,9 +246,9 @@ interfaces and only allow single direct subtyping among classes and
 multiple direct subtyping from a class/interface to an interface---a
 combination often called ``single-inheritance, multiple
 subtyping''. In this case, the graph representation of the problem is
-less intuitive. Consider Figure~\ref{fig:real-example:problem} that
+less intuitive. Consider Figure~\ref{hiercomp/fig:real-example:problem} that
 gives a problem instance. (A possible solution for these constraints
-is in Figure~\ref{fig:real-example:solution}, but is given purely for
+is in Figure~\ref{hiercomp/fig:real-example:solution}, but is given purely for
 reference, as it is not central to our discussion.) There are now
 several node types: classes, interfaces (both known and unknown), as
 well as undetermined nodes. There are also more implicit constraints
@@ -268,12 +268,12 @@ multiple-inheritance versions of hierarchy complementation.
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph3.pdf}
-    \subcaption{Constraint Graph}\label{fig:real-example:problem}
+    \subcaption{Constraint Graph}\label{hiercomp/fig:real-example:problem}
   \end{minipage}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/cgraph3-solution.pdf}
-    \subcaption{Solution}\label{fig:real-example:solution}
+    \subcaption{Solution}\label{hiercomp/fig:real-example:solution}
   \end{minipage}
   \caption[Example of full-Java constraint graph]{Example of full-Java
     constraint graph. Double circles denote known classes/interfaces,
@@ -282,7 +282,7 @@ multiple-inheritance versions of hierarchy complementation.
     grey nodes are unknown types that are initially undetermined
     (i.e., the input does not explicitly identify them as classes or
     interfaces, although constraint reasoning may do so later).}
-  \label{fig:real-example}
+  \label{hiercomp/fig:real-example}
 \end{figure}
 
 
@@ -487,7 +487,7 @@ complement for it, not necessarily the one that JPhantom computes.
 %%% We later use this. Better not emphasize it.
 %Notably, this well-formedness condition does
 %not assume that known classes have known superclasses---e.g.,
-%Figure~\ref{fig:real-example:problem} offered an instance where a
+%Figure~\ref{hiercomp/fig:real-example:problem} offered an instance where a
 %superclass was a phantom type. Of course, an actual usage setting of
 %JPhantom can impose this or other restrictions on the input.
 
@@ -534,7 +534,7 @@ considerations, as past approaches do.
 %-------------------------------------------------------------------------------
 
 \section{Hierarchy Complementation for Multiple Inheritance}
-\label{multiple}
+\label{hiercomp/multiple}
 
 We begin with a modeling of the hierarchy complementation problem in
 the setting of multiple inheritance. This means that every class in our
@@ -594,7 +594,7 @@ solution would be valid w.r.t. our constraints.
 
 % Optionally, we could prune some edges from our solution without
 % breaking any constraints, to minimize the output of our algorithm
-% for practical purposes. Algorithm~\ref{alg:multiple:simple} performs
+% for practical purposes. Algorithm~\ref{hiercomp/alg:multiple:simple} performs
 % such an optimization, by first computing a transitive closure of the
 % constraints and then removing redundant edges, whose target can be
 % reached from another path.
@@ -604,7 +604,7 @@ solution would be valid w.r.t. our constraints.
 The problem becomes much more interesting when we take $V_{known}$
 into account. The source of the difficulty is the combination of cycle
 detection with nodes whose outgoing edge set cannot be extended.
-Consider first the pattern of Figure~\ref{fig:choice}.
+Consider first the pattern of Figure~\ref{hiercomp/fig:choice}.
 
 \begin{figure}[ht]
   \centering \includegraphics[scale = 0.6]{figures/complementation/cgraph-min.pdf}
@@ -612,7 +612,7 @@ Consider first the pattern of Figure~\ref{fig:choice}.
     constraints, either $B$ or $C$ or $D$ have to be ordered below
     $E$, since no new outgoing edges can be added to $A$ and the path
     constraint to $E$ needs to be satisfied.}
-  \label{fig:choice}
+  \label{hiercomp/fig:choice}
 \end{figure}
 
 This pattern is a basic instance of interesting reasoning in the case of
@@ -644,13 +644,13 @@ below $E$. We refer to the set of $\{B,C,D\}$ as the \emph{projection
 
 That is, for each known node we can follow its outgoing direct-edges
 recursively, ending each path when we reach a phantom node. For
-instance, in Figure~\ref{fig:proj}, the phantom projection set for
+instance, in Figure~\ref{hiercomp/fig:proj}, the phantom projection set for
 node $A$ is $\{C,E,H\}$.
 
 % Node $I$ is not included since no path exists
 % from $A$ to $I$ through direct-edges only.
 
-Referring again to Figure~\ref{fig:proj}, we can see that if $H$ is
+Referring again to Figure~\ref{hiercomp/fig:proj}, we can see that if $H$ is
 chosen from the projection set of $A$ in order to satisfy the
 path-edge $(A,B)$, and therefore edge $(H,B)$ is added, then this
 would immediately create a cycle because of the existing $(B,H)$
@@ -667,28 +667,28 @@ choice from the relevant projection set.
   \centering
   %%\subfloat[Constraint Graph]{
   \includegraphics[scale=0.6]{figures/complementation/projections.pdf}
-    %%\label{fig:proj:graph}
+    %%\label{hiercomp/fig:proj:graph}
   %%}
   %% \subfloat[Solution]{
   %%   \includegraphics[scale=0.4]{images/stree1-ext.pdf}
-  %%   \label{fig:cgraph1:ext}
+  %%   \label{hiercomp/fig:cgraph1:ext}
   %% }
   \caption[Phantom Projection Set]{%
     The phantom projection set of $A$ is $\{C,E,H\}$. In order to
     satisfy path-edge $(A,B)$ we can either add a path-edge $(C,B)$,
     $(E,B)$, or $(H,B)$. The last one creates a cycle.
   }
-  \label{fig:proj}
+  \label{hiercomp/fig:proj}
 \end{figure}
 
 %% Multiple Inheritance Examples
 
 Combining this projection set choice with cycle detection leads to
-interesting search outcomes. Figure~\ref{fig:unsat} shows an example
+interesting search outcomes. Figure~\ref{hiercomp/fig:unsat} shows an example
 of unsatisfiable input. The path edge $(B,D)$ makes either $E$ or $F$
 be subtypes of $D$, and similarly the path edge $(A,C)$ makes either
 $E$ or $F$ be subtypes of $C$. Nevertheless, any choice leads to
-cycles. In contrast, Figure~\ref{fig:multipleHard} shows an input for
+cycles. In contrast, Figure~\ref{hiercomp/fig:multipleHard} shows an input for
 which a solution is possible, and which we use to illustrate our
 algorithm.
 
@@ -696,19 +696,19 @@ algorithm.
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/mult-inh-unsat.pdf}
-    \subcaption{Unsatisfiable input}\label{fig:unsat}
+    \subcaption{Unsatisfiable input}\label{hiercomp/fig:unsat}
   \end{minipage}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/mult-inh-sat.pdf}
-    \subcaption{Satisfiable input}\label{fig:multipleHard}
+    \subcaption{Satisfiable input}\label{hiercomp/fig:multipleHard}
   \end{minipage}
   \caption{Multiple Inheritance Examples}
 \end{figure}
 
 %%% WRONG!!!
 %%%%
-% In the same vein, the example of Figure~\ref{fig:multipleHard} is
+% In the same vein, the example of Figure~\ref{hiercomp/fig:multipleHard} is
 % satisfiable, but requires some reasoning to find a solution. The path
 % edge $(B,H)$ cannot be satisfied by ordering $E$ below $H$ without
 % introducing a cycle, but can be satisfied by ordering $F$ below $H$.
@@ -762,53 +762,53 @@ from lower to higher strata.
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-0.pdf}
-    \subcaption{Step 1}\label{fig:multiple:steps:0}
+    \subcaption{Step 1}\label{hiercomp/fig:multiple:steps:0}
   \end{minipage}
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-1.pdf}
-    \subcaption{Step 2}\label{fig:multiple:steps:1}
+    \subcaption{Step 2}\label{hiercomp/fig:multiple:steps:1}
   \end{minipage}
   \vspace{0mm}                  % not sure why this adds space
   \\
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-2.pdf}
-    \subcaption{Step 3}\label{fig:multiple:steps:2}
+    \subcaption{Step 3}\label{hiercomp/fig:multiple:steps:2}
   \end{minipage}
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-3.pdf}
-    \subcaption{Step 4}\label{fig:multiple:steps:3}
+    \subcaption{Step 4}\label{hiercomp/fig:multiple:steps:3}
   \end{minipage}
   \vspace{0mm}
   \\
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-4.pdf}
-    \subcaption{Step 5}\label{fig:multiple:steps:4}
+    \subcaption{Step 5}\label{hiercomp/fig:multiple:steps:4}
   \end{minipage}
   \begin{minipage}[b]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.4]{figures/complementation/steps-5.pdf}
-    \subcaption{Step 6}\label{fig:multiple:steps:5}
+    \subcaption{Step 6}\label{hiercomp/fig:multiple:steps:5}
   \end{minipage}
   \caption[Stratification Example]{An example of the stratification
     produced by the multiple-inheritance solver for
-    Example~\ref{fig:multipleHard}.}
-  \label{fig:multiple:steps}
+    Example~\ref{hiercomp/fig:multipleHard}.}
+  \label{hiercomp/fig:multiple:steps}
 \end{figure*}
 
 \input{algorithms/multiple/stratifying}
 
 
-Figure~\ref{fig:multiple:steps} presents an illustration of the
+Figure~\ref{hiercomp/fig:multiple:steps} presents an illustration of the
 algorithm's application to the example of
-Figure~\ref{fig:multipleHard}. The sets $\{C,D\}$ and $\{E,F\}$ are
+Figure~\ref{hiercomp/fig:multipleHard}. The sets $\{C,D\}$ and $\{E,F\}$ are
 the projection sets of nodes $A$ and $B$ respectively. At the first
 step, all nodes will be placed in the lowest stratum. Note that, at
 this point, all nodes could be placed in topological order:
-Figure~\ref{fig:multiple:steps:0} is perfectly valid as the output
+Figure~\ref{hiercomp/fig:multiple:steps:0} is perfectly valid as the output
 of a topological sort. However, this is not a
 solution by our standards, since node $A$ cannot satisfy the edge to
 $G$ because both of its projection nodes, $D$ and $C$, are placed
@@ -826,7 +826,7 @@ nodes $E,F$ have ``stabilized'' at a lower stratum. This in turn
 causes node $D$ to stabilize at step 5. At step 6, $G$ can also stay
 put, since it is in a higher stratum than the lowest projection of
 $A$, namely $D$. No nodes are advanced at step 7 (which is omitted in
-Figure~\ref{fig:multiple:steps}), thus signifying that our
+Figure~\ref{hiercomp/fig:multiple:steps}), thus signifying that our
 stratification has successfully converged to its final form. It is
 therefore simple to compute a solution, by adding edges $(H,D),
 (H,C), (G,C)$, $(D,G)$ and either $(F,H)$ or $(E,H)$
@@ -834,7 +834,7 @@ to the direct-edges $(A,C), (A,D), (B,E), (B,F)$. This set of edges
 will constitute our final solution.
 
 It is also easy to see that our algorithm would soundly detect that
-the example of Figure~\ref{fig:unsat} is unsatisfiable. At the first
+the example of Figure~\ref{hiercomp/fig:unsat} is unsatisfiable. At the first
 step, only known nodes $A,B$ would remain in the lowest stratum, but
 on the next iteration all remaining nodes would advance again, thus
 triggering the condition of failure (line~\ref{lst:line:unsat}), since
@@ -865,7 +865,7 @@ Appendix~\ref{correctness}.
 %-------------------------------------------------------------------------------
 
 \section{Hierarchy Complementation for Single Inheritance}
-\label{single}
+\label{hiercomp/single}
 
 The problem for a single inheritance setting has a very similar
 statement as in the earlier case of multiple inheritance, but markedly
@@ -910,22 +910,22 @@ will form a tree instead of a forest.
 % JPhantom: our current approach is simple and very fast in practice.}
 % Therefore our algorithm for the multiple inheritance case is a
 % straightforward backtracking exhaustive search for the satisfaction of
-% all constraints of the form of Figure~\ref{fig:choice}.
+% all constraints of the form of Figure~\ref{hiercomp/fig:choice}.
 
 
 The problem is quite hard in its general setting. There are several
 patterns that necessitate a complex search in the space of
-possibilities. Figures~\ref{fig:single1}-\ref{fig:single4} show some
+possibilities. Figures~\ref{hiercomp/fig:single1}-\ref{hiercomp/fig:single4} show some
 basic patterns that induce complex constraints. All nodes reachable
 from a single one need to be linearly ordered
-(Figure~\ref{fig:single1} shows the simplest case). This requires
+(Figure~\ref{hiercomp/fig:single1} shows the simplest case). This requires
 computing an ordering (i.e., guessing a permutation) of these
 nodes. Other constraints can render some of the permutations
 invalid. The basic pattern behind such restrictions is that of
-Figure~\ref{fig:single2}: there are hierarchies that cannot be
+Figure~\ref{hiercomp/fig:single2}: there are hierarchies that cannot be
 related. Combining the two patterns suggests that there needs to be a
 search in the space of permutations for a valid one:
-Figures~\ref{fig:single3} and \ref{fig:single4} show some simple
+Figures~\ref{hiercomp/fig:single3} and \ref{hiercomp/fig:single4} show some simple
 cases.
 
 % CHECK subcaption alignment everywhere!!
@@ -936,32 +936,32 @@ cases.
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-pat1.pdf}
     \subcaption{B and C must be subtype-related (in either
-      direction).}\label{fig:single1}
+      direction).}\label{hiercomp/fig:single1}
   \end{minipage}
   \hspace{0.4in}
   \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-pat2.pdf}
-    \subcaption{D and E cannot be subtype-related.}\label{fig:single2}
+    \subcaption{D and E cannot be subtype-related.}\label{hiercomp/fig:single2}
   \end{minipage}
   \\
   \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-pat3.pdf}
-    \subcaption{A has to be a subtype of F.}\label{fig:single3}
+    \subcaption{A has to be a subtype of F.}\label{hiercomp/fig:single3}
   \end{minipage}
   \hspace{0.2in}
   \begin{minipage}[t]{0.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-pat4.pdf}
     \subcaption{A has to be a subtype of either G or
-      H.}\label{fig:single4}
+      H.}\label{hiercomp/fig:single4}
   \end{minipage}
   \caption{Single Inheritance Basic Patterns}
 \end{figure*}
 
 Composing such constraints into more complex hierarchies gives an idea
-of the difficulty of the search involved. Figure~\ref{fig:hard:or}
+of the difficulty of the search involved. Figure~\ref{hiercomp/fig:hard:or}
 shows an example where it is hard to see without complex
 reasoning which of the $E$, $F$, $G$ nodes have to be placed
 above $A$ and which cannot.
@@ -976,7 +976,7 @@ above $A$ and which cannot.
     G)$. However, since $F$ is the first common known supertype of $M$
     and $N$, and $A$ just a supertype of both, $F <: A$, and thus
     $(A <: E) \lor (A <: G)$. }
-\label{fig:hard:or}
+\label{hiercomp/fig:hard:or}
 \end{figure}
 
 %%You keep using that word, comprise. I don't think it means what you
@@ -990,10 +990,12 @@ constraints. This requires an exponential search in the worst
 case. Indeed, our implementation performs precisely such an exhaustive
 search, but with a heuristic choice of nodes so that the search tries
 to satisfy the constraints introduced by the patterns in
-Figures~\ref{fig:single1} and \ref{fig:single2}---i.e., the pattern of
-Figure~\ref{fig:single1} is identified, all induced permutations are
-tried, and the pattern of Figure~\ref{fig:single2} is used to prune
-them eagerly, instead of waiting to detect failure later.
+Figures~\ref{hiercomp/fig:single1} and
+\ref{hiercomp/fig:single2}---i.e., the pattern of
+Figure~\ref{hiercomp/fig:single1} is identified, all induced
+permutations are tried, and the pattern of
+Figure~\ref{hiercomp/fig:single2} is used to prune them eagerly,
+instead of waiting to detect failure later.
 
 Most importantly, our approach provides special handling for a
 simple but practically quite common case. In this special case,
@@ -1016,9 +1018,9 @@ V_{known}\times V_{known}$. The extra condition allows us to employ a
 fast polynomial time algorithm. This interesting case of our problem
 is very common in practice. Intuitively, the ease of dealing with this
 case stems from avoiding the search in the space of permutations when
-the input contains patterns such as those in Figure~\ref{fig:single3}:
+the input contains patterns such as those in Figure~\ref{hiercomp/fig:single3}:
 if two permutations have elements in common (e.g., the permutation of
-$B$ and $F$, and that of $F$ and $C$ in Figure~\ref{fig:single3}) they
+$B$ and $F$, and that of $F$ and $C$ in Figure~\ref{hiercomp/fig:single3}) they
 cannot include nodes that are guaranteed to be subtype-unrelated (such
 as $B$ and $C$ in this example) and all unknown nodes have to be below
 the known ones in any solution.
@@ -1045,9 +1047,9 @@ total order). In practice, we produce a partial order by using a
 variant of topological sort that generates a tree instead of a list as
 its result, but a full topological sort also satisfies the correctness
 requirements of the algorithm. (We return to the topic of why we
-actually want a weaker ordering in Section~\ref{java}.)
+actually want a weaker ordering in Section~\ref{hiercomp/java}.)
 
-In the example of Figure~\ref{fig:kdirect:ex},
+In the example of Figure~\ref{hiercomp/fig:kdirect:ex},
 Algorithm~\ref{alg:single:kdirect} first checks and removes the
 $(F,A)$ path-edge. Then the phantom nodes are divided in the following
 phantom connected components: $\{G,H,I\}$, $\{J,K,L\}$, and
@@ -1063,17 +1065,17 @@ output: $I <: H <: G <: B$, $K <: J <: L <: F$, and $M <: F$.
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-direct.pdf}
-    \subcaption{Constraint Graph}\label{fig:stree1:simple}
+    \subcaption{Constraint Graph}\label{hiercomp/fig:stree1:simple}
   \end{minipage}
   % \hspace{-5mm}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[scale=0.6]{figures/complementation/sing-inh-direct-solution.pdf}
-    \subcaption{Solution}\label{fig:cgraph1:simple}
+    \subcaption{Solution}\label{hiercomp/fig:cgraph1:simple}
   \end{minipage}
   \caption[Single Inheritance Algorithm Example]{%
     Algorithm~\ref{alg:single:kdirect} - Example. }
-  \label{fig:kdirect:ex}
+  \label{hiercomp/fig:kdirect:ex}
 \end{figure}
 
 %% Do we care? Seems like a leftover.
@@ -1106,7 +1108,7 @@ the above rules.
 
 The addition of the second rule, above, is a hallmark feature of the
 hierarchy complementation problem. Consider the input of
-Figure~\ref{fig:diamond}. The $(B,A)$ and $(C,A)$ edges guarantee that
+Figure~\ref{hiercomp/fig:diamond}. The $(B,A)$ and $(C,A)$ edges guarantee that
 both $B$ and $C$ will be ordered below $A$ in the result.  However, we
 also know that they should be ordered relative to each other: the
 $(D,B)$ and $(D,C)$ edges enforce this requirement, since there can
@@ -1129,7 +1131,7 @@ above requirements, for this example.
   have to be below A, but also they have to be relatively ordered with
   each other, since D must find both on its (single inheritance) path
   to the root.}
-\label{fig:diamond}
+\label{hiercomp/fig:diamond}
 \end{figure}
 
 Algorithm~\ref{alg:single:simple} produces an ordering relation
@@ -1176,7 +1178,7 @@ Algorithm~\ref{alg:single:simple} relative to the definition of $\ll$.
 
 \input{algorithms/single/simple}
 
-An example is given in Figure~\ref{fig:ex1:simple}. We assume that
+An example is given in Figure~\ref{hiercomp/fig:ex1:simple}. We assume that
 node $A$ is the \emph{root} node. Therefore, the algorithm will first
 call \textsc{placeUnder($G_C$, $A$)} and then erase the edges
 $\{(B,A), (C,A), (D,A), (E,A), (I,A)\}$. The set of unconstrained
@@ -1204,16 +1206,16 @@ this order.
   \centering
   \subfloat[Constraint Graph]{
     \includegraphics[scale=0.4]{images/cgraph1.pdf}
-    \label{fig:stree1:simple}
+    \label{hiercomp/fig:stree1:simple}
   }
   \subfloat[Solution]{
     \includegraphics[scale=0.4]{images/stree1.pdf}
-    \label{fig:cgraph1:simple}
+    \label{hiercomp/fig:cgraph1:simple}
   }
   \caption{%
-    Algorithm~\ref{alg:single:simple} - Example
+    Algorithm~\ref{hiercomp/alg:single:simple} - Example
   }
-\label{fig:ex1:simple}
+\label{hiercomp/fig:ex1:simple}
 \end{figure}
 
 
@@ -1277,8 +1279,8 @@ $E_{direct}$ edges in the output.
 
 \input{algorithms/single/extended}
 
-For example, in Figure~\ref{fig:ex1:ext} we can see how the solution
-of Figure~\ref{fig:ex1:simple} is altered if we take a given class
+For example, in Figure~\ref{hiercomp/fig:ex1:ext} we can see how the solution
+of Figure~\ref{hiercomp/fig:ex1:simple} is altered if we take a given class
 hierarchy into account. Let $V_{known} = \{F,J\}$ and $E_{direct}
 = \{(F,C),(J,F)\}$. The solid edges denote the constraints added due
 to $f_i$, while the newly added edges $(F,G),(C,G)$ have been inserted
@@ -1293,7 +1295,7 @@ fixpoint.
 Line~\ref{lst:line:priority} in the \textsc{pick()} function will
 choose a \emph{direct} subtype according to $f_i$, over any other
 unconstrained node. For instance, if ``$f_i[C] = A$'' were part of the
-input in the earlier pattern of Figure~\ref{fig:diamond}, then
+input in the earlier pattern of Figure~\ref{hiercomp/fig:diamond}, then
 the \textsc{pick()} function would choose node $C$ among $V = \{B,C\}$
 to place next, resulting in the $A \leftarrow C \leftarrow
 B \leftarrow D$ ordering (and not $A \leftarrow B \leftarrow
@@ -1305,7 +1307,7 @@ error is raised if a known direct supertype disagrees with what
 we have computed. This can only happen if two subtrees of $G$ have
 roots in $V_{known}$, and these two subtrees are somehow connected. In
 this case, the problem is unsolvable for single
-inheritance. An example would be the pattern of Figure~\ref{fig:diamond} if
+inheritance. An example would be the pattern of Figure~\ref{hiercomp/fig:diamond} if
 $V_{known} = \{A,B,C\}$ and $E_{direct} = \{(B,A), (C,A)\}$. Our
 algorithm would reach a point where either node $C$ would have to be
 placed under $B$, or node $B$ under $C$. In both cases, this would
@@ -1316,16 +1318,16 @@ conflict with $f_i$, and would be captured by our
   \centering
   \subfloat[Constraint Graph]{
     \includegraphics[scale=0.6]{figures/complementation/cgraph1e.pdf}
-    \label{fig:stree1}
+    \label{hiercomp/fig:stree1}
   }
   \subfloat[Solution]{
     \includegraphics[scale=0.6]{figures/complementation/cgraph1e-solution.pdf}
-    \label{fig:cgraph1:ext}
+    \label{hiercomp/fig:cgraph1:ext}
   }
   \caption{%
-    Algorithm~\ref{alg:single:ext} - Example
+    Algorithm~\ref{hiercomp/alg:single:ext} - Example
   }
-  \label{fig:ex1:ext}
+  \label{hiercomp/fig:ex1:ext}
 \end{figure}
 
 \paragraph{Correctness Proof Sketch:}
@@ -1381,7 +1383,7 @@ w.r.t. our constraint edges (both path and direct).
 %-------------------------------------------------------------------------------
 
 \section{Single Inheritance, Multiple Subtyping: Classes and Interfaces}
-\label{java}
+\label{hiercomp/java}
 
 It is easy to combine the single- and multiple-inheritance
 approaches of the last two sections in the context of a language that
@@ -1425,7 +1427,7 @@ lead to restricting the colors of a node. First, we have local
 constraints: we may get a node color from the initial input---i.e., an
 observed bytecode instruction (such as \code{invokeinterface}) may
 directly restrict the color of a phantom type. (More constraints of
-this form are discussed in Section~\ref{jphantom}.) Second, we may get
+this form are discussed in Section~\ref{hiercomp/jphantom}.) Second, we may get
 transitive constraints, due to restrictions on subtyping. Interfaces
 can only subtype interfaces (except for the \code{Object} class in
 Java). This leads to two types of transitive constraints: If a black
@@ -1460,7 +1462,7 @@ can only be extended by other classes).
 % for lack of space.
 % %% REVIEW! We need to think about this.
 
-% For instance, for the input of Figure~\ref{fig:kdirect:ex}
+% For instance, for the input of Figure~\ref{hiercomp/fig:kdirect:ex}
 
 Furthermore, phantom nodes with no color constraints can be safely
 assumed to be interfaces (black), for maximum flexibility in solving
@@ -1479,7 +1481,7 @@ direction of movement (i.e., from white source nodes, we have to go
 backwards). When this process is over, we can assign the color black
 to all remaining undetermined (in terms of color) nodes.  An example
 of this process can be seen in our earlier
-Figure~\ref{fig:real-example}. Once we have assigned a
+Figure~\ref{hiercomp/fig:real-example}. Once we have assigned a
 \emph{black-or-white} color to every node, we can split our constraint
 graph into two subgraphs by isolating white-to-white edges (and
 feeding them to a single inheritance solver). After we have determined
@@ -1546,7 +1548,7 @@ existed.
 %-------------------------------------------------------------------------------
 
 \section{Implementation and Practical Evaluation}
-\label{jphantom}
+\label{hiercomp/jphantom}
 
 We next discuss practical aspects of our implementation. First, we
 consider the \emph{program analysis} part of our work, which solves
@@ -1644,7 +1646,7 @@ an input jar file by JPhantom.
     declared types (2nd column) by references in the constant pool or
     by entries in the local variable table (if such exists). Also, let
     $R_m$ be the containing method's return type.  }
-  \label{fig:constraints}
+  \label{hiercomp/fig:constraints}
 \end{figure}
 
 %% Is this a leftover???
@@ -1710,7 +1712,7 @@ alternative technique of storing \emph{sets of reference types}, as
 presented in alternative verifier
 designs \cite{Stark00theproblem}. I.e., our bytecode analyzer stores
 not a single type, but a set of types for each variable at every point
-of execution. Figure~\ref{fig:constraints} lists the constraints that
+of execution. Figure~\ref{hiercomp/fig:constraints} lists the constraints that
 may be generated by the analyzer for certain bytecodes. Since our
 analyzer generates constraints due to widening reference conversions,
 it is easy to see that storing a set of reference types fits our needs
@@ -1857,7 +1859,7 @@ following issues:
   Unfortunately, this leads to incompleteness in the resulting
   analysis performed by \doop{}.
 
-  Figure~\ref{fig:venn} presents a Venn diagram over the sets of
+  Figure~\ref{hiercomp/fig:venn} presents a Venn diagram over the sets of
   reachable methods as computed by \doop{} for three different
   inputs:
   \begin{inparaenum}[(i)]
@@ -1909,7 +1911,7 @@ following issues:
     \emph{antlr-minus} jar after being transformed by JPhantom,
     respectively. The sets are not drawn to scale: the size of each
     subset is indicated only by the number in it.}
-  \label{fig:venn}
+  \label{hiercomp/fig:venn}
 \end{figure}
 
 In summary, JPhantom avoids problems with crashes when encountering
@@ -1956,7 +1958,7 @@ benchmarks it was, upon original encounter, an unexpected discovery
 that they could not be analyzed due to dependencies to unknown classes
 in other libraries.
 
-Figure~\ref{fig:exp1} presents input features and the running time of
+Figure~\ref{hiercomp/fig:exp1} presents input features and the running time of
 JPhantom for each of our benchmarks. The first column is the name of
 the benchmark. The second column is the size of the output, i.e., the
 complemented jar, divided into the original size of the input
@@ -1997,7 +1999,7 @@ to disk.
 \caption{%
     Results of experiments.
 }
-\label{fig:exp1}
+\label{hiercomp/fig:exp1}
 \end{figure}
 
 
@@ -2123,7 +2125,7 @@ constraints. Some interesting points are that:
 %-------------------------------------------------------------------------------
 
 \section{Discussion}
-\label{discussion}
+\label{hiercomp/discussion}
 
 We next discuss the problem of hierarchy complementation speculatively,
 in settings different from ours. The general problem is that of
@@ -2210,7 +2212,7 @@ example, we discuss some of these complications below.
 
   For phantom types \code{R} and \code{X}, if some other constraint
   (e.g., of the kind induced in the case of multiple inheritance in
-  Section~\ref{multiple}) can be satisfied by making \code{X} a
+  Section~\ref{hiercomp/multiple}) can be satisfied by making \code{X} a
   sybtype of \code{S}, then we get the additional constraint: ``if
   \code{X} becomes a subtype of \code{S} then \code{Y} must be a
   subtype of \code{R}''. This is again a very expressive constraint
@@ -2353,9 +2355,9 @@ compilation in the form of bytecode, and bytecode only. Second, our
 emphasis is on satisfying constraints instead of capturing them as a
 rich type. Finally, our constraints are of a very different nature
 from any in the principal typings literature. As discussed in
-Section~\ref{discussion}, the input and output language assumptions
-crucially determine the essence of an incomplete program analysis
-problem.
+Section~\ref{hiercomp/discussion}, the input and output language
+assumptions crucially determine the essence of an incomplete program
+analysis problem.
 
 
 %-------------------------------------------------------------------------------
