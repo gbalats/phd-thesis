@@ -258,14 +258,14 @@ This is not the case for C/C++, where:
 
 
 
-\noindent Figure~\ref{fig/struct} illustrates the above points.
+\noindent Figure~\ref{structsens/fig/struct} illustrates the above points.
 %regarding C's complexity with respect to pointer analysis. 
 The \code{Outer} struct type contains a 3-element array of
 \code{Inner} subobjects via its field \code{in}. Unlike in Java, all
 these subobjects are stored inside the \code{Outer} instance's
 allocation; no dereference is needed to access them. On
-Figure~\ref{fig/struct:code}, variable \code{ptr} will hold the
-address of some subobject of variable (or stack-allocated object)
+Figure~\ref{structsens/fig/struct:code}, variable \code{ptr} will hold
+the address of some subobject of variable (or stack-allocated object)
 \code{obj} of the \code{Outer} type. Variable \code{ptr} is then used
 later to store to this field of \code{obj}. (Note that the two
 instructions, the store instruction at line~4 and the instruction that
@@ -290,7 +290,7 @@ typedef struct Outer {
    Inner in[3];
 } Outer;
 \end{lcppcode}
-    \subcaption{Nested struct declaration}\label{fig/struct:decl}
+    \subcaption{Nested struct declaration}\label{structsens/fig/struct:decl}
   \end{minipage}%
   \begin{minipage}[b]{.5\linewidth}
     \centering\large
@@ -302,17 +302,17 @@ int ***ptr = &(obj.in[1].x); ...
 void *q = obj.x;
 \end{lcppcode}
     \subcaption{Complex Field Access}
-    \label{fig/struct:code}\par\vfill
+    \label{structsens/fig/struct:code}\par\vfill
 \begin{lcppcode}
 Inner i;
 Inner *ip = &i;
 ip = (Inner *) &ip->y;
 \end{lcppcode}
     \subcaption{Positive Weight Cycles}
-    \label{fig/struct:pwc}
+    \label{structsens/fig/struct:pwc}
   \end{minipage}
   \caption{C example with nested struct types}
-  \label{fig/struct}
+  \label{structsens/fig/struct}
 \end{figure}
 
 In contrast, a \emph{field-insensitive} approach (which is common
@@ -352,7 +352,7 @@ by $p$.
 There are several issues with this approach:
 \begin{enumerate}
 \item First, it is not clear how the approach generalizes to nested structures,
-  as in Figure~\ref{fig/struct:decl}. Had a heap allocation
+  as in Figure~\ref{structsens/fig/struct:decl}. Had a heap allocation
   $\alloc{o}$ (of unknown type) flowed to the points-to set of
   variable \code{p}, how could an expression like $p + i$
   differentiate between the $i$-th field of $\alloc{o}$ and the $i$-th
@@ -360,7 +360,8 @@ There are several issues with this approach:
   could be of entirely incompatible types.)
 \item As Pearce et al. note, imprecision in the analysis may introduce
   positive weight cycles that lead to infinite derivations, if no
-  other action is taken. For instance, in Figure~\ref{fig/struct:pwc}:
+  other action is taken. For instance, in
+  Figure~\ref{structsens/fig/struct:pwc}:
   \begin{compactenum}[i.]
   \item Due to the instruction ``\code{ip~=~\&i};'', the points-to set of
     \var{ip} should include at least \var{i}: $ip \supseteq \{ i \}$.
@@ -386,14 +387,15 @@ There are several issues with this approach:
 \item This approach greatly decreases the analysis precision in the
   presence of factory methods or wrapper functions for allocation
   routines. Consider the \code{xmalloc()} function of \emph{GNU
-    Coreutils} in Figure~\ref{fig/xmalloc}, which is consistently used
-  instead of \code{malloc()} to check if the allocation succeeded and
-  abort the program otherwise. The allocation site it contains will
-  represent the union of all struct types, dynamically allocated via
-  \code{xmalloc()}, by the same abstract object. The $i$-th field of
-  this abstract object will then represent the $i$-th field of this
-  union type, losing essential type information by merging unrelated
-  fields (whose types we statically know to be completely different).
+    Coreutils} in Figure~\ref{structsens/fig/xmalloc}, which is
+  consistently used instead of \code{malloc()} to check if the
+  allocation succeeded and abort the program otherwise. The allocation
+  site it contains will represent the union of all struct types,
+  dynamically allocated via \code{xmalloc()}, by the same abstract
+  object. The $i$-th field of this abstract object will then represent
+  the $i$-th field of this union type, losing essential type
+  information by merging unrelated fields (whose types we statically
+  know to be completely different).
 \end{enumerate}
 
 \begin{figure}[ht]
@@ -408,7 +410,7 @@ void * xmalloc (size_t n) {
 \caption[Generic \code{malloc()} wrapper]{%
   Generic \code{malloc()} wrapper with error checking that aborts the
   program when allocation fails}
-  \label{fig/xmalloc}
+  \label{structsens/fig/xmalloc}
 \end{figure}
 
 The common denominator of all these limitations is that they lose any
@@ -464,20 +466,22 @@ instruction set, and has the following distinguishing features:
   instead of an \instr{alloca} instruction.
 \end{itemize}
 
-The example of Figure~\ref{fig/partialssa} illustrates these points
-regarding the LLVM translation. Figure~\ref{fig/partialssa:c} shows
-the original source code, while Figure~\ref{fig/partialssa:llvm} shows
-the corresponding LLVM bitcode. Local variable \code{p} is stored in
-memory (since its address is taken) and  virtual register
-\code{\%p} holds its address. \code{\%p}'s value can be updated multiple times,
-using \instr{store} instructions. Likewise, global variable
-\code{gv} (of type \code{int*}) is also kept in memory and pointer
-\code{@gv} (of type \code{int**}) is used to access it. As will be
-clear later, our analysis follows the variable representation conventions of LLVM and
+The example of Figure~\ref{structsens/fig/partialssa} illustrates
+these points regarding the LLVM
+translation. Figure~\ref{structsens/fig/partialssa:c} shows the
+original source code, while
+Figure~\ref{structsens/fig/partialssa:llvm} shows the corresponding
+LLVM bitcode. Local variable \code{p} is stored in memory (since its
+address is taken) and virtual register \code{\%p} holds its
+address. \code{\%p}'s value can be updated multiple times, using
+\instr{store} instructions. Likewise, global variable \code{gv} (of
+type \code{int*}) is also kept in memory and pointer \code{@gv} (of
+type \code{int**}) is used to access it. As will be clear later, our
+analysis follows the variable representation conventions of LLVM and
 decouples memory allocations from virtual registers (or global
-variable references). Figure~\ref{fig/partialssa:pt} depicts the
-relevant points-to relationships, which capture that \code{gv} points to
-\code{p}.
+variable references). Figure~\ref{structsens/fig/partialssa:pt}
+depicts the relevant points-to relationships, which capture that
+\code{gv} points to \code{p}.
 %
 Dashed edges are used to represent \emph{variable points-to edges}
 (whose source is a virtual register), while solid edges are
@@ -496,7 +500,7 @@ void f()
 }
 \end{cppcode}
     \subcaption{C source}
-    \label{fig/partialssa:c}
+    \label{structsens/fig/partialssa:c}
   \end{minipage}
   ~
   \begin{minipage}[b]{.4\linewidth}
@@ -510,16 +514,16 @@ define void @f() {
 }
 \end{bitcode}
     \subcaption{LLVM translation}
-    \label{fig/partialssa:llvm}
+    \label{structsens/fig/partialssa:llvm}
   \end{minipage}
   \begin{minipage}[b]{.33\linewidth}
     \centering
     \includegraphics[trim={14mm 10mm 0 0},clip,width=1.5\linewidth]{figures/structsens/Partial-SSA.pdf}
     \subcaption{Points-to graph}
-    \label{fig/partialssa:pt}
+    \label{structsens/fig/partialssa:pt}
   \end{minipage}
   \caption{Partial SSA Example}
-  \label{fig/partialssa}
+  \label{structsens/fig/partialssa}
 \end{figure}
 
 
@@ -542,10 +546,10 @@ representing its input and output relations. Then, we express the main
 aspects of our analysis as a set of inference rules.
 
 \subsection{Abstractions}
-\label{sect/abstractions}
+\label{structsens/sect/abstractions}
 
-Figure~\ref{fig/domains} presents the input and output domains
-of our analysis. We represent functions as a subset of global
+Figure~\ref{structsens/fig/domains} presents the input and output
+domains of our analysis. We represent functions as a subset of global
 entities. Thus, $G$ contains all symbols referencing global
 entities---everything starting with symbol ``\code{@}'' in LLVM
 bitcode. Set $V$ holds temporaries only (i.e., virtual registers), and
@@ -570,27 +574,27 @@ set of abstract objects $O$, that correspond to memory locations.
     \bottomrule
   \end{tabular}
   \caption{Analysis Domains}
-  \label{fig/domains}
+  \label{structsens/fig/domains}
 \end{figure}
 
 The LLVM IR defines an extensive instruction set. However, only a
 small subset is relevant for the purposes of pointer
-analysis. Figure~\ref{fig/llvm} presents a simplified version of these
-relevant instructions. The first two instructions are used to allocate
-memory on the stack and on the heap, respectively. As previously
-discussed, \instr{alloca} instructions are used for address-taken
-variables. They accept an extra type argument (absent in
+analysis. Figure~\ref{structsens/fig/llvm} presents a simplified
+version of these relevant instructions. The first two instructions are
+used to allocate memory on the stack and on the heap, respectively. As
+previously discussed, \instr{alloca} instructions are used for
+address-taken variables. They accept an extra type argument (absent in
 \instr{malloc} instructions), which specifies the exact type of the
 allocation (virtual registers are strongly typed), and the allocation
-size is a constant. Next, we have
-\instr{cast} instructions, used solely to satisfy LLVM's type checker
-since they do not change any memory contents, and \instr{phi}
-instructions that choose a value depending on the instruction's
-predecessor. Apart from the standard \instr{load}/\instr{store}
-instructions, we have two more instructions that, given a memory
-address operand, return a new address by adding a relative offset
-that corresponds to either a field or an array element. (Only 
-\instr{load} instructions dereference memory, however.) Finally,
+size is a constant. Next, we have \instr{cast} instructions, used
+solely to satisfy LLVM's type checker since they do not change any
+memory contents, and \instr{phi} instructions that choose a value
+depending on the instruction's predecessor. Apart from the standard
+\instr{load}/\instr{store} instructions, we have two more instructions
+that, given a memory address operand, return a new address by adding a
+relative offset that corresponds to either a field or an array
+element. (Only \instr{load} instructions dereference memory, however.)
+Finally,
 %% Not clear to me why store can take a constant address but load cannot.
 %% If constants can be handled via intermediate registers in one case,
 %% they also can in the other.
@@ -652,7 +656,7 @@ accept a variable (function pointer), as their first argument.
     instruction (that we omit in this figure). Each such label can be
     used to uniquely identify its instruction. %
   }
-  \label{fig/llvm}
+  \label{structsens/fig/llvm}
 \end{figure}
 
 
@@ -702,13 +706,14 @@ abstract object that could be of any of the above forms.
 By representing field and array subobjects as separate abstract
 objects themselves, the handling of instructions that return addresses
 anywhere but at the beginning of some allocation becomes
-straightforward. As we shall see at Section~\ref{sect/rules}, all our
-analysis has to do is return the relevant abstract object that
-represents the given subobject of its base allocation. This abstract
-subobject will have its own distinct points-to set, which will be
-tracked separately from that of its base allocation or any of the rest
-of its fields. Thus, it will allow the analysis to retain a certain
-degree of precision that would be otherwise impossible.
+straightforward. As we shall see at
+Section~\ref{structsens/sect/rules}, all our analysis has to do is
+return the relevant abstract object that represents the given
+subobject of its base allocation. This abstract subobject will have
+its own distinct points-to set, which will be tracked separately from
+that of its base allocation or any of the rest of its fields. Thus, it
+will allow the analysis to retain a certain degree of precision that
+would be otherwise impossible.
 % for a field-insensitive approach.
 
 \vspace{0.5em}
@@ -742,15 +747,15 @@ relations:
 
 
 \subsection{Techniques - Rules}
-\label{sect/rules}
+\label{structsens/sect/rules}
 
-Figure~\ref{fig/rules} presents the main aspects of the analysis as a
-set of inference rules. The first two rules handle stack and heap
-allocation instructions. All they do is create a new abstract object
-representing the given allocation site, and assign it to the target
-variable. In the case of stack allocation, we also record the type of
-the object, since it is available at the allocation site. The next
-pair of rules handle global allocations for global variables and
+Figure~\ref{structsens/fig/rules} presents the main aspects of the
+analysis as a set of inference rules. The first two rules handle stack
+and heap allocation instructions. All they do is create a new abstract
+object representing the given allocation site, and assign it to the
+target variable. In the case of stack allocation, we also record the
+type of the object, since it is available at the allocation site. The
+next pair of rules handle global allocations for global variables and
 functions, respectively, in a similar way. In contrast to the previous
 rules, we create abstract objects for all global entities, regardless
 of any instructions (since their allocation in LLVM bitcode is
@@ -900,7 +905,7 @@ implicit), and record their types.
       \\ \alloctype{o_{i,\tp{T}}} = \tp{T}}
   \end{math}
   \caption{Inference Rules}
-  \label{fig/rules}
+  \label{structsens/fig/rules}
 \end{figure}
 
 
@@ -1034,10 +1039,10 @@ indeed irrelevant.
 \subsection{Partial Order of Abstract Objects}
 
 As the observant reader may have noticed, the rules of
-Figure~\ref{fig/rules} about accesses or array elements are not
-sound. Consider the example of Figure~\ref{fig/array}. Variable
-$\var{p}$ points to a heap allocation. Three different store
-instructions take place:
+Figure~\ref{structsens/fig/rules} about accesses or array elements are
+not sound. Consider the example of
+Figure~\ref{structsens/fig/array}. Variable $\var{p}$ points to a heap
+allocation. Three different store instructions take place:
 \begin{inparaenum}[(i)]
 \item one that stores $\code{\&i}$ to index 1,
 \item one that stores $\code{\&j}$ to index 3, and
@@ -1063,7 +1068,7 @@ int *y = p[2];  // yields $\{ k \}$
 int *z = p[j];  // yields $\{ i, j, k \}$
 \end{cppcode}
   \caption{Accessing array elements.}
-  \label{fig/array}
+  \label{structsens/fig/array}
 \end{figure}
 
 Using our array-sensitive approach, we ensure that indices 1, 3, and
@@ -1113,9 +1118,10 @@ partial order over domain $O$ and define it appropriately.
 \noindent
 Intuitively, $\alloc{o_1} \sqsubseteq \alloc{o_2}$ holds when
 $\alloc{o_1}$ can be turned to $\alloc{o_2}$ by substituting any of
-its constant array indices with ``$*$''. Figure~\ref{fig/poset} gives
-an example of such ordering. The direction of
-the edges is from the less to the more general object.
+its constant array indices with
+``$*$''. Figure~\ref{structsens/fig/poset} gives an example of such
+ordering. The direction of the edges is from the less to the more
+general object.
 
 \begin{figure}[ht]
   \centering
@@ -1125,19 +1131,20 @@ the edges is from the less to the more general object.
     objects. An edge $(\, \alloc{s},\alloc{t} \,)$ denotes that object
     $\alloc{s}\:$ is generalized by object $\alloc{t}\:$ (i.e.,
     $\, \alloc{s} \sqsubseteq \alloc{t}\, $).}
-  \label{fig/poset}
+  \label{structsens/fig/poset}
 \end{figure}
 
 Given this partial order, it suffices to add the two rules of
-Figure~\ref{fig/rules:star} to account for possible index aliases. The
-first rule states that the points-to set of a (less general) object,
-such as $\alloc{o[c]}$, is a superset of the points-to set of any
-object that generalizes it, such as $\alloc{o[*]}$. The second rule
-modifies the treatment of load instructions, so that they may return
-anything in the points-to set of not just the object we load from
-(such as $\alloc{o}[*]$), but also of objects that it generalizes
-(such as $\alloc{o[c]}$). In this way, the general and specific points-to
-sets are kept distinct, while their subset relationship is maintained.
+Figure~\ref{structsens/fig/rules:star} to account for possible index
+aliases. The first rule states that the points-to set of a (less
+general) object, such as $\alloc{o[c]}$, is a superset of the
+points-to set of any object that generalizes it, such as
+$\alloc{o[*]}$. The second rule modifies the treatment of load
+instructions, so that they may return anything in the points-to set of
+not just the object we load from (such as $\alloc{o}[*]$), but also of
+objects that it generalizes (such as $\alloc{o[c]}$). In this way, the
+general and specific points-to sets are kept distinct, while their
+subset relationship is maintained.
 
 \begin{figure}[ht]
   % \begin{math}
@@ -1191,7 +1198,7 @@ sets are kept distinct, while their subset relationship is maintained.
   \end{math}
   \\
   \caption{Associating array subobjects via their partial order.}
-  \label{fig/rules:star}
+  \label{structsens/fig/rules:star}
 \end{figure}
 
 
@@ -1281,20 +1288,21 @@ translated to a series of indirect access instructions.
 call i32 %4 (%class.B* %bp)
 \end{bitcode}
     \subcaption{C++ virtual call compiled to LLVM bitcode}
-    \label{fig/vcall:bitcode}
+    \label{structsens/fig/vcall:bitcode}
   \end{minipage}
   \begin{minipage}[b]{.5\linewidth}
     \centering
     \includegraphics[trim={0 0 0 0},clip,width=1\linewidth]{figures/structsens/Virtual-Call.pdf}
     \subcaption{Points-to graph}
-    \label{fig/vcall:ptgraph}
+    \label{structsens/fig/vcall:ptgraph}
   \end{minipage}
   \caption{C++ Virtual Call Example}
-  \label{fig/vcall}
+  \label{structsens/fig/vcall}
 \end{figure}
 
-Figure~\ref{fig/vcall:bitcode} presents (a simplified version of) the
-LLVM bitcode for such a translation. A virtual call has to
+Figure~\ref{structsens/fig/vcall:bitcode} presents (a simplified
+version of) the LLVM bitcode for such a translation. A virtual call
+has to
 \begin{inparaenum}[(i)]
 \item load the v-pointer of the class instance (at offset 0),
 \item index into the returned v-table (at the corresponding offset of
@@ -1307,10 +1315,10 @@ By employing the techniques we have described so far, our
 structure-sensitive analysis is well-equipped to deal with such an
 involved pattern, and precisely resolve the function to be called.
 
-Figure~\ref{fig/vcall:ptgraph} shows what our analysis computes
-(assuming $\var{\%bp}$ points to variable $\var{b}$). Only
-a minor addition is required: anything that points to an object
-should also point to its first field (at byte offset 0). Hence, both
+Figure~\ref{structsens/fig/vcall:ptgraph} shows what our analysis
+computes (assuming $\var{\%bp}$ points to variable $\var{b}$). Only a
+minor addition is required: anything that points to an object should
+also point to its first field (at byte offset 0). Hence, both
 $\var{\%bp}$ and $\var{\%1}$ (after the cast) will point both to
 (stack-allocated) object $\alloc{b}$, and to its v-pointer field
 subobject $\alloc{b.vptr}$. The first load instruction will return the
@@ -1344,7 +1352,7 @@ Xeon E5-2667 (v2) CPUs at 3.30GHz and 256GB of RAM. The analysis
 is single-threaded and occupies a small portion of the RAM. We use
 the LogicBlox Datalog engine (v.3.10.14) and LLVM v.3.7.0.
 
-%% Figure~\ref{fig/stats:misc} presents some general
+%% Figure~\ref{structsens/fig/stats:misc} presents some general
 %% metrics on the input and output of each analysis:
 %% \begin{inparaenum}[(i)]
 %% \item number of call-graph edges (allocation site to function),
@@ -1403,11 +1411,11 @@ the LogicBlox Datalog engine (v.3.10.14) and LLVM v.3.7.0.
 %%     number of call-graph edges. The third (resp. sixth) column is the
 %%     number of abstract objects created. The fourth (resp. seventh) column
 %%     is the running time of the analysis.}
-%%   \label{fig/stats:misc}
+%%   \label{structsens/fig/stats:misc}
 %% \end{figure}
 
-Figure~\ref{fig/stats:misc} presents some general
-metrics on the input and output of each analysis:
+Figure~\ref{structsens/fig/stats:misc} presents some general metrics
+on the input and output of each analysis:
 \begin{inparaenum}[(i)]
 \item number of call-graph edges (allocation site to function),
 \item number of abstract objects created by the analysis, and
@@ -1464,18 +1472,18 @@ metrics on the input and output of each analysis:
     edges (as computed by our analysis). The third (resp. fifth)
     column is the number of abstract objects created. The fourth
     (resp. sixth) column is the analysis running time.}
-  \label{fig/stats:misc}
+  \label{structsens/fig/stats:misc}
 \end{figure}
 
 
 
-Figure~\ref{fig/stats:var} compares the two analyses in terms of the
-degree of resolving variable points-to targets. The first column of each analysis lists
-the percentage of fully resolved variables (virtual registers): \emph{how
-  many point to a single abstract object}. This is the main
-metric of interest for most analysis clients. The next two columns
-list the percentage of variables that point to two/three
-objects.
+Figure~\ref{structsens/fig/stats:var} compares the two analyses in
+terms of the degree of resolving variable points-to targets. The first
+column of each analysis lists the percentage of fully resolved
+variables (virtual registers): \emph{how many point to a single
+  abstract object}. This is the main metric of interest for most
+analysis clients. The next two columns list the percentage of
+variables that point to two/three objects.
 
 \begin{figure}[htb!]
   \setlength{\tabcolsep}{3pt}
@@ -1540,27 +1548,27 @@ objects.
     Variable points-to sets. Proportion of resolved variables (that
     point to one abstract object), as well as variables with two or
     three points-to targets.}
-  \label{fig/stats:var}
+  \label{structsens/fig/stats:var}
 \end{figure}
 
 It is evident that our structure-sensitive analysis fares consistently
-better in fully resolving  variable targets. Our analysis resolves
-many more variables than \pearce{} does, for any of the available
+better in fully resolving variable targets. Our analysis resolves many
+more variables than \pearce{} does, for any of the available
 benchmarks, with an average increase of $36\%$ across all coreutil
-benchmarks and $58\%$ in the PostgreSQL benchmarks. 
-This is \emph{despite using a finer-grained object abstraction
-  than \pearce{}}: The ``abstract objects'' column of
-Figure~\ref{fig/stats:misc} shows that our analysis abstraction has
-\emph{one to two orders of magnitude more} abstract objects than
-\pearce{}. Yet it succeeds at resolving many more variables to a
-single (and much finer-grained) abstract object. (The only benchmark
-instance in which \pearce{} somewhat benefits from its coarse abstract object
-granularity is ecpg: a full $42.64\%$ of variables point to 3, much
-coarser than ours, abstract objects.) Note also that the \pearce{}
-analysis appears much better than it actually is for meaningful cases,
-due to large amounts of low-hanging fruit---e.g., global or
-address-taken variables, which are the single target of some virtual
-register, due to the SSA representation.
+benchmarks and $58\%$ in the PostgreSQL benchmarks.  This is
+\emph{despite using a finer-grained object abstraction than
+  \pearce{}}: The ``abstract objects'' column of
+Figure~\ref{structsens/fig/stats:misc} shows that our analysis
+abstraction has \emph{one to two orders of magnitude more} abstract
+objects than \pearce{}. Yet it succeeds at resolving many more
+variables to a single (and much finer-grained) abstract object. (The
+only benchmark instance in which \pearce{} somewhat benefits from its
+coarse abstract object granularity is ecpg: a full $42.64\%$ of
+variables point to 3, much coarser than ours, abstract objects.) Note
+also that the \pearce{} analysis appears much better than it actually
+is for meaningful cases, due to large amounts of low-hanging
+fruit---e.g., global or address-taken variables, which are the single
+target of some virtual register, due to the SSA representation.
 
 
 
