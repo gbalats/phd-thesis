@@ -1,4 +1,4 @@
-\label{chapter:reflection}
+\label{reflection/chapter:reflection}
 
 Reflection is a highly dynamic language feature that poses grave
 problems for static analyses.  In the Java setting, reflection is
@@ -358,14 +358,14 @@ work:
 
 %%%SPACE
 %The rest of the paper introduces important background on static
-%reflection analysis (Section~\ref{sec:model}), presents our new
-%techniques (Section~\ref{soundiness}), evaluates them
-%(Section~\ref{sec:experiments}), and compares to related work
-%(Section~\ref{sec:related}).
+%reflection analysis (Section~\ref{reflection/sec:model}), presents our new
+%techniques (Section~\ref{reflection/soundiness}), evaluates them
+%(Section~\ref{reflection/sec:experiments}), and compares to related work
+%(Section~\ref{reflection/sec:related}).
 
 
 \section{Background: Joint Reflection and Points-To Analysis}
-\label{sec:model}
+\label{reflection/sec:model}
 
 As necessary background, we next present an abstracted model of the
 inter-related reflection and points-to analysis upon which our
@@ -485,7 +485,7 @@ objects, and more.
 %\end{minipage}
 %}
 \caption{Relations representing the input program and their informal meaning.}
-\label{figure:inputs}
+\label{reflection/figure:inputs}
 \end{figure}
 
 
@@ -511,7 +511,7 @@ natural numbers, $N$, and
 strings.
  The analysis takes as input the relations (i.e.,
 tables filled with information from the program text) shown in
-Figure~\ref{figure:inputs}.
+Figure~\ref{reflection/figure:inputs}.
 Using these inputs, the Livshits et al. reflection analysis
 can be expressed as a five-rule addition to any points-to
 analysis. The rest of the points-to analysis (not shown here---see
@@ -671,7 +671,7 @@ the method \args{m}.
 
 
 \section{Techniques for Empirical Soundness}
-\label{soundiness}
+\label{reflection/soundiness}
 
 %Our reflection analysis is designed with an aim for empirical
 %soundness.
@@ -684,21 +684,22 @@ We next present our main techniques for higher empirical soundness.
 
 
 \subsection{Generalizing Reflection Inference via Substring Analysis}  
-\label{sec:strings}
+\label{reflection/sec:strings}
 
 An important way of enhancing the empirical soundness of our analysis
-is via richer string flow. The logic discussed in Section~\ref{sec:model}
-only captures the case of entire string constants used as parameters
-to a \code{forName} call. The parameter of \code{forName} could be any
-string expression, however. It is interesting to attempt to deduce
-whether such an expression can refer to a class name. Similarly,
-strings representing field and method names are used in reflective
-calls---we already encountered the \code{getMethod} call in
-Section~\ref{sec:model}. 
+is via richer string flow. The logic discussed in
+Section~\ref{reflection/sec:model} only captures the case of entire
+string constants used as parameters to a \code{forName} call. The
+parameter of \code{forName} could be any string expression,
+however. It is interesting to attempt to deduce whether such an
+expression can refer to a class name. Similarly, strings representing
+field and method names are used in reflective calls---we already
+encountered the \code{getMethod} call in
+Section~\ref{reflection/sec:model}.
 
 %%%SPACE
 %% \paragraph{Example.} 
-%% The (simplified) code excerpt shown in Figure~\ref{figure:substrings},
+%% The (simplified) code excerpt shown in Figure~\ref{reflection/figure:substrings},
 %% found in the \emph{xalan} DaCapo benchmark, demonstrates the need for
 %% substring analysis in order to resolve reflective method
 %% invocations. The methods shown belong to class
@@ -752,7 +753,7 @@ Section~\ref{sec:model}.
 %% }
 %% \end{javacode}}
 %% \caption{Example of reflection leveraging partial strings.}
-%% \label{figure:substrings}
+%% \label{reflection/figure:substrings}
 %% \end{figure}
 
 %% Note that, in order to resolve the setter method, one needs to track
@@ -830,12 +831,12 @@ to be pointed by the variable \args{r} that accepts the result of the
 In this way, the flow of partial string expressions through the
 program is tracked. By then appropriately adjusting the
 \predname{ConstantForClass} and \predname{ConstantForMethod} predicates of
-Section~\ref{sec:model} (to also map from partial strings to their
+Section~\ref{reflection/sec:model} (to also map from partial strings to their
 matching types) we can estimate which reflective entities can be
 returned at the site of a \code{forName} or \code{getMethod} call.  In
 this way, the joint points-to and reflection analysis is enhanced with
 substring reasoning without requiring any changes to the base logic of
-Section~\ref{sec:model}. String flow through buffers becomes just
+Section~\ref{reflection/sec:model}. String flow through buffers becomes just
 an enhancement of the points-to logic, which is already leveraged
 by reflection analysis.
 
@@ -878,7 +879,7 @@ flow into the reflection operation.
 %an excellent heuristic for 
 
 \subsection{Use-Based Reflection Analysis}
-\label{sec:use-based}
+\label{reflection/sec:use-based}
 
 Our second technique for statically analyzing reflection calls
 %leverages the way objects returned by reflective calls are later used
@@ -890,7 +891,7 @@ mechanism.
 %We discuss these next.
 
 \subsubsection{Inter-procedural Back-Propagation.}
-\label{sec:back-propagation}
+\label{reflection/sec:back-propagation}
 
 An important observation regarding reflection handling is that it is
 one of the few parts of a static analysis that are typically
@@ -1083,7 +1084,7 @@ e = (Event) o2;
 
 Interestingly, the back-propagation analysis can exploit not just cast
 information but also strings (including partial strings, transparently,
-per our substring/string-flow analysis of Section~\ref{sec:strings}).
+per our substring/string-flow analysis of Section~\ref{reflection/sec:strings}).
 When retrieving a member from a reflectively discovered class, the
 string name supplied may contain enough information to disambiguate
 what this class may be. Consider the pattern:
@@ -1102,7 +1103,7 @@ idea to the 4 API calls \javasignature{Class.get[Declared]Method} and
 \paragraph{Contrasting approaches.}
 
 Our back-propagating reflection analysis
-%(Section~\ref{sec:back-propagation}) 
+%(Section~\ref{reflection/sec:back-propagation})
 has some close relatives in the literature.  Livshits et
 al.~\cite{aplas/LivshitsWL05,livshits:thesis} also examined using
 future casts as hints for \code{forName} calls, as an alternative to
@@ -1149,7 +1150,7 @@ however, important ways in which our techniques differ:
   % return, even when it is not certain it will. This maximizes
   % empirical soundness and we then employ other mechanisms for
   % controlling the potential imprecision of the back-propagating
-  % analysis, as we will see in Section~\ref{sec:throttling}.
+  % analysis, as we will see in Section~\ref{reflection/sec:throttling}.
 
   % \item Our back-propagation analysis complements our object invention
   %   (forward propagation) analysis, whereas other techniques favor one
@@ -1170,7 +1171,7 @@ however, important ways in which our techniques differ:
   %   \footnote{The Li
   %   et al. technique generally takes great pains to avoid over-approximation.
   %   It underapproximates virtually all reflection calls (and not just the
-  %   few mentioned in Section~\ref{sec:back-propagation}) and only
+  %   few mentioned in Section~\ref{reflection/sec:back-propagation}) and only
   %   resolves them when ...
 
 
@@ -1179,7 +1180,7 @@ however, important ways in which our techniques differ:
   \code{get[Declared]\{Method,Field\}} calls to resolve earlier
   \code{forName} calls). This feature also benefits from other
   elements of our overall analysis, namely substring matching and
-  substring flow analysis (Section~\ref{sec:strings}). For instance,
+  substring flow analysis (Section~\ref{reflection/sec:strings}). For instance,
   by having more information on what are the possible strings passed
   to a \code{getMethod} call, we are more likely to determine the
   return value of a \code{getClass}, on which the \code{getMethod} was
@@ -1205,7 +1206,7 @@ however, important ways in which our techniques differ:
 %% propagated to many program points, then the analysis precision and
 %% scalability are likely to suffer.  Therefore, it is desirable to
 %% control when and how back-propagation will apply. We discuss this
-%% topic in Section~\ref{sec:throttling}, but first we consider
+%% topic in Section~\ref{reflection/sec:throttling}, but first we consider
 %% alternatives to back-propagation.
 
 
@@ -1228,7 +1229,7 @@ however, important ways in which our techniques differ:
 %  Subtype(type, t).
 
 \subsubsection{Inventing Objects.}
-\label{sec:invention}
+\label{reflection/sec:invention}
 
 Our approach introduces an alternative use-based reflection analysis
 technique, which works as a \emph{forward propagation} technique (in
@@ -1326,7 +1327,7 @@ cast.
 
 %\subsection{Contrasting Approaches}
 
-%Although we compare to related work in Section~\ref{sec:related}
+%Although we compare to related work in Section~\ref{reflection/sec:related}
 
 
 
@@ -1347,7 +1348,7 @@ cast.
 %\end{rules}
 %
 %Note that the rule adds more inferences to the \predname{ClassObject}
-%relation, defined in Section~\ref{sec:model}. The rule's logic states that
+%relation, defined in Section~\ref{reflection/sec:model}. The rule's logic states that
 %if there is a call site, \args{i_n} of \code{newInstance} and another call site
 %\args{i_f} of \code{forName}, and if the receiver of the \code{newInstance} call is aliased
 %with the result of the \code{forName} call, and the result of the \code{newInstance}
@@ -1377,15 +1378,15 @@ cast.
 %that \code{newInstance} can be called on, and have its result cast. If
 %the \code{forName} is completely unresolved (i.e., its return value is
 %not inferred based on other rules, such as the ``constant name'' rule
-%of Section~\ref{sec:model}) or if it is resolved to some type that cannot
+%of Section~\ref{reflection/sec:model}) or if it is resolved to some type that cannot
 %produce a value to trigger the cast, then the above cast logic will
 %remain inert.
 
 
 \subsection{Balancing for Scalability}
-\label{sec:throttling}
+\label{reflection/sec:throttling}
 
-%As discussed in Section~\ref{sec:back-propagation}, the
+%As discussed in Section~\ref{reflection/sec:back-propagation}, the
 Consider again our inter-procedural back-propagating analysis
 technique relative to prior, intra-procedural techniques. Our approach
 explicitly aims for empirical soundness (i.e., to infer all potential
@@ -1424,7 +1425,7 @@ heap (i.e., through objects or arrays), allowing only their flow
 through local variables. This is consistent with expected
 inter-procedural usage patterns of reflection results: although such
 results will likely be returned from methods (cf. the quote from
-\cite{aplas/LivshitsWL05} in Section~\ref{sec:back-propagation}),
+\cite{aplas/LivshitsWL05} in Section~\ref{reflection/sec:back-propagation}),
 they are less likely to be stored in heap objects. 
 
 We employ both of the above techniques by default in our analysis
@@ -1443,7 +1444,7 @@ through input options.
 
 
 \section{Evaluation}
-\label{sec:experiments}
+\label{reflection/sec:experiments}
 
 We implemented our techniques in the \textsc{Doop}
 framework~\cite{oopsla/BravenboerS09}, together with numerous
@@ -1679,7 +1680,7 @@ dynamic features, as discussed in the Introduction.
     and analysis time (line) over the DaCapo benchmarks. \emph{Lower
       is better for all.} For missing bars (``n/a''), the analysis did
     not terminate in 90mins.}
-  \label{fig:dacapo-bach}
+  \label{reflection/fig:dacapo-bach}
 \end{figure}
 
 % \begin{figure}[t]
@@ -1709,7 +1710,7 @@ dynamic features, as discussed in the Introduction.
 %   \caption{Total static and dynamic call-graph edges for the DaCapo 9.12-Bach
 %     benchmarks. These include only \emph{application-to-application}
 %     and \emph{application-to-library} edges.}
-%   \label{fig:total_static}
+%   \label{reflection/fig:total_static}
 % \end{figure}
 
 \begin{figure}[h]
@@ -1738,11 +1739,11 @@ dynamic features, as discussed in the Introduction.
   \caption{Total static and dynamic call-graph edges for the DaCapo 9.12-Bach
     benchmarks. These include only \emph{application-to-application}
     and \emph{application-to-library} edges.}
-  \label{fig:total_static}
+  \label{reflection/fig:total_static}
 \end{figure}
 
 
-Figure~\ref{fig:dacapo-bach} plots the results of our experiments,
+Figure~\ref{reflection/fig:dacapo-bach} plots the results of our experiments,
 combining both analysis time and empirical unsoundness (in call-graph
 edges). 
 %We compare our techniques to the \textsc{Elf} system
@@ -1770,15 +1771,15 @@ We show five techniques:
   engineering enhancements over the original \textsc{Doop} framework,
   but no analysis of partial strings or their flow.
 \item \emph{Substring.} The analysis integrates the substring and
-  substring flow analysis of Section~\ref{sec:strings}.
+  substring flow analysis of Section~\ref{reflection/sec:strings}.
 \item \emph{+Invent.} This analysis integrates substring analysis as well as the
-  object invention technique of Section~\ref{sec:invention}.
+  object invention technique of Section~\ref{reflection/sec:invention}.
 \item \emph{+Backwards.}\footnote{The \emph{+Backwards} and
     \emph{+Invent} techniques %are not comparable: they
     are both additions to the substring analysis, but neither includes
     the other.} This analysis integrates substring analysis as well as
   the back-propagation technique of
-  Section~\ref{sec:back-propagation}.
+  Section~\ref{reflection/sec:back-propagation}.
 \end{asparaenum}
 
 
@@ -1814,7 +1815,7 @@ analysis.
   or \emph{+backwards} outperformed \textsc{Elf}, while in 7-of-10
   benchmarks \emph{all} our techniques outperformed \textsc{Elf}.
   This is due to achieving scalability using the threshold techniques
-  of Section~\ref{sec:throttling} instead of by sacrificing some
+  of Section~\ref{reflection/sec:throttling} instead of by sacrificing some
   empirical soundness, as \textsc{Elf} does. (A major design feature
   of \textsc{Elf} is that it explicitly avoids inferring reflection
   call targets when it cannot fully disambiguate them.)
@@ -1827,14 +1828,14 @@ analysis.
 %  disambiguate them. This achieves scalability but at the expense of
 %  soundness. Instead, our experiments show that empirical soundness
 %  can be achieved while our mechanisms of
-%  Section~\ref{sec:throttling} manage to preserve scalability.
+%  Section~\ref{reflection/sec:throttling} manage to preserve scalability.
 
   
 %\item[RQ3: Do the techniques sacrifice precision?] 
   For completeness, we also show a sanity-checking metric over
   our analyses. Empirical soundness could
   increase by computing a vastly imprecise call-graph. This is not the
-  case for our techniques. Figure~\ref{fig:total_static} lists the
+  case for our techniques. Figure~\ref{reflection/fig:total_static} lists the
   total static and dynamic edges being computed. On average,
   \emph{+backwards} computes the most static edges (about $4.5$ times
   the number of dynamic edges). On the lower end of the spectrum lies
@@ -1882,7 +1883,7 @@ analysis.
 %  analysis) in 6 benchmarks. We do not plot the results of combining
 %  object invention and back-propagation because for these benchmarks
 %  (and for our current settings of parameters $c$ and $d$ from
-%  Section~\ref{sec:throttling}) they hardly show a difference over
+%  Section~\ref{reflection/sec:throttling}) they hardly show a difference over
 %  back-propagation alone, in either execution time or empirical
 %  soundness.
 
@@ -1910,7 +1911,7 @@ of context-sensitivity.
 
 
 \section{Related Work}
-\label{sec:related}
+\label{reflection/sec:related}
 
 The traditional handling of reflection in static analysis has been
 through integration of user input or dynamic information.  The
@@ -1967,7 +1968,7 @@ specifics differ. The conceptual precursor to both approaches is the
 work on reflection by Livshits et
 al.~\cite{aplas/LivshitsWL05,livshits:thesis}, which has been
 extensively discussed and contrasted throughout the paper (see
-Sections~\ref{sec:model}, and \ref{sec:use-based}).
+Sections~\ref{reflection/sec:model}, and \ref{reflection/sec:use-based}).
 
 Advanced techniques for string analysis have been presented by
 Christensen et al.~\cite{sas/ChristensenMS03}. They analyze complex
@@ -2016,7 +2017,7 @@ and patch the code to avoid reflection entirely.
 %technique. The work is concurrent to ours and we have only been able
 %to obtain a preprint at the time of this writing. Nevertheless, the
 %differences of the two approaches seem quite clear, as also discussed
-%in Section~\ref{sec:back-propagation}. Furthermore, the Li et al.
+%in Section~\ref{reflection/sec:back-propagation}. Furthermore, the Li et al.
 %technique does not employ substring matching or substring flow
 %analysis and does not emphasize empirical soundness. Instead it
 %eagerly under-approximates many more reflective calls and resolves
