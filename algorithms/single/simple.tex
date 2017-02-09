@@ -1,6 +1,6 @@
 \begin{algorithm} 
   \caption{Single-inheritance phantom-only solver}
-  \label{alg:single:simple}
+  \label{hiercomp/alg:single:simple}
   \hrulefill
 
   \begin{algorithmic}[1]
@@ -41,7 +41,7 @@
           \EndIf
        \EndWhile
        \If{$G$ has edges} \Comment all nodes have outgoing edge (cycle)
-         \State error: no solution  \label{lst:line:cycle}  %(graph has at least one cycle)
+         \State error: no solution  \label{hiercomp/lst:line:cycle}  %(graph has at least one cycle)
        \EndIf
        \State \Return $S$
     \EndFunction

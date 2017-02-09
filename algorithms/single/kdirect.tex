@@ -1,6 +1,6 @@
-\begin{algorithm} 
+\begin{algorithm}[thp]
   \caption{Single-inheritance solver for strictly known direct-supertypes}
-  \label{alg:single:kdirect}
+  \label{hiercomp/alg:single:kdirect}
   \small
   \hrulefill
 
@@ -34,7 +34,7 @@
       \If{$\exists$ path $t \leadsto \textit{top}[k]$ in $S$}
         \Let{$\textit{top}[k]$}{$t$}
         \Comment{lower superclass found, update LCS}
-      \ElsIf{$\nexists$ path $\textit{top}[k] \leadsto t$ in $S$}\label{lst:line:crossover}
+      \ElsIf{$\nexists$ path $\textit{top}[k] \leadsto t$ in $S$}\label{hiercomp/lst:line:crossover}
         \State \Return error (unsatisfiable constraint)
       \EndIf
     \EndFor

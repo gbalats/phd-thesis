@@ -1,28 +1,28 @@
-\label{correctness}
+\label{hiercomp/correctness}
 
 We shall call the path-edges originating from known-nodes
 \emph{\emph{kp}-edges}.  We will also use the symbols $S_0,
 S_1,\ldots,S_\infty$ to denote the various stratifications computed at
-each step of Algorithm~\ref{alg:multiple:strat}.  Note that our
+each step of Algorithm~\ref{hiercomp/alg:multiple:strat}.  Note that our
 algorithm will actually produce a finite number of stratifications (at
 most $|V|$) but we can disregard both the upper limit of the main loop
-and the early-failure condition (line~\ref{lst:line:unsat}) for
+and the early-failure condition (line~\ref{hiercomp/lst:line:unsat}) for
 proving correctness. Instead we focus on the main computation
-(line~\ref{lst:line:formula}) and the infinite sequence of
+(line~\ref{hiercomp/lst:line:formula}) and the infinite sequence of
 stratifications that would be produced if it was allowed to run
 forever (even after reaching a fixpoint).
 
-\begin{lem}\label{monotonicity}
+\begin{lem}\label{hiercomp/monotonicity}
   %% Let $G = (V,E) : V = V_{known} \cup V_{phantom}$ and $E = E_{path}
   %% \cup E_{direct}$ be a constraint graph.
   For all $v \in V$, the sequence $\{ S_{0}[v], S_{1}[v], \ldots \}$
   is non-decreasing.
 \end{lem}
 \begin{proof}
-  Direct consequence of line~\ref{lst:line:formula} of the algorithm.
+  Direct consequence of line~\ref{hiercomp/lst:line:formula} of the algorithm.
 \end{proof}
 
-\begin{lem}\label{range}
+\begin{lem}\label{hiercomp/range}
   %% Let $G = (V,E) : V = V_{known} \cup V_{phantom}$ and $E = E_{path}
   %% \cup E_{direct}$ be a constraint graph.
   For all $i \in \mathbb{N}$, $0 \leq S_i[v] \leq i, \forall v \in V$.
@@ -48,7 +48,7 @@ forever (even after reaching a fixpoint).
   S_{i+1}[v]$ and either $i = 0$ or $S_{i-1}[v] < S_i[v]$.
 \end{defn}
 
-\begin{thm}\label{stability} (Once a node's stratum does not change,
+\begin{thm}\label{hiercomp/stability} (Once a node's stratum does not change,
   it will not change again.)
   %% Let $G = (V,E) : V = V_{known} \cup V_{phantom}$ and $E = E_{path}
   %% \cup E_{direct}$ be a constraint graph.
@@ -62,11 +62,11 @@ forever (even after reaching a fixpoint).
 
   \begin{enumerate}
   \item \emph{Base}: For $i = 0$, let $v$ be a node in $V$, such that
-    $S_0[v] = S_{1}[v]$. From Lemma~\ref{range}, we have that $S_0[v]
-    = S_{1}[v] = 0$, which can happen if and only if $v$ has no
-    incoming edges (otherwise an edge would cause the node to move to
-    a higher stratum on iteration 1). It is therefore impossible for
-    $v$ to change in the following iterations since it has no
+    $S_0[v] = S_{1}[v]$. From Lemma~\ref{hiercomp/range}, we have that
+    $S_0[v] = S_{1}[v] = 0$, which can happen if and only if $v$ has
+    no incoming edges (otherwise an edge would cause the node to move
+    to a higher stratum on iteration 1). It is therefore impossible
+    for $v$ to change in the following iterations since it has no
     constraining edges.
   \item \emph{Inductive Step}: Assume that the theorem holds for all $i
     < n$ for some value of $n \in \mathbb{N}$. Let $t \in V$ be a
@@ -81,13 +81,13 @@ forever (even after reaching a fixpoint).
     than the source of the edge itself, while for \emph{kp}-edges,
     it is the lower phantom projection of the edge's source at step
     $n$ that we may use instead. Let us consider ordinary path-edges
-    first, in more detail. From Lemma~\ref{range}, we have that $0
+    first, in more detail. From Lemma~\ref{hiercomp/range}, we have that $0
     \leq S_n[t] \leq n$, and thus $0 \leq S_{n+1}[t] \leq n$.  Let
     $(s,t) \in E$ be an incoming edge of $t$. We have that $0\leq
     S_{n}[s] < S_{n+1}[t] \leq n$ which entails that $0 \leq S_{n}[s]
-    \leq n - 1$.  Therefore, according to Lemma~\ref{range}, we have
+    \leq n - 1$.  Therefore, according to Lemma~\ref{hiercomp/range}, we have
     that $0 \leq S_{i}[s] \leq n - 1, \forall i \in \{0,\ldots{},n\}$.
-    By the pigeonhole principle, and due to Lemma~\ref{monotonicity},
+    By the pigeonhole principle, and due to Lemma~\ref{hiercomp/monotonicity},
     there must surely exist two consecutive values $i,i+1$,
     s.t. $S_i[s] = S_{i+1}[s]$ and $i < n$. From the induction
     hypothesis, we know that $s$ will therefore not change and its
@@ -99,14 +99,14 @@ forever (even after reaching a fixpoint).
   \end{enumerate}
 \end{proof}
 
-\begin{corollary}\label{maxstrata}
+\begin{corollary}\label{hiercomp/maxstrata}
   %% Let $G = (V,E) : V = V_{known} \cup V_{phantom}$ and $E = E_{path}
   %% \cup E_{direct}$ be a constraint graph.
   For all $v \in V$ and $n \in \mathbb{N}^+$, $S_{n-1}[v] \neq
   S_{n}[v] \Rightarrow S_{n}[v] = n$.
 \end{corollary}
 
-\begin{thm}\label{termination}
+\begin{thm}\label{hiercomp/termination}
   %% Let $G = (V,E) : V = V_{known} \cup V_{phantom}$ and $E = E_{path}
   %% \cup E_{direct}$ be a constraint graph.
   The stratification sequence $S_0, S_1,\ldots$ will diverge (i.e.,
@@ -127,7 +127,7 @@ forever (even after reaching a fixpoint).
     that $S_{n-1}[u] = S_{n}[u]$, and observe that for each remaining
     node, there must exist at least a constraining edge that cannot be
     satisfied with a node that has already been ``stabilized''. That
-    said, due to Corollary~\ref{maxstrata}, each remaining node $v \in
+    said, due to Corollary~\ref{hiercomp/maxstrata}, each remaining node $v \in
     V$, s.t. $S_{n-1}[v] \neq S_{n}[v]$, will be placed at a higher (by 1)
     stratum at this point, i.e., $S_{i}[v] = i, \forall i \in
     \{0,\ldots{},n+1\}$. Since the relative positions of all the
@@ -136,7 +136,7 @@ forever (even after reaching a fixpoint).
     iteration. In other words, there is a cyclic dependency between
     the remaining nodes that will remain unaltered, thus eliminating
     the possibility of reaching a fixpoint.
-  \item (\emph{Only If}) Due to Theorem~\ref{stability},
+  \item (\emph{Only If}) Due to Theorem~\ref{hiercomp/stability},
     we know that we need at most $|V|$ computation steps, in order to
     reach a fixpoint, if at each computation step there exists at
     least a new node that gets stabilized. In other words, we need a
@@ -148,10 +148,11 @@ forever (even after reaching a fixpoint).
 \end{proof}
 
 \noindent
-Therefore, the optimization in Algorithm~\ref{alg:multiple:strat} of
-detecting this exact condition (line~\ref{lst:line:unsat}) and
-terminating would be triggered if and only if no fixpoint would be
-reached whatsoever, had the algorithm continued its execution.
+Therefore, the optimization in
+Algorithm~\ref{hiercomp/alg:multiple:strat} of detecting this exact
+condition (line~\ref{hiercomp/lst:line:unsat}) and terminating would
+be triggered if and only if no fixpoint would be reached whatsoever,
+had the algorithm continued its execution.
 
 \begin{proof}[Soundness]
   We need to show that, if our algorithm computes a solution, this
@@ -172,7 +173,7 @@ reached whatsoever, had the algorithm continued its execution.
 \begin{proof}[Completeness]
   We need to show that, if a solution exists for a given constraint
   graph, then our algorithm will also be able to compute a solution,
-  or equivalently (according to Theorem~\ref{termination}) that the
+  or equivalently (according to Theorem~\ref{hiercomp/termination}) that the
   stratification sequence being computed will reach a fixpoint.
   Consider such a (posited but unknown) solution. For such a solution
   we may generate a stratification (since the solution may contain no
@@ -186,7 +187,7 @@ reached whatsoever, had the algorithm continued its execution.
 %  S_{sol}[v]$ for any such possible solution.
 
 
-  \begin{lem}\label{lemma:minheight}
+  \begin{lem}\label{hiercomp/lemma:minheight}
     Let $S_{sol}$ denote the stratification of a valid solution of the
     problem instance. We have that: $\forall i \in \mathbb{N}, \forall
     v \in V : S_{i}[v] \leq S_{sol}[v]$.
@@ -199,7 +200,7 @@ reached whatsoever, had the algorithm continued its execution.
     such integer, i.e., that before that point our stratification
     was upper bounded by that of the unknown solution:
     % I don't see this.
-    % (which is safe to assume because of  Lemma~\ref{monotonicity}),
+    % (which is safe to assume because of  Lemma~\ref{hiercomp/monotonicity}),
     $\forall j \in \{n \in \mathbb{N} \;|\; 0 \leq n < k \}, \forall v
     \in V : S_j[v] \leq S_{sol}[v]$. For $u$ to be placed at a higher
     stratum by our algorithm there must exist an edge $(s,u) \in E $
@@ -230,7 +231,7 @@ reached whatsoever, had the algorithm continued its execution.
   Let $s_{sol} = \sum_{v \in V} S_{sol}[v]$ and $s_{i} = \sum_{v \in
     V} S_{i}[v], \forall i \in \mathbb{N}$. It follows that $s_i \leq
   s_{sol}, \forall i \in \mathbb{N}$, for any such possible
-  solution. Additionally, because of Lemma~\ref{monotonicity} and our
+  solution. Additionally, because of Lemma~\ref{hiercomp/monotonicity} and our
   two theorems, we know
   that each step but the last will strictly increase the sum of all
   strata values over all nodes. E.g., if our algorithm ended its
@@ -253,11 +254,11 @@ reached whatsoever, had the algorithm continued its execution.
 
 \vfill\eject
 \begin{thm}[Principality]
-  Any solution produced by Algorithm~\ref{alg:multiple:strat} will
-  have a minimum number of strata. That is, for any possible solution
-  of the problem instance, with $t$ denoting the solution's total
-  strata, we have that $n \leq t$, where $n$ is the total number of
-  strata produced by Algorithm~\ref{alg:multiple:strat}.
+  Any solution produced by Algorithm~\ref{hiercomp/alg:multiple:strat}
+  will have a minimum number of strata. That is, for any possible
+  solution of the problem instance, with $t$ denoting the solution's
+  total strata, we have that $n \leq t$, where $n$ is the total number
+  of strata produced by Algorithm~\ref{hiercomp/alg:multiple:strat}.
 \end{thm}
 
 \begin{proof}
@@ -268,19 +269,21 @@ reached whatsoever, had the algorithm continued its execution.
   $\forall v \in V : S_{sol}[v] < t$.
 
   Since a solution exists and \emph{completeness} has been proved, we
-  know that Algorithm~\ref{alg:multiple:strat} will also be able to
-  terminate successfully at some step $n \in \mathbb{N}$, yielding its
-  own solution. Let $n_{s}$ be the total number of strata, and $x \in
-  V$ be a node at the highest stratum of the solution computed by our
-  algorithm. That is, $\forall v \in V : S_{n}[v] \leq S_{n}[x]$. Node
-  $x$ will also be the node that was changed last, which is at
-  step $n-1$, i.e., $S_n[x] = S_{n-1}[x] \neq S_{n-2}[x]$. Therefore,
-  from Corollary~\ref{maxstrata}, we have: $S_n[x] = S_{n-1}[x] = n -
-  1$. Since strata are consecutive integers starting from $0$, we have
-  that: $n_{s} = S_n[x] + 1 = n$.
+  know that Algorithm~\ref{hiercomp/alg:multiple:strat} will also be
+  able to terminate successfully at some step $n \in \mathbb{N}$,
+  yielding its own solution. Let $n_{s}$ be the total number of
+  strata, and $x \in V$ be a node at the highest stratum of the
+  solution computed by our algorithm. That is,
+  $\forall v \in V : S_{n}[v] \leq S_{n}[x]$. Node $x$ will also be
+  the node that was changed last, which is at step $n-1$, i.e.,
+  $S_n[x] = S_{n-1}[x] \neq S_{n-2}[x]$. Therefore, from
+  Corollary~\ref{hiercomp/maxstrata}, we have:
+  $S_n[x] = S_{n-1}[x] = n - 1$. Since strata are consecutive integers
+  starting from $0$, we have that: $n_{s} = S_n[x] + 1 = n$.
 
-  According to Lemma~\ref{lemma:minheight}, we have: $n = n_{s} =
-  S_n[x] + 1 \leq S_{sol}[x] + 1 \leq t < t + 1$. Thus, we have shown
-  that our algorithm minimizes the total number of strata it produces.
+  According to Lemma~\ref{hiercomp/lemma:minheight}, we have:
+  $n = n_{s} = S_n[x] + 1 \leq S_{sol}[x] + 1 \leq t < t + 1$. Thus,
+  we have shown that our algorithm minimizes the total number of
+  strata it produces.
 %  (a number common to all of its solutions).
 \end{proof}

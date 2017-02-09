@@ -1,6 +1,6 @@
 \begin{algorithm} 
   \caption{Single-inheritance extended solver}
-  \label{alg:single:ext}
+  \label{hiercomp/alg:single:ext}
 
   \hrulefill
 
@@ -16,12 +16,14 @@
       \EndIf
     \EndFor
 %    \ForAll{$c \in V_{known}$}
-      %% \State add edge $(c,f_i[c])$ to $E$ \label{lst:line:direct}
+      %% \State add edge $(c,f_i[c])$ to $E$ \label{hiercomp/lst:line:direct}
       \ForAll{$(c,c_s) \in E_{path}$}
         \While{$f_i[c] = p$} \Comment while there exists a known parent, which we shall call $p$
           \If{$p \neq c_s$}  \Comment just for tolerating extraneous path edges in input
-            \State $E \gets E \cup \left\{(p,c_s)\right\}$ \label{lst:line:add} \Comment no need to update $E_{path}$, \textsc{placeUnder} only uses $E$
-% $E$ add edge $(p,c_s)$ to $E$ \label{lst:line:indirect}
+            \State $E \gets E \cup
+            \left\{(p,c_s)\right\}$ \label{hiercomp/lst:line:add}
+            \Comment no need to update $E_{path}$, \textsc{placeUnder} only uses $E$
+% $E$ add edge $(p,c_s)$ to $E$ \label{hiercomp/lst:line:indirect}
           \EndIf
           \Let{$c$}{$p$}
 %          \Let{$c$}{$f_i[c]$}
@@ -37,9 +39,9 @@
 
   \begin{algorithmic}[1]
     \Function{pick}{$V$, $n$}
-    \If{$\exists v \in V: f_i[v] = m$} \label{lst:line:priority}
+    \If{$\exists v \in V: f_i[v] = m$} \label{hiercomp/lst:line:priority}
       \If{$n \neq m$}
-        \State error: crossover %% \label{lst:line:crossover}
+        \State error: crossover %% \label{hiercomp/lst:line:crossover}
       \Else
         \State \Return $v$
       \EndIf

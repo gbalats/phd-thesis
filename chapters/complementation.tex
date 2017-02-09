@@ -716,7 +716,7 @@ algorithm.
 
 %% Algorithm explanation
 
-Algorithm~\ref{alg:multiple:strat} solves in polynomial time (an easy bound is
+Algorithm~\ref{hiercomp/alg:multiple:strat} solves in polynomial time (an easy bound is
 $O(|V| \cdot |E|)$) any
 instance of the hierarchy complementation problem in the multiple
 inheritance setting. The main part of the algorithm is
@@ -737,12 +737,12 @@ building on the stratification of the previous step, $S_{i}$, and
 advancing some nodes to a higher stratum in order to satisfy
 constraints. This process is repeated until we converge to the final
 stratification, which will respect all of our constraints
-(line~\ref{lst:line:fixpoint}). If no new node converges at some step
+(line~\ref{hiercomp/lst:line:fixpoint}). If no new node converges at some step
 (i.e., all nodes that reached a certain stratum advance to the next),
 then we can be certain that we are dealing with unsatisfiable input,
 and terminate, thus avoiding infinite recursion
-(line~\ref{lst:line:unsat}). The nodes to be advanced at each step are
-determined at line~\ref{lst:line:formula}, which captures the essence
+(line~\ref{hiercomp/lst:line:unsat}). The nodes to be advanced at each step are
+determined at line~\ref{hiercomp/lst:line:formula}, which captures the essence
 of the algorithm. The new stratum of a node $t$ will be either
 \begin{inparaenum}[(i)]
 \item its current stratum,
@@ -837,7 +837,7 @@ It is also easy to see that our algorithm would soundly detect that
 the example of Figure~\ref{hiercomp/fig:unsat} is unsatisfiable. At the first
 step, only known nodes $A,B$ would remain in the lowest stratum, but
 on the next iteration all remaining nodes would advance again, thus
-triggering the condition of failure (line~\ref{lst:line:unsat}), since
+triggering the condition of failure (line~\ref{hiercomp/lst:line:unsat}), since
 an iteration passed with no progress made.
 
 % This projection set will serve as the domain for each path-edge that
@@ -857,7 +857,7 @@ an iteration passed with no progress made.
 % %bottleneck.
 
 A detailed proof of the correctness of our algorithm can be found in
-Appendix~\ref{correctness}.
+Appendix~\ref{hiercomp/correctness}.
 
 
 %-------------------------------------------------------------------------------
@@ -899,8 +899,8 @@ will form a tree instead of a forest.
 % constraint is  that we cannot have cycles in the resulting
 % hierarchy. This constraint also applied to the single inheritance case, where
 % the algorithm would detect such a cycle, if no unconstrained nodes
-% were left in a non-empty graph (Algorithm\ref{alg:single:simple},
-% function \textsc{placeUnder()}---line~\ref{lst:line:cycle}).
+% were left in a non-empty graph (Algorithm\ref{hiercomp/alg:single:simple},
+% function \textsc{placeUnder()}---line~\ref{hiercomp/lst:line:cycle}).
 
 % Based on theses examples we see that solving the problem seems to
 % require a search.\footnote{We have thus far failed to either cast the
@@ -1025,7 +1025,7 @@ cannot include nodes that are guaranteed to be subtype-unrelated (such
 as $B$ and $C$ in this example) and all unknown nodes have to be below
 the known ones in any solution.
 
-Algorithm~\ref{alg:single:kdirect} first removes path-edges
+Algorithm~\ref{hiercomp/alg:single:kdirect} first removes path-edges
 originating from known-nodes, after verifying that the corresponding
 paths indeed exist. It then uses union/find data structures to compute
 connected components of phantom nodes, while treating path-edges
@@ -1037,7 +1037,7 @@ nodes. Note that when two known-nodes are reachable by two phantom
 nodes of the same connected component (in the phantom subgraph), then
 one of them ought to be a supertype of the other, or else no solution
 can exist in a single inheritance setting. This condition is captured
-in line~\ref{lst:line:crossover}. After the first common (known)
+in line~\ref{hiercomp/lst:line:crossover}. After the first common (known)
 supertype for every connected component has been computed, a mere
 topological sort, i.e. placing all relevant nodes in a total order, is
 enough to satisfy all of this component's constraints. This may
@@ -1050,7 +1050,7 @@ requirements of the algorithm. (We return to the topic of why we
 actually want a weaker ordering in Section~\ref{hiercomp/java}.)
 
 In the example of Figure~\ref{hiercomp/fig:kdirect:ex},
-Algorithm~\ref{alg:single:kdirect} first checks and removes the
+Algorithm~\ref{hiercomp/alg:single:kdirect} first checks and removes the
 $(F,A)$ path-edge. Then the phantom nodes are divided in the following
 phantom connected components: $\{G,H,I\}$, $\{J,K,L\}$, and
 $\{M\}$. The first common known supertype for each component is $B$,
@@ -1074,7 +1074,7 @@ output: $I <: H <: G <: B$, $K <: J <: L <: F$, and $M <: F$.
     \subcaption{Solution}\label{hiercomp/fig:cgraph1:simple}
   \end{minipage}
   \caption[Single Inheritance Algorithm Example]{%
-    Algorithm~\ref{alg:single:kdirect} - Example. }
+    Algorithm~\ref{hiercomp/alg:single:kdirect} - Example. }
   \label{hiercomp/fig:kdirect:ex}
 \end{figure}
 
@@ -1134,7 +1134,7 @@ above requirements, for this example.
 \label{hiercomp/fig:diamond}
 \end{figure}
 
-Algorithm~\ref{alg:single:simple} produces an ordering relation
+Algorithm~\ref{hiercomp/alg:single:simple} produces an ordering relation
 (represented as a ``solution'' set of ``direct parent'' edges, $S$)
 whose transitive closure satisfies the requirements for
 $\ll$,\footnote{I.e., the algorithm computes the \emph{transitive
@@ -1168,7 +1168,7 @@ the arbitrary ordering picked (to satisfy the second rule of the $\ll$
 definition) does not violate explicit ordering constraints in the
 input (per the first rule of the $\ll$ definition). The above
 properties also serve as a proof sketch for the correctness of
-Algorithm~\ref{alg:single:simple} relative to the definition of $\ll$.
+Algorithm~\ref{hiercomp/alg:single:simple} relative to the definition of $\ll$.
 
 % Thus, to create our solution, given that our
 %constraint graph is weakly connected---and if it's not, we can make it
@@ -1271,7 +1271,7 @@ $E_{direct}$ edges) we can add outgoing edges to all nodes found on
 this path, so they will never be placed above a node ordered relative
 to their descendant via $E_{path}$, thus violating the requirement of
 preserving the input hierarchy. This is shown in
-Algorithm~\ref{alg:single:ext}. Function \textsc{solve()} performs
+Algorithm~\ref{hiercomp/alg:single:ext}. Function \textsc{solve()} performs
 the preprocessing step while keeping the core logic, i.e. the earlier
 \textsc{placeUnder()} function, intact. Function \textsc{pick()}
 prioritizes known direct descendants, in order to maintain the
@@ -1290,9 +1290,9 @@ to preserve their respective order. After $(F,G)$ has been added, and
 because $f_i[F] = C$, we can soundly add $(C,G)$ and then reach a
 fixpoint.
 
-% (line~\ref{lst:line:indirect}).
+% (line~\ref{hiercomp/lst:line:indirect}).
 
-Line~\ref{lst:line:priority} in the \textsc{pick()} function will
+Line~\ref{hiercomp/lst:line:priority} in the \textsc{pick()} function will
 choose a \emph{direct} subtype according to $f_i$, over any other
 unconstrained node. For instance, if ``$f_i[C] = A$'' were part of the
 input in the earlier pattern of Figure~\ref{hiercomp/fig:diamond}, then
@@ -1302,7 +1302,7 @@ B \leftarrow D$ ordering (and not $A \leftarrow B \leftarrow
 C \leftarrow D$, as produced by settling arbitrary node choices according
 to lexicographic order).
 
-In line \ref{lst:line:crossover} of the \textsc{pick()} function, an
+In line \ref{hiercomp/lst:line:crossover} of the \textsc{pick()} function, an
 error is raised if a known direct supertype disagrees with what
 we have computed. This can only happen if two subtrees of $G$ have
 roots in $V_{known}$, and these two subtrees are somehow connected. In
@@ -1332,14 +1332,14 @@ conflict with $f_i$, and would be captured by our
 
 \paragraph{Correctness Proof Sketch:}
 
-Algorithm~\ref{alg:single:simple} already satisfies all path-edge
-constraints. The extended version (\ref{alg:single:ext}) adds new
+Algorithm~\ref{hiercomp/alg:single:simple} already satisfies all path-edge
+constraints. The extended version (\ref{hiercomp/alg:single:ext}) adds new
 path-edges soundly, i.e. an edge $(s,t)$ is added exactly when
 $s$ \emph{has} to be a subtype of $t$. Therefore, to prove that our
 algorithm is correct we only have to show that it maintains in the
 output the direct-edges of its input.
 
-The edges added by line~\ref{lst:line:add} of the \textsc{solve()}
+The edges added by line~\ref{hiercomp/lst:line:add} of the \textsc{solve()}
 function ensure that a node $k \in V_{known}$ will be placed in an
 unconstrained set (i.e., $k$ has no outgoing edges) \emph{for the
 first time} when the second argument of \textsc{placeUnder()} is equal
@@ -1362,7 +1362,7 @@ $k$ in the same unconstrained set (when both $u,k$ were to be placed
 under their direct-supertype). This, however, is an unsatisfiable
 condition upon which our algorithm signals an error. To see that the
 error truly indicates unsatisfiability of the input, recall the
-property of Algorithm~\ref{alg:single:simple} mentioned earlier: if a
+property of Algorithm~\ref{hiercomp/alg:single:simple} mentioned earlier: if a
 node with no outgoing edges can reach another node through an
 undirected path, then both nodes have a common descendant, i.e., a
 node that can reach both through \emph{directed} paths, and thus they
@@ -1456,7 +1456,7 @@ can only be extended by other classes).
 % introducing paths between previously unreachable nodes if we use a
 % weaker ordering (producing a tree and not a linear list) in place of
 % the topological sort step of
-% Algorithm~\ref{alg:single:kdirect}. Such a sort makes two nodes
+% Algorithm~\ref{hiercomp/alg:single:kdirect}. Such a sort makes two nodes
 % ordered only if there was a path between them in the original
 % input. The algorithm is straightforward but tedious and we elide it
 % for lack of space.
@@ -2041,6 +2041,7 @@ consider the list below, which is the actual execution output of a
 JPhantom run on the jruby benchmark:
 
 \begin{alltt}\footnotesize
+\vspace{2em}
 Phantom Classes Detected: \hfill{[constraint]}
 
 org.apache.tools.ant.BuildException \hfill{must be a class}

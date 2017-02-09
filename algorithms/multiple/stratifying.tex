@@ -1,6 +1,6 @@
-\begin{algorithm}
+\begin{algorithm}[t]
   \caption{Multiple-inheritance solver}
-  \label{alg:multiple:strat}
+  \label{hiercomp/alg:multiple:strat}
   \small
 
   \hrulefill
@@ -35,13 +35,13 @@
             \lbrace
               1 + \minof{p \in \textit{proj}(s)}{\lbrace S_{i}[p] \rbrace} 
             \rbrace} \\ 
-          \end{Bmatrix}$} \label{lst:line:formula} 
+          \end{Bmatrix}$} \label{hiercomp/lst:line:formula}
       \EndFor
       \If{$\forall v \in V : S_{i+1}[v] = S_{i}[v]$}
-        \State \Return $S_{i}$  \label{lst:line:fixpoint} 
+        \State \Return $S_{i}$  \label{hiercomp/lst:line:fixpoint}
         \Comment{reached a fixpoint}
       \ElsIf{$\forall v \in V : S_{i+1}[v] = S_{i}[v] \Rightarrow S_{i}[v] = S_{i-1}[v]$}
-        \State \algorithmicbreak \label{lst:line:unsat} 
+        \State \algorithmicbreak \label{hiercomp/lst:line:unsat}
         \Comment{no progress made on this step}
       \EndIf
 %      \Let{$i$}{$i + 1$}
