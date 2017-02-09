@@ -1620,6 +1620,7 @@ dynamic features, as discussed in the Introduction.
     \includegraphics[width=\textwidth,height=0.2\textheight]{%
       figures/reflection/batik-plain.pdf}
   \end{subfigure}
+  \\
 
   % 2nd row
   \begin{subfigure}[t]{0.5\textwidth}
@@ -1633,6 +1634,7 @@ dynamic features, as discussed in the Introduction.
     \includegraphics[width=\textwidth,height=0.2\textheight]{%
       figures/reflection/h2-plain.pdf}
   \end{subfigure}
+  \\
 
   % 3rd row
   \begin{subfigure}[t]{0.5\textwidth}
@@ -1646,6 +1648,7 @@ dynamic features, as discussed in the Introduction.
     \includegraphics[width=\textwidth,height=0.2\textheight]{%
       figures/reflection/luindex-plain.pdf}
   \end{subfigure}
+  \\
 
   % 4th row
   \begin{subfigure}[t]{0.5\textwidth}
@@ -1659,7 +1662,12 @@ dynamic features, as discussed in the Introduction.
     \includegraphics[width=\textwidth,height=0.2\textheight]{%
       figures/reflection/pmd-plain.pdf}
   \end{subfigure}
-  
+  \caption{Unsoundness metrics (two bars: missing call-graph edges
+    app-to-app and app-to-lib) and analysis time (line) over the
+    DaCapo benchmarks. \emph{Lower is better for all.} For missing
+    bars (``n/a''), the analysis did not terminate in 90mins.}
+\end{figure}
+\begin{figure}\ContinuedFloat
   % 5th row
   \begin{subfigure}[t]{0.5\textwidth}
     \centering
@@ -1676,10 +1684,7 @@ dynamic features, as discussed in the Introduction.
 
   % lusearch and sunflow could be left out
 
-  \caption{Unsoundness metrics (two bars: missing call-graph edges app-to-app and app-to-lib)
-    and analysis time (line) over the DaCapo benchmarks. \emph{Lower
-      is better for all.} For missing bars (``n/a''), the analysis did
-    not terminate in 90mins.}
+  \caption{Unsoundness metrics (cont.)}
   \label{reflection/fig:dacapo-bach}
 \end{figure}
 
