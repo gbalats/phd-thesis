@@ -37,27 +37,22 @@ facilities, and auto-complete functionality), and a myriad other tools
 routinely employ static analysis machinery. Even the seemingly simple
 effort of computing a program's call-graph (i.e., which program
 function can call which other) requires sophisticated analysis in
-order to achieve precision.
-%SPACE
-% in a modern language.
+order to achieve precision in a modern language.
 
 Yet, static whole-program analysis suffers in the presence of common
 dynamic features, especially reflection. When a Java program accesses
 a class by supplying its name as a run-time string, via the
-\javasignature{Class.forName} library call, the static analysis
-%has very few
-%available courses of action: It 
-needs to either conservatively
-over-approximate (e.g., assume that \emph{any} class can be accessed),
-%%SPACE
-%possibly limiting the set later, after the returned object is used),
-or to perform a string analysis that will allow it to infer the
-contents of the \code{forName} string argument. Both options can be
-detrimental to the scalability of the analysis: the conservative
-over-approximation may never become constrained enough by further
-instructions to be feasible in practice; precise string analysis is
-impractical for programs of realistic size.  It is telling that
-\emph{no practical Java program analysis framework in existence
+\javasignature{Class.forName} library call, the static analysis has
+very few available courses of action: It needs to either
+conservatively over-approximate (e.g., assume that \emph{any} class
+can be accessed, possibly limiting the set later, after the returned
+object is used), or to perform a string analysis that will allow it to
+infer the contents of the \code{forName} string argument. Both options
+can be detrimental to the scalability of the analysis: the
+conservative over-approximation may never become constrained enough by
+further instructions to be feasible in practice; precise string
+analysis is impractical for programs of realistic size.  It is telling
+that \emph{no practical Java program analysis framework in existence
   handles reflection soundly} \cite{soundiness15}, although other
 language features are modeled soundly.\footnote{In our context,
   \emph{sound} = over-approximate, i.e., guaranteeing that all
@@ -108,30 +103,26 @@ setting.
     extensive reflection in the libraries.}
 \end{quote}
 
-%%SPACE
-%\noindent The same caveats routinely appear in the research
-%literature. Multiple published points-to analysis papers analyze
-%well-known benchmarks with reflection
-%disabled~\cite{popl/SmaragdakisBL11,pldi/KastrinisS13,ecoop/AliL12,ecoop/AliL13}.
+\noindent The same caveats routinely appear in the research
+literature. Multiple published points-to analysis papers analyze
+well-known benchmarks with reflection
+disabled~\cite{popl/SmaragdakisBL11,pldi/KastrinisS13,ecoop/AliL12,ecoop/AliL13}.
 
-%%% SPACE
-%A representative quote~\cite{popl/SmaragdakisBL11} illustrates:
-%
-%\begin{quote}
-%\emph{Hsqldb and jython could not be analyzed with reflection analysis
-%enabled [...]
-%%---hsqldb cannot even be analyzed context-insensitively and
-%%jython cannot even be analyzed with the 1obj analysis. This is 
-%due to vast imprecision introduced when reflection methods are not
-%filtered in any way by constant strings (for classes, fields, or
-%methods) and the analysis infers a large number of reflection objects
-%to flow to several variables.}
-%% [...]  For these two applications, our analysis has
-%% reflection reasoning disabled. 
-%%Since hsqldb in the DaCapo benchmark
-%%code has its main functionality called via reflection, we had to
-%%configure its entry point manually.}
-%\end{quote}
+
+A representative quote~\cite{popl/SmaragdakisBL11} illustrates:
+\begin{quote}
+  \emph{Hsqldb and jython could not be analyzed with reflection
+    analysis enabled [...]  ---hsqldb cannot even be analyzed
+    context-insensitively and jython cannot even be analyzed with the
+    1obj analysis. This is due to vast imprecision introduced when
+    reflection methods are not filtered in any way by constant strings
+    (for classes, fields, or methods) and the analysis infers a large
+    number of reflection objects to flow to several variables.  [...]
+    For these two applications, our analysis has reflection reasoning
+    disabled.  Since hsqldb in the DaCapo benchmark code has its main
+    functionality called via reflection, we had to configure its entry
+    point manually.}
+\end{quote}
 
 %\noindent
 In this paper, we describe an approach to analyzing reflection in the
@@ -488,55 +479,41 @@ objects, and more.
 \label{reflection/figure:inputs}
 \end{figure}
 
-
-%%%SPACE
-%\begin{itemize}
-%\item invocation sites, $I$;
-%\item variables, $V$;
-%\item heap object abstractions (i.e., allocation sites), $H$;
-%\item method signatures, $S$;
-%\item types, $T$;
-%\item methods, $M$;
-%\item natural numbers, $N$, and
-%\item strings.
-%\end{itemize}
 The domains of the analysis include:
-invocation sites, $I$;
-variables, $V$;
-heap object abstractions (i.e., allocation sites), $H$;
-method signatures, $S$;
-types, $T$;
-methods, $M$;
-natural numbers, $N$, and
-strings.
- The analysis takes as input the relations (i.e.,
-tables filled with information from the program text) shown in
-Figure~\ref{reflection/figure:inputs}.
-Using these inputs, the Livshits et al. reflection analysis
-can be expressed as a five-rule addition to any points-to
-analysis. The rest of the points-to analysis (not shown here---see
-e.g., \cite{uss/GuarnieriL09,pldi/KastrinisS13,aplas/WhaleyACL05})
-supplies more rules for computing a relation \pred{VarPointsTo}{v: V,
-  h: H} and a relation \pred{CallGraphEdge}{i: I, m: M}. Intuitively,
-the traditional points-to part of the joint analysis is responsible
-for computing how heap objects flow intra- and inter-procedurally
-through the program, while the added rules contribute only the
-reflection handling. We explain the rules below.
+\begin{compactitem}[\(\cdot\)]
+\item invocation sites, \(I\)
+\item variables, \(V\)
+\item heap object abstractions (i.e., allocation sites), \(H\)
+\item method signatures, \(S\)
+\item types, \(T\)
+\item methods, \(M\)
+\item natural numbers, \(N\)
+\item and strings.
+\end{compactitem}
+The analysis takes as input the relations (i.e., tables filled with
+information from the program text) shown in
+Figure~\ref{reflection/figure:inputs}.  Using these inputs, the
+Livshits et al. reflection analysis can be expressed as a five-rule
+addition to any points-to analysis. The rest of the points-to analysis
+(not shown here---see e.g.,
+\cite{uss/GuarnieriL09,pldi/KastrinisS13,aplas/WhaleyACL05}) supplies
+more rules for computing a relation \pred{VarPointsTo}{v: V, h: H} and
+a relation \pred{CallGraphEdge}{i: I, m: M}. Intuitively, the
+traditional points-to part of the joint analysis is responsible for
+computing how heap objects flow intra- and inter-procedurally through
+the program, while the added rules contribute only the reflection
+handling. We explain the rules below.
 % and use long variable names for readability.
 
-%\begin{figure}[h]
-%\fbox{
-%\begin{minipage}{0.95\columnwidth}
-\begin{rules}
-\pred{ClassObject}{i, t} \rulearrow \\
-\tab    \pred{Call}{i, \code{"Class.forName"}}, \pred{ActualArg}{i, 0, p}, \\
-\tab    \pred{VarPointsTo}{p, c}, \pred{ConstantForClass}{c, t}.\rulesep\\
-\pred{VarPointsTo}{r, h} \rulearrow \\
-\tab \pred{ClassObject}{i, t}, \pred{ReifiedClass}{t, h}, \pred{AssignRetValue}{i, r}.\\
-\end{rules}
-%\end{minipage}
-%}
-%\end{figure}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{ClassObject}{i, t} \rulearrow \\
+    \tab    \pred{Call}{i, \code{"Class.forName"}}, \pred{ActualArg}{i, 0, p}, \\
+    \tab    \pred{VarPointsTo}{p, c}, \pred{ConstantForClass}{c, t}.\rulesep\\
+    \pred{VarPointsTo}{r, h} \rulearrow \\
+    \tab \pred{ClassObject}{i, t}, \pred{ReifiedClass}{t, h}, \pred{AssignRetValue}{i, r}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent The first two rules, above, work jointly: they model a
 \code{forName} call, which returns a class object given a string
@@ -559,14 +536,17 @@ still get inferred to resolve to an actual type.
 
 %// what classes can a forName call return? Certainly those with constant string names.
 
-
-\begin{rules}
-\pred{VarPointsTo}{r, h} \rulearrow \\
-\tab \pred{Call}{i, \code{"Class.newInstance"}}, \pred{ActualArg}{i, 0, v}, 
-     \pred{VarPointsTo}{v, h_c},\\
-\tab \pred{ReifiedClass}{t, h_c}, \pred{AssignRetValue}{i, r}, 
-     \pred{ReifiedHeapAllocation}{i, t, h}.\\
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{r, h} \rulearrow
+    \\
+    \tab \pred{Call}{i, \code{"Class.newInstance"}}, \pred{ActualArg}{i, 0, v},
+    \\
+    \tab \pred{VarPointsTo}{v, h_c}, \pred{ReifiedClass}{t, h_c},
+    \\
+    \tab \pred{AssignRetValue}{i, r}, \pred{ReifiedHeapAllocation}{i, t, h}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent The above rule reads: if the receiver object, \args{h_c}, of a
 \code{newInstance} call is a class object for class \args{t}, and the
@@ -574,13 +554,21 @@ still get inferred to resolve to an actual type.
 \args{r} point to the special (i.e., invented) allocation site \args{h} that designates
 objects of type \args{t} allocated at the \code{newInstance} call site.
 
-\begin{rules}
-\pred{VarPointsTo}{r, h_m} \rulearrow \\
-\tab \pred{Call}{i, \code{"Class.getMethod"}}, \pred{ActualArg}{i, 0, b}, \pred{ActualArg}{i, 1, p}, \\
-\tab \pred{AssignRetValue}{i, r}, \pred{VarPointsTo}{b, h_c}, \pred{ReifiedClass}{t, h_c},\\
-\tab \pred{VarPointsTo}{p, c}, \pred{ConstantForMethod}{c, s}, \\ % param points to string constant
-\tab \pred{Lookup}{t, s, \_}, \pred{ReifiedMethod}{s, h_m}.\\ % // signature agrees with type
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{r, h_m} \rulearrow \\
+    \tab \pred{Call}{i, \code{"Class.getMethod"}},
+    \\
+    \tab \pred{ActualArg}{i, 0, b}, \pred{ActualArg}{i, 1, p},
+    \\
+    \tab \pred{AssignRetValue}{i, r}, \pred{VarPointsTo}{b, h_c}, \pred{ReifiedClass}{t, h_c},
+    \\
+    \tab \pred{VarPointsTo}{p, c}, \pred{ConstantForMethod}{c, s},
+    \\ % param points to string constant
+    \tab \pred{Lookup}{t, s, \_}, \pred{ReifiedMethod}{s, h_m}.
+    \\ % // signature agrees with type
+  \end{rules}
+\end{minipage}
 
 \noindent The above rule gives semantics to \code{getMethod} calls.  It
 states that if such a call is made with receiver \args{b} (for
@@ -593,12 +581,15 @@ stands for ``any'' value), the variable \args{r} holding the result of the
 \code{getMethod} call points to the reflective object,
 \args{h_m}, for this method signature.
 
-\begin{rules}
-\pred{CallGraphEdge}{i, m} \rulearrow \\
-\tab \pred{Call}{i, \code{"Method.invoke"}}, \pred{ActualArg}{i, 0, b}, \pred{ActualArg}{i, 1, p}, \\
-\tab \pred{VarPointsTo}{b, h_m}, \pred{ReifiedMethod}{s, h_m}, \\
-\tab \pred{VarPointsTo}{p, h}, \pred{HeapType}{h, t}, \pred{Lookup}{t, s, m}.\\
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{CallGraphEdge}{i, m} \rulearrow \\
+    \tab \pred{Call}{i, \code{"Method.invoke"}}, \\
+    \tab \pred{ActualArg}{i, 0, b}, \pred{ActualArg}{i, 1, p}, \\
+    \tab \pred{VarPointsTo}{b, h_m}, \pred{ReifiedMethod}{s, h_m}, \\
+    \tab \pred{VarPointsTo}{p, h}, \pred{HeapType}{h, t}, \pred{Lookup}{t, s, m}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent Finally, all reflection information can contribute to inferring more
 call-graph edges. The last rule encodes that a new edge can be
@@ -697,89 +688,86 @@ field and method names are used in reflective calls---we already
 encountered the \code{getMethod} call in
 Section~\ref{reflection/sec:model}.
 
-%%%SPACE
-%% \paragraph{Example.} 
-%% The (simplified) code excerpt shown in Figure~\ref{reflection/figure:substrings},
-%% found in the \emph{xalan} DaCapo benchmark, demonstrates the need for
-%% substring analysis in order to resolve reflective method
-%% invocations. The methods shown belong to class
-%% \code{org.apache\allowbreak{}.xalan\allowbreak{}.processor\allowbreak{}.XSLTAttributeDef},
-%% which represents an attribute for an element in an XSLT
-%% stylesheet. The method \code{setAttrVal()} computes and sets the value
-%% of this attribute, for a given element (of type
-%% \code{ElemTemplateElement}), via reflection (calls \code{getClass},
-%% \code{getMethod}, \code{invoke}). In order to achieve this, it first has
-%% to determine the exact name of the setter method of the element, by
-%% calling \code{getSetterMethodName()}. The attribute contains a field
-%% \code{m\_name}, which holds the local name of the attribute without any
-%% prefix. The method simply transforms this local name to a setter
-%% method by adding a ``\code{set}'' prefix, removing dashes, and changing
-%% it to camel case. (Reflective calls have to be generic, which explains
-%% why patterns such as this, relying on naming conventions and employing
-%% some basic string transformation, are common in practice.)
+\paragraph{Reflection Usage Example.}
+The (simplified) code excerpt shown in Figure~\ref{reflection/figure:substrings},
+found in the \emph{xalan} DaCapo benchmark, demonstrates the need for
+substring analysis in order to resolve reflective method
+invocations. The methods shown belong to class
+\code{org.apache\allowbreak{}.xalan\allowbreak{}.processor\allowbreak{}.XSLTAttributeDef},
+which represents an attribute for an element in an XSLT
+stylesheet. The method \code{setAttrVal()} computes and sets the value
+of this attribute, for a given element (of type
+\code{ElemTemplateElement}), via reflection (calls \code{getClass},
+\code{getMethod}, \code{invoke}). In order to achieve this, it first has
+to determine the exact name of the setter method of the element, by
+calling \code{getSetterMethodName()}. The attribute contains a field
+\code{m\_name}, which holds the local name of the attribute without any
+prefix. The method simply transforms this local name to a setter
+method by adding a ``\code{set}'' prefix, removing dashes, and changing
+it to camel case. (Reflective calls have to be generic, which explains
+why patterns such as this, relying on naming conventions and employing
+some basic string transformation, are common in practice.)
 
-%% \begin{figure}[tb]
-%% \vspace{-0.5cm}{\footnotesize
-%% \begin{javacode}
-%% boolean setAttrVal(..., ElemTemplateElement el) {
-%%    String setterString = getSetterMethodName();
-%%    Object val = processValue(..., el);
+\begin{figure}[tb]
+  \begin{javacode}
+    boolean setAttrVal(..., ElemTemplateElement el) {
+      String setterString = getSetterMethodName();
+      Object val = processValue(..., el);
 
-%%    Object[] args = new Object[]{ val };
-%%    Class[] argTypes = new Class[]{ val.getClass() };
+      Object[] args = new Object[]{ val };
+      Class[] argTypes = new Class[]{ val.getClass() };
 
-%%    Method meth = 
-%%        el.getClass().getMethod(setterString, argTypes);
-%%    meth.invoke(el, args);
-%% }
+      Method meth = el.getClass().getMethod(setterString, argTypes);
+      meth.invoke(el, args);
+    }
 
-%% public String getSetterMethodName() {
-%%    StringBuffer outBuf = new StringBuffer();
-%%    outBuf.append("set");
+    public String getSetterMethodName() {
+      StringBuffer outBuf = new StringBuffer();
+      outBuf.append("set");
 
-%%    for (int i = 0; i < m_name.length(); i++) {
-%%       char c = m_name.charAt(i);
-%%       if ('-' == c) {
-%%          i++;
-%%          c = m_name.charAt(i);
-%%          c = Character.toUpperCase(c);
-%%       }
-%%       else if (0 == i) {
-%%          c = Character.toUpperCase(c);
-%%       }
-%%       outBuf.append(c);
-%%    }
-%%    return outBuf.toString();
-%% }
-%% \end{javacode}}
-%% \caption{Example of reflection leveraging partial strings.}
-%% \label{reflection/figure:substrings}
-%% \end{figure}
+      for (int i = 0; i < m_name.length(); i++) {
+        char c = m_name.charAt(i);
+        if ('-' == c) {
+          i++;
+          c = m_name.charAt(i);
+          c = Character.toUpperCase(c);
+        }
+        else if (0 == i) {
+          c = Character.toUpperCase(c);
+        }
+        outBuf.append(c);
+      }
+      return outBuf.toString();
+    }
+  \end{javacode}
+  \caption{Example of reflection leveraging partial strings.}
+  \label{reflection/figure:substrings}
+\end{figure}
 
-%% Note that, in order to resolve the setter method, one needs to track
-%% the flow of the ``\code{set}'' prefix through the
-%% \code{StringBuffer} object and use it to match against any possible
-%% setter methods of \code{ElemTemplateElement}.
-%% %%%SPACE
-%% % Ideally, we would like to
-%% %narrow down the setter methods to be called to just one, but this would
-%% %require sophisticated reasoning about the computation performed inside
-%% %\code{getSetterMethodName()}. Such reasoning is outside the scope of this
-%% %paper and fairly foreign to scalable over-approximate techniques, such as
-%% %pointer analysis. Furthermore, the exact value of \code{m\_name} could be missing
-%% %or merged with many other (irrelevant) string constants. 
+Note that, in order to resolve the setter method, one needs to track
+the flow of the ``\code{set}'' prefix through the
+\code{StringBuffer} object and use it to match against any possible
+setter methods of \code{ElemTemplateElement}.
+%
+Ideally, we would like to narrow down the setter methods to be called
+to just one, but this would require sophisticated reasoning about the
+computation performed inside \code{getSetterMethodName()}. Such
+reasoning is outside the scope of this dissertation and fairly foreign
+to scalable over-approximate techniques, such as pointer
+analysis. Furthermore, the exact value of \code{m\_name} could be
+missing or merged with many other (irrelevant) string constants.
 
 
-%\paragraph{Substring matching approach.}
+\paragraph{Substring matching approach.}
 In order to estimate what classes, fields, or methods a string
 expression may represent, we implement \emph{substring matching}: all
 string constants in the program text are tested for prefix and suffix
 matching against known class, method, and field names. (We use
 tunable thresholds to limit the matches: e.g., member prefixes,
-resp. suffixes, need to be at least 3, resp. 5, characters long.)
+resp. suffixes, need to be at least 3, resp. 5, characters long.
 %, class suffixes at least 6 characters long.  
-%These settings reflect a balance between expected usage
-%and spurious matches.)
+These settings reflect a balance between expected usage and spurious
+matches.)
 
 The strings that may refer to such entities are handled with more
 precision than others during analysis. For instance, a points-to
@@ -804,21 +792,17 @@ partially match method, field, or class names, as described above. It
 also takes an extra input relation \pred{StringFactoryVar}{v_f: V}
 that captures which variables are of a string factory type.)
 
-%\begin{figure}[h]
-%\fbox{
-%\begin{minipage}{0.95\columnwidth}
-%\hspace{6mm}%
-\begin{rules}
-\pred{VarPointsTo}{r, h} \rulearrow \\
-\tab \pred{Call}{i_a, \code{"append"}}, \pred{ActualArg}{i_a, 0, v_f}, \pred{ActualArg}{i_a, 1, v}, \\
-\tab \pred{StringFactoryVar}{v_f}, \pred{Call}{i_t, \code{"toString"}}, 
-     \pred{AssignRetValue}{i_t, r}, \\
-\tab \pred{ActualArg}{i_t, 0, u_f}, \pred{VarPointsTo}{v_f, h_f}, \pred{VarPointsTo}{u_f, h_f}, \\
-\tab \pred{VarPointsTo}{v, h}, \pred{ReflectionObject}{h}.\\
-\end{rules}
-%\end{minipage}
-%}
-%\end{figure}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{r, h} \rulearrow \\
+    \tab \pred{Call}{i_a, \code{"append"}}, \\
+    \tab \pred{ActualArg}{i_a, 0, v_f}, \pred{ActualArg}{i_a, 1, v}, \\
+    \tab \pred{StringFactoryVar}{v_f}, \\
+    \tab \pred{Call}{i_t, \code{"toString"}}, \pred{AssignRetValue}{i_t, r}, \\
+    \tab \pred{ActualArg}{i_t, 0, u_f}, \pred{VarPointsTo}{v_f, h_f}, \pred{VarPointsTo}{u_f, h_f}, \\
+    \tab \pred{VarPointsTo}{v, h}, \pred{ReflectionObject}{h}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent In words: if a call to \code{append} and a call to \code{toString} are
 over the same factory object, \args{h_f}, (accessed by different
@@ -854,15 +838,12 @@ itself with how string factory objects (\args{h_f}) are represented
 inside the analysis. Indeed, string factory objects are often as
 numerous as strings themselves, since they are implicitly allocated on
 every use of the \code{+} operator over strings in a Java program.
-Therefore, a pointer analysis will often merge string factory
-objects, with the appropriate user-selectable flag.%
-\footnote{E.g., 
-%For instance, this is enabled with the flag
-  \texttt{SMUSH\_STRINGS} in \textsc{Wala} 
-  \cite{www:wala-reflection} and \texttt{MERGE\_STRING\_BUFFERS} in
-   \textsc{Doop}.}
-% Both flags are on by default for
-%  precise (i.e., costly) analyses.}
+Therefore, a pointer analysis will often merge string factory objects,
+with the appropriate user-selectable flag.%
+\footnote{E.g., For instance, this is enabled with the flag
+  \texttt{SMUSH\_STRINGS} in \textsc{Wala} \cite{www:wala-reflection}
+  and \texttt{MERGE\_STRING\_BUFFERS} in \textsc{Doop}.  Both flags
+  are on by default for precise (i.e., costly) analyses.}
 The rule for string flow through
 factories is unaffected by this treatment. Although precision is lost
 if all string factory objects are merged into one abstract object, the
@@ -882,59 +863,57 @@ flow into the reflection operation.
 \label{reflection/sec:use-based}
 
 Our second technique for statically analyzing reflection calls
-%leverages the way objects returned by reflective calls are later used
-%in the program.  We call the approach 
-is called \emph{use-based reflection
+leverages the way objects returned by reflective calls are later used
+in the program.  We call the approach \emph{use-based reflection
   analysis} and it integrates two sub-techniques: a
-\emph{back-propagation} mechanism and a (forward) \emph{object invention}
-mechanism. 
-%We discuss these next.
+\emph{back-propagation} mechanism and a (forward) \emph{object
+  invention} mechanism.  We discuss these next.
 
 \subsubsection{Inter-procedural Back-Propagation.}
 \label{reflection/sec:back-propagation}
 
 An important observation regarding reflection handling is that it is
 one of the few parts of a static analysis that are typically
-\emph{under-approximate} rather than \emph{over-approximate}~\cite{soundiness15}.
-%% SPACE
-%A static points-to analysis is primarily a \emph{may} analysis: it
-%computes a conservative over-approximation of the analyzed program's
-%behavior. This is usually impossible to do in the presence of
-%reflection: the analysis cannot know all the values that a string
-%expression can assume. Of course, the analysis could over-approximate
-%such values (e.g., assume that \emph{any} string is possible) but such
-%treatment is catastrophic for precision and scalability: a single
-%reflective call would lead to vast imprecision propagating through the
-%program. No actual, implemented whole-program analysis attempts such
-%over-approximation~\cite{soundiness15}. Instead, analyses choose to
-%purposely treat reflective calls under-approximately: when the
-%arguments of the reflection call are possible to infer, they are taken
-%into account; other potential values are ignored.
-%
+\emph{under-approximate} rather than \emph{over-approximate}.  A
+static points-to analysis is primarily a \emph{may} analysis: it
+computes a conservative over-approximation of the analyzed program's
+behavior. This is usually impossible to do in the presence of
+reflection: the analysis cannot know all the values that a string
+expression can assume. Of course, the analysis could over-approximate
+such values (e.g., assume that \emph{any} string is possible) but such
+treatment is catastrophic for precision and scalability: a single
+reflective call would lead to vast imprecision propagating through the
+program. No actual, implemented whole-program analysis attempts such
+over-approximation~\cite{soundiness15}. Instead, analyses choose to
+purposely treat reflective calls under-approximately: when the
+arguments of the reflection call are possible to infer, they are taken
+into account; other potential values are ignored.
+
 Our first use-based reflection analysis technique back-propagates
 information from the use-site of a reflective result \emph{to the
   original reflection call that got under-approximated}. Such an
-under-approximated call can be a
-\begin{inparablank}
-\item \javasignature{Class.forName},
-\item \javasignature{Class.get[Declared]Method},
-\item \javasignature{Class.get[Declared]Field},
-\end{inparablank}
-etc. call, which returns a dynamic representation of a class, method,
-or field, given a string name.
-
-%\begin{itemize}
-%\item A \code{Class.forName} call, as seen earlier: returns a dynamic representation of a
-%  class, given a string.
-%\item A \code{Class.get[Declared]Method} call, as seen earlier: returns a dynamic
-%  representation of a method, given a class and a string.
-%\item A \code{Class.get[Declared]Field} call: returns a dynamic representation of a
-%  field, given a class and a string.
-%\item A \code{Class.get[Declared]Methods} call: returns all (or all public) methods
-%  of a class.
-%\item A \code{Class.get[Declared]Fields} call: returns all (or all public) fields of
-%  a class.
-%%%SPACE
+under-approximated call can be a:
+% \begin{inparablank}
+% \item \javasignature{Class.forName},
+% \item \javasignature{Class.get[Declared]Method},
+% \item \javasignature{Class.get[Declared]Field},
+% \end{inparablank}
+% etc. call, which returns a dynamic representation of a class, method,
+% or field, given a string name.
+\begin{compactitem}[--]
+\item \javasignature{Class.forName} call, as seen earlier: returns a
+  dynamic representation of a class, given a string.
+\item \javasignature{Class.get[Declared]Method} call, as seen
+  earlier: returns a dynamic representation of a method, given a class
+  and a string.
+\item \javasignature{Class.get[Declared]Field} call: returns a
+  dynamic representation of a field, given a class and a string.
+% \item \javasignature{Class.get[Declared]Methods} call: returns all
+%   (or all public) methods of a class.
+% \item \javasignature{Class.get[Declared]Fields} call: returns all
+%   (or all public) fields of a class.
+\end{compactitem}
+%%% SPACE
 %\footnote{Note that (unlike the first three cases) there is no \emph{a priori}
 %reason why the last two cases should be under-approximated. They do
 %not receive a string as an argument, therefore, if the class on which
@@ -1023,21 +1002,28 @@ returned by a \code{newInstance} call, which was, in turn, performed on
 the special object returned by a \code{forName} call, at invocation site
 \args{i}. The rules then become:
 
-\begin{rules}
-\pred{VarPointsTo}{v, h} \rulearrow \\
-\tab \pred{Call}{i, \code{"Class.forName"}}, \pred{AssignRetValue}{i, v}, \pred{ReifiedForName}{i, h}.\\
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{v, h} \rulearrow \\
+    \tab \pred{Call}{i, \code{"Class.forName"}}, \\
+    \tab \pred{AssignRetValue}{i, v}, \pred{ReifiedForName}{i, h}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent In words: the variable that was assigned the result of a \code{forName}
 invocation points to the special object representing all missing objects from
 this invocation site. In this way, the special object can then propagate through
 the points-to analysis.
 
-\begin{rules}
-\pred{VarPointsTo}{r, h_n} \rulearrow \\
-\tab \pred{Call}{i_n, \code{"Class.newInstance"}}, \pred{ActualArg}{i_n, 0, v}, \pred{VarPointsTo}{v, h}, \\
-\tab \pred{AssignRetValue}{i_n, r}, \pred{ReifiedForName}{i, h}, \pred{ReifiedNewInstance}{i, h_n}.
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{r, h_n} \rulearrow \\
+    \tab \pred{Call}{i_n, \code{"Class.newInstance"}}, \\
+    \tab \pred{ActualArg}{i_n, 0, v}, \pred{VarPointsTo}{v, h}, \\
+    \tab \pred{AssignRetValue}{i_n, r}, \\
+    \tab \pred{ReifiedForName}{i, h}, \pred{ReifiedNewInstance}{i, h_n}.
+  \end{rules}
+\end{minipage}
 
 \noindent According to this rule, when analyzing a \code{newInstance}
 call, if the receiver is a special object that was produced by a
@@ -1051,10 +1037,13 @@ The final rule uses input relation \pred{Cast}{v': V, v: V, t: T} (with
 \args{v} the variable being cast) and
 \pred{Subtype}{t: T, u:T} with its expected meaning:
 
-\begin{rules}
-\pred{ClassObject}{i, t'} \rulearrow \\
-\tab \pred{Cast}{\_, v, t}, \pred{Subtype}{t', t}, \pred{VarPointsTo}{v, h_n}, \pred{ReifiedNewInstance}{i, h_n}.\\
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{ClassObject}{i, t'} \rulearrow \\
+    \tab \pred{Cast}{\_, v, t}, \pred{Subtype}{t', t}, \\
+    \tab \pred{VarPointsTo}{v, h_n}, \pred{ReifiedNewInstance}{i, h_n}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent The rule ties the logic together: if a cast to type \args{t}
 is found, where the cast variable points to a special object,
@@ -1103,8 +1092,8 @@ idea to the 4 API calls \javasignature{Class.get[Declared]Method} and
 \paragraph{Contrasting approaches.}
 
 Our back-propagating reflection analysis
-%(Section~\ref{reflection/sec:back-propagation})
-has some close relatives in the literature.  Livshits et
+(Section~\ref{reflection/sec:back-propagation}) has some close
+relatives in the literature.  Livshits et
 al.~\cite{aplas/LivshitsWL05,livshits:thesis} also examined using
 future casts as hints for \code{forName} calls, as an alternative to
 regular string inference. Li et al.~\cite{ecoop/LiTSX14} generalize
@@ -1286,11 +1275,13 @@ relation gives an invented object, \args{h} of type \args{t}, for each
 \code{newInstance} invocation site, \args{i}, and type \args{t} that
 appears in a cast.  The algorithm is captured by two rules:
 
-\begin{rules}
-\pred{VarPointsTo}{v, h} \rulearrow \\
-\tab \pred{Call}{i, \code{"Class.newInstance"}}, \pred{AssignRetValue}{i, v}, \\
-\tab \pred{ReifiedMarkerNewInstance}{i, h}.\\
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{v, h} \rulearrow \\
+    \tab \pred{Call}{i, \code{"Class.newInstance"}}, \pred{AssignRetValue}{i, v}, \\
+    \tab \pred{ReifiedMarkerNewInstance}{i, h}.\\
+  \end{rules}
+\end{minipage}
 
 \noindent That is, the variable assigned the result of a \code{newInstance}
 invocation points to a special object marking that it was produced
@@ -1300,11 +1291,14 @@ the points-to analysis.
 The key part of the algorithm is to then invent an object at a cast
 site.
 
-\begin{rules}
-\pred{VarPointsTo}{r, h} \rulearrow \\
-\tab \pred{Cast}{r, v, t}, \pred{VarPointsTo}{v, h_m},\\
-\tab \pred{ReifiedMarkerNewInstance}{i, h_m}, \pred{ReifiedInventedObject}{i, t, h}.
-\end{rules}
+\begin{minipage}{0.95\columnwidth}
+  \begin{rules}
+    \pred{VarPointsTo}{r, h} \rulearrow \\
+    \tab \pred{Cast}{r, v, t}, \pred{VarPointsTo}{v, h_m},\\
+    \tab \pred{ReifiedMarkerNewInstance}{i, h_m}, \\
+    \tab \pred{ReifiedInventedObject}{i, t, h}.
+  \end{rules}
+\end{minipage}
 
 \noindent In words, if a variable, \args{v}, is cast to a type
 \args{t} and points to a marker object that was produced by a
@@ -1468,24 +1462,22 @@ reflection limits either context- or flow-sensitivity.
 %to scale with a context-insensitive analysis are likely to not scale
 %for context-sensitive analyses).
 
-%% The evaluation of our techniques aims to answer three 
-%% research questions:
+The evaluation of our techniques aims to answer three research
+questions:
 
-%% \begin{enumerate}[\bfseries {RQ}1:]
-%% \item \emph{Can these techniques improve the soundness of a
-%%     points-to analysis?}
-%% \item \emph{Do the presented techniques have reasonable running times?}
-%% \item \emph{Does an increase in soundness incur a significant loss in precision?}
-%% \end{enumerate}
+\begin{enumerate}[\bfseries {RQ}1:]
+\item \emph{Can these techniques improve the soundness of a
+    points-to analysis?}
+\item \emph{Do the presented techniques have reasonable running times?}
+\item \emph{Does an increase in soundness incur a significant loss in precision?}
+\end{enumerate}
 
 
 \paragraph{Experimental Setup.}
 Our evaluation setting uses the LogicBlox Datalog engine, v.3.9.0, on
 a Xeon X5650 2.67GHz machine with only one thread running at a time
 and 24GB of RAM. We have used a JVMTI agent to construct a dynamic
-call-graph for each analyzed program.
-%%SPACE
-%, by instrumenting its execution.
+call-graph for each analyzed program, by instrumenting its execution.
 
 We analyze 10 benchmark programs from the DaCapo 9.12-Bach
 suite~\cite{dacapo:paper}, with their default inputs (for the purposes
@@ -1493,16 +1485,15 @@ of the dynamic analysis). Other benchmarks could not be executed or
 analyzed: \emph{tradebeans}/\emph{tradesoap} from 9.12-Bach do not run
 with our instrumentation agent, hence no dynamic call-graphs can be
 extracted for comparison. This is a known, independently documented,
-issue (see {\small \url{http://sourceforge.net/p/dacapobench/bugs/70/}}). We
-have been unable to meaningfully analyze \emph{fop} and
+issue (see {\small
+  \url{http://sourceforge.net/p/dacapobench/bugs/70/}}). We have been
+unable to meaningfully analyze \emph{fop} and
 \emph{tomcat}---significant entry points were missed. This suggests
-either a packaging error 
-%at determining what makes up the application
-%and library code of each benchmark (manual repackaging is necessary
-%since 
-(no application-library boundaries are provided by the DaCapo suite), or the
-extensive use of dynamic loading, which needs further special
-handling. 
+either a packaging error at determining what makes up the application
+and library code of each benchmark (manual repackaging is necessary
+since no application-library boundaries are provided by the DaCapo
+suite), or the extensive use of dynamic loading, which needs further
+special handling.
 %%SPACE 
 %We are planning to investigate such instances in the future.
 
@@ -1558,51 +1549,6 @@ recent work~\cite{pppj/StancuWBLF14}. For a sound static analysis, no
 edge should occur dynamically but not predicted statically. However,
 this is not the case in practice, due to the unsound handling of
 dynamic features, as discussed in the Introduction.
-
-
-%SPACE
-%%  We consider only call-graph edges originating from
-%% application code, since library classes contain a fair amount of
-%% non-analyzable native methods.\footnote{Call-graph edges from the
-%%   library are still fully statically analyzed, thus our experiments
-%%   demonstrate scalability relative to large libraries. We just do not
-%%   report library-originating edges (though they are computed within
-%%   the time reported) since these only cloud the picture, due to native
-%%   code. There is no easy way to compare library-to-library results to
-%%   dynamic edges without manual filtering, which raises validity
-%%   questions.}
-%% % which \textsc{Doop} cannot analyze at all.
-%% %
-%% We also filter out some missing edges:
-%% %%% SPACE 
-%% %(i.e., consider them
-%% %implicitly covered), which involve the following methods:
-%% \begin{bullets}
-%% %[$\cdot$]
-%% \item \emph{Class Initializers.} 
-%%   \textsc{Doop} only models 
-%% %  Due to \textsc{Doop}'s modeling of
-%% %  class initialization, no call-graph edges to and from \code{<clinit>}
-%% %  methods are recorded. Instead, the analysis tracks down only 
-%%   \emph{which} subset of classes get initialized (without any
-%%   information about where the initializer gets called from). We filter
-%%   out edges to class initializer methods, if static analysis indicates
-%%   that the class has been initialized.
-%% \item \emph{Native.} Native code cannot be analyzed. However, some
-%%   library reflection calls are wrappers for native methods (e.g.,
-%%   \code{forName()} and \code{forName0()}). Edges to these methods are,
-%%   thus, completely extraneous due to our special modeling
-%%   of their effect.
-%% \item \emph{Class Loader.} Method \code{loadClass()} is invoked by the
-%%   VM when a class needs to be loaded and \code{checkPackageAccess()} is
-%%   invoked right after loading.
-%%   %% checkPackageAccess() is private and called automatically by the
-%%   %% VM.
-%% \item \emph{Synthetic.} Edges involving dynamically generated classes
-%%   are impossible to obtain by reflection analysis alone, so we eliminate
-%%   such instances.
-%% \end{bullets}
-
 
 \paragraph{Results.}
 
@@ -1760,10 +1706,53 @@ Each chart plots the
 missing dynamic call-graph edges that are not discovered by the
 corresponding static analysis. We use separate bars for the
 \emph{application-to-application} and \emph{application-to-library}
-edges. Library-to-library edges are also computed but they are not
-comparable in static vs. dynamic analysis due to native calls.  We
-filter out edges to implicit methods (static initializers,
-\code{loadClass()}) that are not statically modeled.
+edges.
+
+% Library-to-library edges are also computed but they are not
+% comparable in static vs. dynamic analysis due to native calls.
+We consider only call-graph edges originating from application code,
+since library classes contain a fair amount of non-analyzable native
+methods.\footnote{Call-graph edges from the library are still fully
+  statically analyzed, thus our experiments demonstrate scalability
+  relative to large libraries. We just do not report
+  library-originating edges (though they are computed within the time
+  reported) since these only cloud the picture, due to native
+  code. There is no easy way to compare library-to-library results to
+  dynamic edges without manual filtering, which raises validity
+  questions.}
+% which \textsc{Doop} cannot analyze at all.
+%
+We also filter out some missing edges (i.e., consider them implicitly
+covered), which involve the following methods:
+\begin{itemize}
+%[$\cdot$]
+\item \emph{Class Initializers.}  \textsc{Doop} only models
+%  Due to \textsc{Doop}'s modeling of
+%  class initialization, no call-graph edges to and from \code{<clinit>}
+%  methods are recorded. Instead, the analysis tracks down only
+  \emph{which} subset of classes get initialized (without any
+  information about where the initializer gets called from). We filter
+  out edges to class initializer methods (i.e., \code{<clinit>}), if
+  static analysis indicates that the class has been initialized.
+\item \emph{Native.} Native code cannot be analyzed. However, some
+  library reflection calls are wrappers for native methods (e.g.,
+  \code{forName()} and \code{forName0()}). Edges to these methods are,
+  thus, completely extraneous due to our special modeling
+  of their effect.
+\item \emph{Class Loader.} Method \code{loadClass()} is invoked by the
+  VM when a class needs to be loaded and \code{checkPackageAccess()} is
+  invoked right after loading.
+  %% checkPackageAccess() is private and called automatically by the
+  %% VM.
+\item \emph{Synthetic.} Edges involving dynamically generated classes
+  are impossible to obtain by reflection analysis alone, so we eliminate
+  such instances.
+\end{itemize}
+
+%
+% We filter out edges to implicit methods (static initializers,
+% \code{loadClass()}) that are not statically modeled.
+
 We show five techniques:
 
 \begin{asparaenum}
@@ -1797,10 +1786,10 @@ program. This improvement appears as a reduction in the figures
 \emph{difference} in the missing edges compared to the dynamic
 analysis.
 
-%Two research questions can now be answered:
+Our research questions can now be answered:
 
-%\begin{description}
-%\item[RQ1: Do our techniques impact soundness?]  
+\begin{description}
+\item[RQ1: Do our techniques impact soundness?]
   As can be seen, our techniques substantially increase the soundness
   of the analysis.  In most benchmarks, more than half (to nearly all)
   of the missing \emph{application-to-application} edges are
@@ -1810,7 +1799,7 @@ analysis.
   analyzed in the past, since most of the dynamic call-graph was
   missing.
 
-%\item[RQ2: Do the techniques have reasonable running times?] 
+\item[RQ2: Do the techniques have reasonable running times?]
   Furthermore, although our approach emphasizes empirical soundness,
   it does not sacrifice scalability. All four of our settings are
   faster than \textsc{Elf} for almost all benchmarks. Aside from
@@ -1835,8 +1824,7 @@ analysis.
 %  can be achieved while our mechanisms of
 %  Section~\ref{reflection/sec:throttling} manage to preserve scalability.
 
-  
-%\item[RQ3: Do the techniques sacrifice precision?] 
+\item[RQ3: Do the techniques sacrifice precision?]
   For completeness, we also show a sanity-checking metric over
   our analyses. Empirical soundness could
   increase by computing a vastly imprecise call-graph. This is not the
@@ -1847,8 +1835,7 @@ analysis.
   \emph{no substring}, with a minimum of $3.4$ times the number of
   dynamic edges being computed.
 
-
-%\end{description}
+\end{description}
 
 % \item For 5-of-9 of the DaCapo 2006-10-MR2 benchmarks and for 3-of-9
 %   or the DaCapo 9.12-Bach, there is no benefit to be gained by
@@ -1940,10 +1927,8 @@ al.~\cite{ecoop/HirzelDH04,toplas/HirzelDDH07}, where an online
 pointer analysis is used to deal with reflection and dynamic loading
 by monitoring their run-time occurrence, recording their results, and
 running the analysis again, incrementally. This approach is quite
-interesting when applicable. However, 
-%%SPACE
-%it is not applicable in many static analysis settings. M
-maintaining and running a precise static
+interesting when applicable. However, it is not applicable in many
+static analysis settings. Maintaining and running a precise static
 analysis during program run time is often not realistic (e.g., for
 expensive context-sensitive analyses). Furthermore, the approach does
 not offer the off-line soundness guarantees one may expect from static
@@ -1953,15 +1938,12 @@ called so far.
 
 Interesting work on static treatments of reflection is often in the
 context of dynamic languages, where resolving reflective invocations
-is a necessity.  
-Furr et al.~\cite{oopsla/FurrAF09}
-offer an analysis of how dynamic features are used in the Ruby
-language. Their observations are similar to ours: dynamic features
-(reflection in our case) are often used either with sets of constant
-arguments
-%%SPACE
-% (in order to avoid writing verbose, formulaic code), 
-or with known prefixes/suffixes (e.g., to re-locate within the file system).
+is a necessity.  Furr et al.~\cite{oopsla/FurrAF09} offer an analysis
+of how dynamic features are used in the Ruby language. Their
+observations are similar to ours: dynamic features (reflection in our
+case) are often used either with sets of constant arguments (in order
+to avoid writing verbose, formulaic code), or with known
+prefixes/suffixes (e.g., to re-locate within the file system).
 
 Madsen et al.~\cite{sigsoft/MadsenLF13} employ a use-based analysis
 technique in the context of Javascript. When objects are retrieved
@@ -1978,22 +1960,19 @@ Sections~\ref{reflection/sec:model}, and \ref{reflection/sec:use-based}).
 Advanced techniques for string analysis have been presented by
 Christensen et al.~\cite{sas/ChristensenMS03}. They analyze complex
 string expressions and abstract them via a context-free grammar that
-is then widened to a regular language. Reflection is one of their
-examples but they only apply it to small benchmarks.
+is then widened to a regular language. The regular approximations
+produced by this approach are richer than the prefix and suffix
+matching of our substring analysis, and can thus better approximate
+the possible values of arbitrary string expressions. Reflection is one
+of their examples but they only apply it to small benchmarks.
 
-% The regular approximations
-% produced by this approach are richer than the prefix and suffix
-% matching of our substring analysis, and can thus better approximate
-% the possible values of arbitrary string expressions.
-
-%%SPACE
-%Ali and Lhot{\'a}k~\cite{ecoop/AliL12,ecoop/AliL13}
-%offer comparisons of dynamic and static call-graph edge metrics.  They
-%discover hundreds of missing edges in several of the DaCapo
-%2006-10-MR2 benchmarks.  However, their experiments do not integrate
-%the vastly improved support for reflection (e.g., modeling of
-%\javasignature{Object.getClass}) offered by \textsc{Elf} or
-%our current work. 
+\citeauthor{ecoop/AliL12}~\cite{ecoop/AliL12,ecoop/AliL13} offer
+comparisons of dynamic and static call-graph edge metrics.  They
+discover hundreds of missing edges in several of the DaCapo
+2006-10-MR2 benchmarks.  However, their experiments do not integrate
+the vastly improved support for reflection (e.g., modeling of
+\javasignature{Object.getClass}) offered by \textsc{Elf} or our
+current work.
 
 %were performed
 %before numerous engineering improvements in the \textsc{Doop}
@@ -2010,10 +1989,9 @@ Stancu et al.~\cite{pppj/StancuWBLF14} empirically
 %present an empirical study that 
 compare profiling data with a points-to static analysis.
 %,but do not support reflection. 
-However, they target only the most
-reflection-light benchmarks of the DaCapo 9.12-Bach suite
-%(\emph{avrora, luindex, and lusearch}), 
-and patch the code to avoid reflection entirely.
+However, they target only the most reflection-light benchmarks of the
+DaCapo 9.12-Bach suite (\emph{avrora, luindex, and lusearch}), and
+patch the code to avoid reflection entirely.
 
 %Some of the most closely related work to ours is the Li et
 %al. work~\cite{ecoop/LiTSX14}, discussed earlier. Li et al. also
@@ -2069,8 +2047,6 @@ complexity. Nevertheless, we believe it is an important step and it is
 highly interesting (probably surprising to most experts) that
 empirical soundness can be achieved without any external input for
 widely used benchmark programs of significant complexity.
-
-
 
 Other standard optimizations included allocating all reified fields,
 objects, and constructors without context: they are immutable
