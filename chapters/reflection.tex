@@ -1608,10 +1608,11 @@ dynamic features, as discussed in the Introduction.
     \includegraphics[width=\textwidth,height=0.2\textheight]{%
       figures/reflection/pmd-plain.pdf}
   \end{subfigure}
-  \caption{Unsoundness metrics (two bars: missing call-graph edges
-    app-to-app and app-to-lib) and analysis time (line) over the
-    DaCapo benchmarks. \emph{Lower is better for all.} For missing
-    bars (``n/a''), the analysis did not terminate in 90mins.}
+  \caption[Unsoundness metrics]{%
+    Unsoundness metrics (two bars: missing call-graph edges app-to-app
+    and app-to-lib) and analysis time (line) over the DaCapo
+    benchmarks. \emph{Lower is better for all.} For missing bars
+    (``n/a''), the analysis did not terminate in 90mins.}
 \end{figure}
 \begin{figure}\ContinuedFloat
   % 5th row
@@ -1687,9 +1688,11 @@ dynamic features, as discussed in the Introduction.
     xalan & 6128 & 35918 & 35221 & 45160 & 45343 & 63746 \\
     \bottomrule
   \end{tabular}
-  \caption{Total static and dynamic call-graph edges for the DaCapo 9.12-Bach
-    benchmarks. These include only \emph{application-to-application}
-    and \emph{application-to-library} edges.}
+  \caption[Total static and dynamic call-graph edges -- DaCapo
+  9.12-Bach benchmarks]{Total static and dynamic call-graph edges for
+    the DaCapo 9.12-Bach benchmarks. These include only
+    \emph{application-to-application} and
+    \emph{application-to-library} edges.}
   \label{reflection/fig:total_static}
 \end{figure}
 
