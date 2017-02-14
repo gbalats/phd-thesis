@@ -67,10 +67,19 @@ lost memory structure, in two different settings:
   lost due to specific programming idioms and the inherent low-level
   nature of the language, and
 \item in Java programs, where despite the high-level nature of the
-  language, structural information may be lost for \emph{partial
-    programs} (i.e., libraries or any programs that lack some of their
-  parts), which, in the form of Java Archives (JARs), constitute the
-  main distributable code entity of this managed language.
+  language, structural information may be lost for
+  \begin{inparaenum}[(a)]
+  \item \emph{partial programs} (i.e., libraries or any programs that
+    lack some of their parts), which, in the form of Java Archives
+    (JARs), constitute the main distributable code entity of this
+    managed language, or
+  \item due to Java's \emph{reflection} mechanism, which allows
+    runtime inspection of classes, interfaces, fields and methods, and
+    can be used to instantiate new objects, invoke methods, get/set
+    field values, and so on, without exact static type information
+    (e.g., the name of the method to be invoked can be created
+    dynamically using plain string operations).
+  \end{inparaenum}
 \end{inparaenum}
 
 
@@ -347,6 +356,33 @@ inheritance cases. More specifically,
   single- and multiple-subtyping instances.
 \end{inparaenum}
 
+Finally, another ubiquitous feature of Java programs that accounts for
+leaked structural information in most types of static analyses is none
+other than Java's \emph{reflection}. Reflection allows programmers to
+dynamically inspect objects and classes, find out what methods and
+fields they declare, and access or modify them in whatever way
+possible. Given that a Java program can reflectively obtain a member
+of a class object given just run-time strings, for a static analysis
+to determine what objects are involved in reflective operations it
+would need some form of sophisticated string value analysis at
+least. Even that could prove insufficient in cases where the strings
+involved come from external sources (e.g., properties files) or are
+constructed using such low level operations that cannot be modeled
+precisely enough by the value analysis at hand.
+
+A technique that can be used to recover missing types in reflective
+operations, without any need for string analysis, is similar to the
+one we use in the C/C++ setting to dynamically discover the types of
+untyped abstract objects by inspecting their normal flow in the
+pointer analysis itself. Specifically, we can treat the casts that
+reflectively generated objects flow to as type hints for their
+respective class objects, if we lack more precise type
+information. The principle is the same: to interleave into the main
+points-to analysis, logic that associates types to statically untyped
+abstract objects, so that these two analysis components can profit
+from their symbiotic relationship (one being both consumer and
+producer of the other).
+
 
 In conclusion, we briefly list the main scientific contributions of
 this dissertation in both the C/C++ and Java settings:
@@ -357,6 +393,9 @@ this dissertation in both the C/C++ and Java settings:
   enhance C/C++ pointer analysis precision by ``dynamically''
   associating and inferring missing type information for abstract
   objects in memory
+\item a technique to recover missing structural information in Java
+  programs that use reflection, that works with the same principle but
+  targets objects involved in reflective operations
 \item the graph-theoretic modeling of the class hierarchy
   complementation problem for partial Java programs
 \item algorithms that solve the class hierarchy complementation
