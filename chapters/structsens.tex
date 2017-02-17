@@ -1,5 +1,40 @@
 \label{chapter:structsens}
 
+In the first chapter, we discussed how a static analysis needs to
+compute an abstract model of the memory, but often fails to provide
+the right abstractions to handle certain aspects of the language being
+analyzed. This, in turn, leads to a memory model that lacks essential
+structural information about objects allocated in memory. In C/C++, as
+a typical example of a language that provides direct memory access,
+field-insensitive analyses providing crude abstractions that even fail
+to distinguish an object from its fields have long been the favorite
+approach of most pointer analyses in the literature, due to their
+simplicity and speed.
+%
+Needless to say, such imprecision is prohibitive for a meaningful
+analysis of C++ programs, where one must extend beyond
+field-sensitivity and be able to reason about v-tables and virtual
+calls, as well, with the utmost precision.
+
+This chapter presents a points-to analysis for C/C++ that recovers
+much of the available high-level structure information of types and
+objects, by applying two key techniques:
+\begin{inparaenum}[(1)]
+\item It records the type of each abstract object and, in cases
+  when the type is not readily available, the analysis uses an
+  \emph{allocation-site plus type} abstraction to create multiple
+  abstract objects per allocation site, so that each one is
+  associated with a single type.
+\item It creates separate abstract objects that represent
+  \begin{inparaenum}[(a)]
+  \item the fields of objects of either struct or class type, and
+  \item the (statically present) constant indices of arrays,
+    resulting in a limited form of array-sensitivity.
+  \end{inparaenum}
+\end{inparaenum}
+
+% The following material is taken from 
+
 %-------------------------------------------------------------------------------
 %  [Introduction Section]
 %-------------------------------------------------------------------------------
@@ -10,45 +45,24 @@
 %  most pointer analyses have opted for speed and severely neglected
 %  precision. In fact, the majority of such analyses are
 %  \emph{field-insensitive}, i.e., they make no distinction between a
-%  base object and its fields. Needless to say, such imprecision is
-%  prohibitive for a meaningful analysis of C++ programs, where one
-%  must extend beyond field-sensitivity and be able to reason about
-%  v-tables and virtual calls with the utmost precision.
+%  base object and its fields.
 
 %  Pointer analyses for C and C++ programs have often opted for speed
 %  at the expense of precision. 
 %  However, such approaches miss essential
 %  distinctions between subobjects, v-tables entries, and more.
 
-  We present a points-to analysis for C/C++ that recovers much of the
-  available high-level structure information of types and objects, by applying
-  two key techniques:
-  \begin{inparaenum}[(1)]
-  \item It records the type of each abstract object and, in cases
-    when the type is not readily available, the analysis uses an
-    \emph{allocation-site plus type} abstraction to create multiple
-    abstract objects per allocation site, so that each one is
-    associated with a single type.
-  \item It creates separate abstract objects that represent
-    \begin{inparaenum}[(a)]
-    \item the fields of objects of either struct or class type, and
-    \item the (statically present) constant indices of arrays,
-      resulting in a limited form of array-sensitivity.
-    \end{inparaenum}
-  \end{inparaenum}
-
-  We apply our approach to the full LLVM bitcode intermediate language
-  and show that it yields much higher precision than past analyses,
-  allowing accurate distinctions between subobjects, v-table entries,
-  array components, and more. Especially for C++ programs, this
-  precision is invaluable for a realistic analysis. Compared to
-  the state-of-the-art past approach, our techniques
-  exhibit substantially better precision along multiple metrics and
-  realistic benchmarks (e.g., 40+\% more variables with a single
-  points-to target).
+We apply our approach to the full LLVM bitcode intermediate language
+and show that it yields much higher precision than past analyses,
+allowing accurate distinctions between subobjects, v-table entries,
+array components, and more. Especially for C++ programs, this
+precision is invaluable for a realistic analysis. Compared to the
+state-of-the-art past approach, our techniques exhibit substantially
+better precision along multiple metrics and realistic benchmarks
+(e.g., 40+\% more variables with a single points-to target).
 
 
-\section{Introduction}
+\section{Overview of Techniques Towards Structure Sensitivity}
 
 Points-to analysis computes an abstract model of the memory that is
 used to answer the following query: \emph{What can a pointer variable
@@ -140,7 +154,9 @@ objects in order to increase analysis precision:
   existing points-to analysis. This is similar to the use-based
   \emph{back-propagation} technique used in past work
   \cite{ecoop/LiTSX14,aplas/LivshitsWL05,aplas/SmaragdakisBKB15}, in a
-  completely different context---handling Java reflection.
+  completely different context---handling Java reflection.  We will
+  examine this technique in detail, in
+  Chapter~\ref{chapter:reflection}.
 \item The field components of abstract objects are represented as
   abstract objects themselves, as long as their type can be
   determined. That is, an abstract object \code{SO} of struct type
@@ -175,7 +191,8 @@ such an index may itself point-to. That is, a precise analysis should
 not merge the points-to sets of distinct indices of v-tables.
 
 
-In summary, our work makes the following contributions:
+In summary, the work presented in this chapter makes the following
+contributions:
 \begin{itemize}
 \setlength\itemsep{0.5em}
 \item It presents a structure-sensitive pointer analysis that employs
@@ -208,13 +225,14 @@ In summary, our work makes the following contributions:
 % analyses can be very fast, but admittedly much less precise than
 % inclusion-based ones.
 
-\section{Background and Motivation}
+\section{C/C++ Pointer Analysis Background and Limitations of Past
+  Approaches}
 
 We next discuss essential aspects of precise pointer analysis for
 C and C++, as well as the key features of the LLVM bitcode intermediate
 language.
 
-\subsection{C/C++ Intricacies and Issues}
+\subsection{Language Level Intricacies and Issues}
 
 Research on pointer analysis in the last decade has shifted much of
 its focus from the low-level C language to higher-level
@@ -527,7 +545,7 @@ define void @f() {
 \end{figure}
 
 
-\section{Approach}
+\section{Structure-Sensitive Approach}
 
 Our analysis approach adds more detail to object abstractions, which
 serve both as sources and as targets of points-to edges, allowing a
@@ -660,7 +678,6 @@ accept a variable (function pointer), as their first argument.
 \end{figure}
 
 
-\vspace{-10pt}                  % CHECK
 \paragraph{Abstract Objects.}
 Our analysis defines several different kinds of abstract objects that
 express the exact nature of the allocation. Any abstract object must
@@ -1635,7 +1652,7 @@ information (with typed abstract objects and full distinction of subobjects), at
 both sources and targets of points-to relationships. Nystrom et
 al.~\cite{paste/NystromKH04} have a fine-grained heap abstraction that
 corresponds to standard use of ``heap cloning''
-(a.k.a. ''context-sensitive heap'').% techniques.
+(a.k.a. ``context-sensitive heap'').% techniques.
 
 
 \section{Conclusions}
