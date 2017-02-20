@@ -63,6 +63,7 @@ better precision along multiple metrics and realistic benchmarks
 
 
 \section{Overview of Techniques Towards Structure Sensitivity}
+\label{structsens/sect/overview}
 
 Points-to analysis computes an abstract model of the memory that is
 used to answer the following query: \emph{What can a pointer variable
@@ -227,6 +228,7 @@ contributions:
 
 \section{C/C++ Pointer Analysis Background and Limitations of Past
   Approaches}
+\label{structsens/sect/background}
 
 We next discuss essential aspects of precise pointer analysis for
 C and C++, as well as the key features of the LLVM bitcode intermediate
@@ -546,6 +548,7 @@ define void @f() {
 
 
 \section{Structure-Sensitive Approach}
+\label{structsens/sect/approach}
 
 Our analysis approach adds more detail to object abstractions, which
 serve both as sources and as targets of points-to edges, allowing a
@@ -1277,6 +1280,7 @@ the analysis can be easily extended to handle them.
 
 
 \section{Analyzing C++}
+\label{structsens/sect/cxx}
 
 LLVM bitcode is a representation well-suited for C. However, for OO
 languages such as C++, high-level features are
@@ -1347,6 +1351,7 @@ at the given offset.
 
 
 \section{Evaluation}
+\label{structsens/sect/eval}
 
 We compare our structure-sensitive analysis to a
 re-implementation of the Pearce et
@@ -1655,17 +1660,34 @@ corresponds to standard use of ``heap cloning''
 (a.k.a. ``context-sensitive heap'').% techniques.
 
 
-\section{Conclusions}
+\section{Summary}
 
-We presented a structure-sensitive points-to analysis for C and
-C++. The analysis attempts to always distinguish abstract objects and
-assign them a unique type (even when none is known at the point of
-object creation) as well as to discriminate between subobjects of a
-single object (array or structure instance). We describe the analysis
-in precise terms and show that its approach succeeds in maintaining
-precision when analyzing realistic programs. In our experience, the
-techniques we described are essential for analyzing C/C++ programs at
-the same level of precision as programs in higher-level languages.
+We began this chapter by introducing the needs for a revised abstract
+memory model for points-to analysis when analyzing C/C++, which can
+fully support field-sensitivity and maintain maximal structural
+information for its abstract objects. We accomplish this by increasing
+object granularity to force the creation of typed objects and by fully
+distinguishing subobjects as well. We give a brief overview of our
+techniques in Section~\ref{structsens/sect/overview}, and present some
+limited background about the peculiarities of C/C++ and LLVM IR in
+Section~\ref{structsens/sect/background}, regarding the complications
+they pose to the problem of pointer analysis. We describe our
+structure-sensitive points-to analysis in depth in
+Section~\ref{structsens/sect/approach}, and discuss how the techniques
+it employs make it suitable for analyzing C++ programs in
+Section~\ref{structsens/sect/cxx}. Finally, we evaluate our approach
+by comparing it to a standard field-sensitive analysis in
+Section~\ref{structsens/sect/eval}.
+
+% We presented a structure-sensitive points-to analysis for C and
+% C++. The analysis attempts to always distinguish abstract objects and
+% assign them a unique type (even when none is known at the point of
+% object creation) as well as to discriminate between subobjects of a
+% single object (array or structure instance). We describe the analysis
+% in precise terms and show that its approach succeeds in maintaining
+% precision when analyzing realistic programs. In our experience, the
+% techniques we described are essential for analyzing C/C++ programs at
+% the same level of precision as programs in higher-level languages.
 
 %% \hl{TODO}
 
