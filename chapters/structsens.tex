@@ -1638,14 +1638,14 @@ physical layouts as compatible. The implementation of \cclyzer{}
 applies a more general form of type compatibility, which has
 been omitted from this paper for space reasons.
 
-Min{\'e} \cite{lctrts/Mine06} presents a highly precise analysis,
-expressed in the abstract interpretation framework, that translates
-any field and array accesses to pointer arithmetic. By relying on an
-external numerical interval analysis, this technique is able to handle
-arbitrary integer computations, and, thus, any kind of pointer
-arithmetic. However, the precision comes with scalability and applicability
-limitations: the technique can
-only analyze programs without dynamic memory allocation or recursion.
+\citeauthor{lctrts/Mine06} \cite{lctrts/Mine06} presents a highly
+precise analysis, expressed in the abstract interpretation framework,
+that translates any field and array accesses to pointer arithmetic. By
+relying on an external numerical interval analysis, this technique is
+able to handle arbitrary integer computations, and, thus, any kind of
+pointer arithmetic. However, the precision comes with scalability and
+applicability limitations: the technique can only analyze programs
+without dynamic memory allocation or recursion.
 %(which commonly applies only to embedded critical software).
 
 There are similarly other C/C++-based analyses that claim
