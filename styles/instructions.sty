@@ -30,6 +30,7 @@
 \newcommand{\vartype}[1]{\typefunc(\var{#1})}
 \newcommand{\codetype}[1]{\typefunc(\code{#1})}
 
+\newcommand{\indices}[1]{\text{\emph{indices}}(\tp{#1})}
 
 %--------------------------------------------------------------------
 % LLVM Bitcode Instructions
@@ -106,4 +107,10 @@
   {\var{#2} =
     \instr{phi} (\op{#3} \ProcessList{#4}{\processarg})
   }
+}
+
+% Pointer Arithmetic Instruction
+\NewDocumentCommand{\ptraccess}{ o m m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \var{#3} + #4}
 }

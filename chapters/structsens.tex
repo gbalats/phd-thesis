@@ -1350,6 +1350,184 @@ instruction will return the exact function that the v-table points to,
 at the given offset.
 
 
+\section{Enhancements}
+\label{structsens/sect/addons}
+
+Section~\ref{structsens/sect/approach} presented only the essential
+parts of a structure-sensitive points-to analysis, but there can be
+many enhancements worth discussing at this point. In this section, we
+will list a few of the most valuable ones for a practical
+implementation.
+
+\subsection{Pointer Arithmetic}
+
+In C/C++, given a pointer ``\mintinline{c++}{P *ptr}'', expressions
+such as
+\begin{inparaenum}[(i)]
+\item ``\mintinline{c++}{(*ptr).fld}'',
+\item ``\mintinline{c++}{ptr->fld}'', and
+\item ``\mintinline{c++}{ptr[0].fld}''
+\end{inparaenum}
+are equivalent (and will be translated to the same LLVM bitcode
+instruction). Hence, a pointer analysis must be able to reason about
+such code patterns and map them to the same abstract (sub)object. In
+LLVM IR, all such field accesses would be canonicalized to the third
+form. In fact, all pointers in LLVM bitcode are treated as pointers to
+arrays of objects (even when they point to a single
+one).\footnote{This is exactly the reason for the first (often zero)
+  index of the often misunderstood \code{getelementptr} LLVM bitcode
+  instruction (see \url{http://llvm.org/docs/GetElementPtr.html}).}
+Regarding the possible choices of analysis inputs (discussed in
+Chapter~\ref{chapter:intro}), such translations are certainly a point
+in favor of choosing an intermediate representation such as LLVM
+bitcode, so that the analysis need not concern itself with superfluous
+syntactic constructs.
+
+However, we have not delved in the various pointer arithmetic idioms
+so far, that are supported by C/C++ and we would like to analyze. In
+C, a pointer is a memory address, which is a numeric value. One can
+perform arithmetic operations on a pointer just as with other numeric
+values. For instance, the expression ``\mintinline{c++}{ptr+3}'' is
+equivalent to ``\mintinline{c++}{&ptr[3]}'' (which corresponds to the
+aforementioned 3rd form, as per LLVM's canonicalization).  Again
+LLVM's translation can be very helpful in narrowing the complexity of
+the input language. To see how our analysis can be extended to support
+pointer arithmetic, we first have to briefly present LLVM's GEP
+instruction, since this is what all types of element accesses (and
+pointer arithmetic operations) are translated to.
+
+\paragraph{The GEP Instruction.} The actual LLVM bitcode instruction
+that is responsible for all types of element accesses is
+\instr{getelementptr} (GEP). The GEP instruction accepts a base
+pointer argument and one or more index arguments. It can be used to
+retrieve any inner element of an arbitrarily nested structure. Its
+general form is:
+\[
+  \mintinline{llvm}{
+    %ptr = getelementptr %base, %idx1, %idx2, %idx3,
+  }
+  \ldots
+\]
+A variable can only be used in the place of the first index argument
+(to index into the base pointer) or in any subsequent array indices
+(as opposed to field indices that always require a constant index). In
+practice, however, such complex GEP instructions are split into
+multiple chained GEPs with at most 2 indices. Each one will either
+return a field or an array element of its base, roughly corresponding
+to the address-of-field and address-of-array-index instructions that
+we have previously shown (if we assume a zero first index). Note that
+GEP instructions do not perform any memory dereference (as the
+instruction \instr{load} does), but only compute a relative offset.
+
+
+\begin{figure}[h!t]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering\large
+    \begin{bitcode}
+      %ptr = getelementptr %b, 7, %v1, 8
+    \end{bitcode}
+    \subcaption{Complex GEP instruction}\label{structsens/fig/gep1}
+  \end{minipage}%
+  \begin{minipage}[b]{.5\linewidth}
+    \centering\large
+    \begin{bitcode}
+      %t1 = getelementptr %b, 7
+      %t2 = getelementptr %t1, 0, %v1
+      %ptr = getelementptr %t2, 0, 8
+    \end{bitcode}
+    \subcaption{Decomposed GEP instruction}
+    \label{structsens/fig/gep2}\par\vfill
+  \end{minipage}
+  \caption{Decomposition of GEP instructions}
+  \label{structsens/fig/gep}
+\end{figure}
+
+For our simplified presentation we have neglected to examine GEP
+instructions whose first index is non-zero (thus retrieving the
+address of an element of some other than the first object as pointed
+by \code{\%base}). Fortunately, we can further decompose such
+instructions, to a GEP instruction with a single non-zero index and a
+second GEP instruction of 2 indices, whose first index is always
+zero. Thus, we can dispense with GEP's overloaded behavior and keep
+our inference rules almost intact. However, we have to augment the
+analysis to support a single-index GEP instruction, which should
+suffice for translations of dynamically allocated arrays and most
+pointer arithmetic expressions that we are interested in.
+
+\begin{figure}[h!t]
+  \begin{math}
+    \inferrule* [left=Stack\;]
+    {\allocainstr[i]{p}{T}{nbytes}}
+    {\vpt{p}{o_{i}[0]}
+      \\ \alloctype{o_{i}[0]} = \tp{T}}
+  \end{math}
+  \quad
+  \begin{math}
+    \inferrule* [left=Heap\;]
+    {\mallocinstr[i]{p}{nbytes}}
+    {\vpt{p}{o_{i}[0]}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Pointer -- Var I\quad \;]
+    {\ptraccess[i]{p}{q}{\var{j}}
+      \\ \gtype{q} = *\tp{T}
+      \\ \vpt{q}{o[k]}
+      \\ \alloctype{o[k]} = \tp{T}}
+    {\vpt{p}{o[*]}
+      \\ \alloctype{o[*]} = \tp{T}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Pointer -- Var II\quad \;]
+    {\ptraccess[i]{p}{q}{\var{j}}
+      \\ \gtype{q} = *\tp{T}
+      \\ \vpt{q}{o[*]}
+      \\ \alloctype{o[*]} = \tp{T}}
+    {\vpt{p}{o[*]}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Pointer -- Const I\;]
+    {\ptraccess[i]{p}{q}{c}
+      \\ \gtype{q} = *\tp{T}
+      \\ \vpt{q}{o[*]}
+      \\ \alloctype{o[*]} = \tp{T}}
+    {\vpt{p}{o[*]}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Pointer -- Const II\;]
+    {\ptraccess[i]{p}{q}{c}
+      \\ \gtype{q} = *\tp{T}
+      \\ \vpt{q}{o[k]}
+      \\ \alloctype{o[k]} = \tp{T}
+      \\\\  k + c \in \indices{T}}
+    {\vpt{p}{o[k+c]}
+      \\ \alloctype{o[k+c]} = \tp{T}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Pointer -- Const III\;]
+    {\ptraccess[i]{p}{q}{c}
+      \\ \gtype{q} = *\tp{T}
+      \\ \vpt{q}{o[k]}
+      \\ \alloctype{o[k]} = \tp{T}
+      \\\\  k + c \notin \indices{T}}
+    {\vpt{p}{o[*]}
+      \\ \alloctype{o[*]} = \tp{T}}
+  \end{math}
+  \caption{Dealing with pointer arithmetic}
+  \label{structsens/fig/ptrarithm}
+\end{figure}
+
+
+
 \section{Evaluation}
 \label{structsens/sect/eval}
 
