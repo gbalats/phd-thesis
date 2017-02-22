@@ -1374,27 +1374,29 @@ such code patterns and map them to the same abstract (sub)object. In
 LLVM IR, all such field accesses would be canonicalized to the third
 form. In fact, all pointers in LLVM bitcode are treated as pointers to
 arrays of objects (even when they point to a single
-one).\footnote{This is exactly the reason for the first (often zero)
-  index of the often misunderstood \code{getelementptr} LLVM bitcode
-  instruction (see \url{http://llvm.org/docs/GetElementPtr.html}).}
-Regarding the possible choices of analysis inputs (discussed in
+one).\footnote{This is exactly the reason for the first (frequently
+  zero) index of the often misunderstood \code{getelementptr} LLVM
+  bitcode instruction (see
+  \url{http://llvm.org/docs/GetElementPtr.html}).}  Regarding the
+possible choices of analysis inputs (discussed in
 Chapter~\ref{chapter:intro}), such translations are certainly a point
 in favor of choosing an intermediate representation such as LLVM
 bitcode, so that the analysis need not concern itself with superfluous
 syntactic constructs.
 
 However, we have not delved in the various pointer arithmetic idioms
-so far, that are supported by C/C++ and we would like to analyze. In
-C, a pointer is a memory address, which is a numeric value. One can
-perform arithmetic operations on a pointer just as with other numeric
-values. For instance, the expression ``\mintinline{c++}{ptr+3}'' is
-equivalent to ``\mintinline{c++}{&ptr[3]}'' (which corresponds to the
-aforementioned 3rd form, as per LLVM's canonicalization).  Again
-LLVM's translation can be very helpful in narrowing the complexity of
-the input language. To see how our analysis can be extended to support
-pointer arithmetic, we first have to briefly present LLVM's GEP
-instruction, since this is what all types of element accesses (and
-pointer arithmetic operations) are translated to.
+so far, that are supported by C/C++ and we would like for our
+structure-sensitive analysis to support as well. A pointer in C is a
+memory address, which is a numeric value. One can perform arithmetic
+operations on a pointer just as with other numeric values. For
+instance, the expression ``\mintinline{c++}{ptr+3}'' is equivalent to
+``\mintinline{c++}{&ptr[3]}'' (which corresponds to the aforementioned
+3rd form, as per LLVM's canonicalization).  Again LLVM's translation
+can be very helpful in narrowing the complexity of the input
+language. To see how our analysis can be extended to support pointer
+arithmetic, we first have to briefly present LLVM's GEP instruction,
+since this is what all types of element accesses (and pointer
+arithmetic operations) are normally translated to.
 
 \paragraph{The GEP Instruction.} The actual LLVM bitcode instruction
 that is responsible for all types of element accesses is
@@ -1402,23 +1404,34 @@ that is responsible for all types of element accesses is
 pointer argument and one or more index arguments. It can be used to
 retrieve any inner element of an arbitrarily nested structure. Its
 general form is:
+
 \[
   \mintinline{llvm}{
     %ptr = getelementptr %base, %idx1, %idx2, %idx3,
   }
   \ldots
 \]
-A variable can only be used in the place of the first index argument
-(to index into the base pointer) or in any subsequent array indices
-(as opposed to field indices that always require a constant index). In
-practice, however, such complex GEP instructions are split into
-multiple chained GEPs with at most 2 indices. Each one will either
-return a field or an array element of its base, roughly corresponding
-to the address-of-field and address-of-array-index instructions that
-we have previously shown (if we assume a zero first index). Note that
-GEP instructions do not perform any memory dereference (as the
+
+Any index after the first corresponds to a field or array element
+access. A variable can only be used in place of \code{\%idx1} (to
+index into the base pointer) or in any subsequent array indices (as
+opposed to field indices that always require a constant index). Even
+though the generic form of GEP may contain multiple indices to be able
+to return the address of deeply nested elements, in practice, such
+complex GEP instructions are split into multiple chained GEPs with at
+most 2 indices. Each one will step in a single field or array element
+of its base (and return its address), roughly corresponding to the
+\emph{address-of-field} and \emph{address-of-array-index} instructions
+that we have previously shown (if we assume a zero first index). Note
+that GEP instructions do not perform any memory dereference (as the
 instruction \instr{load} does), but only compute a relative offset.
 
+So far we have not examined GEP instructions whose first index is
+non-zero (thus retrieving the address of an element of some other than
+the first object of the base pointer array). Fortunately, we can
+further decompose such instructions to a GEP instruction with a single
+non-zero index and a second GEP instruction of 2 indices, whose first
+index is always zero.
 
 \begin{figure}[h!t]
   \begin{minipage}[b]{.5\linewidth}
@@ -1442,17 +1455,19 @@ instruction \instr{load} does), but only compute a relative offset.
   \label{structsens/fig/gep}
 \end{figure}
 
-For our simplified presentation we have neglected to examine GEP
-instructions whose first index is non-zero (thus retrieving the
-address of an element of some other than the first object as pointed
-by \code{\%base}). Fortunately, we can further decompose such
-instructions, to a GEP instruction with a single non-zero index and a
-second GEP instruction of 2 indices, whose first index is always
-zero. Thus, we can dispense with GEP's overloaded behavior and keep
-our inference rules almost intact. However, we have to augment the
-analysis to support a single-index GEP instruction, which should
-suffice for translations of dynamically allocated arrays and most
-pointer arithmetic expressions that we are interested in.
+Figure~\ref{structsens/fig/gep} demonstrates such a decomposition that
+breaks a complex GEP instruction to multiple simpler ones. The last
+two instructions of the decomposed version of
+Figure~\ref{structsens/fig/gep2} correspond to our familiar notions of
+\emph{address-of-array-index} and \emph{address-of-field}
+instructions. Thus, we can dispense with GEP's overloaded behavior and
+keep our inference rules almost intact. However, we have to augment
+the analysis to support a single-index GEP, just like the first
+instruction of Figure~\ref{structsens/fig/gep2}. Essentially, such
+instructions perform a pointer increment operation and are of special
+interest, since they alone should suffice for most translations of
+dynamically allocated arrays and pointer arithmetic operations that
+we are interested in.
 
 \begin{figure}[h!t]
   \begin{math}
@@ -1526,6 +1541,43 @@ pointer arithmetic expressions that we are interested in.
   \label{structsens/fig/ptrarithm}
 \end{figure}
 
+Figure~\ref{structsens/fig/ptrarithm} presents an extension of our
+analysis to handle such pointer increment operations. The first two
+rules slightly change the objects we allocate to resemble the first
+elements of potential array allocations. In cases where an instruction
+allocates a single object, such zero offsets may be redundant but
+facilitate the increment operations of the following rules. The next
+two rules handle pointer increment operations that use a variable
+index \(\var{j}\). In both cases, the result should disregard any
+prior index of the object pointed by \var{q}, and replace it with the
+``\(*\)'' index. The last three rules handle pointer increment
+operations that add a constant \(c\). The first of them states that
+adding a constant index to an already unknown index makes no
+difference and simply propagates the same special object
+(\(\alloc{o[*]}\)). In the last two rules, \(\var{q}\) points to an
+object with a constant index instead (\(\alloc{o[k]}\)), whereupon the
+analysis tries to compute a new constant index \(k+c\) and point to
+the relevant object (\(\alloc{o[k+c]}\)). However, such general
+treatment could potentially lead to the creation of infinite
+objects. To avoid this, we only point to \(\alloc{o[k+c]}\) if the new
+index \(k+c\) statically appears on the source code (and is associated
+with type \(\tp{T}\)). Otherwise, the analysis falls back to using
+\(\alloc{o[*]}\).
+
+To identify what static indices associated with every type we define
+the function \emph{indices} as follows:
+\begin{equation*}
+  \begin{split}
+    \indices{T} =
+    \{ 0 \}
+    & \cup
+    \{ c :  \exists \; \ptraccess{p}{q}{c} \,\land\, \gtype{q} = *\tp{T}
+    \}
+    \\
+    & \cup \{ c :  \exists \; \arrayaccess{p}{q}{c} \,\land\, \gtype{q} = [\tp{T}]
+    \}
+  \end{split}
+\end{equation*}
 
 
 \section{Evaluation}
