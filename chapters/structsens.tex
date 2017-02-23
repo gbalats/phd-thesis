@@ -1126,9 +1126,9 @@ partial order over domain $O$ and define it appropriately.
   (\alloc{x} = \alloc{p.f}\
   \land\ \alloc{y} = \alloc{q.f}\
   \land\ \alloc{p} \sqsubseteq \alloc{q})
-%  \\
+  \\
   \lor
-%  \\
+  \\
   (\alloc{x} = \alloc{p[c]}\
   \land\ \alloc{y} = \alloc{q[c]}\
   \land\ \alloc{p} \sqsubseteq \alloc{q})
@@ -1578,6 +1578,70 @@ define the function \emph{indices} as follows:
     \}
   \end{split}
 \end{equation*}
+
+
+\subsection{Abstract Object Aliases}
+
+There are cases where two abstract objects, such as \(\alloc{o}\) and
+\(\alloc{o[0]}\) may coincide (i.e., map to the same memory
+address). This applies to both zero indices of arrays and the first
+fields of structs. Ignoring such object aliases could lead to unsound
+results, e.g., when dereferencing an object without taking the
+points-to sets of its aliases into account.
+
+To handle such cases, the analysis should treat aliased abstract
+objects as an equivalence class.
+
+\begin{defn}{\emph{Abstract Object Aliases.}}
+  We define the \emph{alias} equivalence relation \(\sim\) on the set
+  of abstract objects \(O\) as the transitive, symmetric, and
+  reflexive closure of the binary relation \(\prec\), so that given
+  two abstract objects \(\alloc{x},\, \alloc{y} \in O\),
+  \(\alloc{x}\, \prec\; \alloc{y}\), if and only if:
+  \begin{gather*}
+    \alloc{y} = \alloc{x[0]}
+    \\
+    \lor
+    \\
+    \alloc{y} = \alloc{x.f} \land \offsetof(f) = 0
+  \end{gather*}
+  where \(\offsetof(f)\) returns the byte offset of a struct field
+  \(f\).
+\end{defn}
+
+\begin{figure}[ht]
+  \begin{math}
+    \inferrule* [left=Deref$^+$\;]
+    {\alloc{o_1} \sim \alloc{o_2}
+      \\ \derefpt{o}{o_1}}
+    {\derefpt{o}{o_2}}
+  \end{math}
+  \;
+  \begin{math}
+    \inferrule* [left=InvDeref$^+$\;]
+    {\alloc{o_1} \sim \alloc{o_2}
+      \\ \derefpt{o_1}{o}}
+    {\derefpt{o_2}{o}}
+  \end{math}
+  \;
+  \begin{math}
+    \inferrule* [left=Vpt$^+$\;]
+    {\alloc{o_1} \sim \alloc{o_2}
+      \\ \vpt{v}{o_1}}
+    {\vpt{v}{o_2}}
+  \end{math}
+  \caption{Extending the analysis with aliased objects.}
+  \label{structsens/fig/aliases}
+\end{figure}
+
+Figure~\ref{structsens/fig/aliases} extends the dereference and
+variable points-to edges computed by the analysis due to object
+aliases. The first rule states that whenever an object points to
+another, it should also point to any aliases of the latter. The second
+rule inverses this notion: when an object is pointed by another, it
+should also be pointed by its aliases. The third rule is analogous to
+the first one, but extends variable points-to edges instead.
+
 
 
 \section{Evaluation}
