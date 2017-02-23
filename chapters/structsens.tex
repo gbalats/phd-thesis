@@ -1643,6 +1643,125 @@ should also be pointed by its aliases. The third rule is analogous to
 the first one, but extends variable points-to edges instead.
 
 
+\subsection{Type Compatibility}
+
+We have used type equality as a filter for redundant derivations in
+the inference rules we have presented so far. In practice, however,
+this could prove too restrictive and lead to the exclusion of
+perfectly valid derivations. For instance, consider the trailing
+padding that C compilers append to struct types for proper
+alignment. The structure type of Figure~\ref{structsens/fig/unpadded}
+would be transformed to that of Figure~\ref{structsens/fig/padded}, as
+most compilers would append a padding field of 7 bytes so that the
+total size becomes 16---a multiple of the largest alignment of any of
+its members (in this case, a multiple of 8 due to field \code{p}).
+
+\begin{figure}[h!t]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering\large
+    \begin{cppcode}
+      struct s1 {
+        char *p;     /* 8 bytes */
+        char c;      /* 1 byte */
+      };
+    \end{cppcode}
+    \subcaption{Unpadded Structure Type}\label{structsens/fig/unpadded}
+  \end{minipage}%
+  \begin{minipage}[b]{.5\linewidth}
+    \centering\large
+    \begin{cppcode}
+      struct s1 {
+        char *p;     /* 8 bytes */
+        char c;      /* 1 byte */
+        char pad[7];
+      };
+    \end{cppcode}
+    \subcaption{Padded Structure Type}
+    \label{structsens/fig/padded}
+  \end{minipage}
+  \caption{Structure Alignment and Padding}
+  \label{structsens/fig/padding}
+\end{figure}
+
+However, had a padded struct (or class) type been inherited by
+another, then the compiler could in some cases use the unpadded
+version as the base type, since the padding could be redundant if new
+fields were considered.\footnote{In LLVM IR, the name of the unpadded
+  version of the type would contain a \code{.base} suffix to
+  distinguish it from the original padded version.} If strict type
+equality was required by the analysis, then this could prohibit
+objects of a derived type to be used as the receiver arguments of
+inherited methods at places where the analysis employed its type
+filters (such as in \emph{address-of-field} instructions).
+
+\begin{figure}[h!t]
+  \begin{minipage}[b]{.3\linewidth}
+    \begin{cppcode}
+      struct s1 {
+        char *p;
+        char c;
+
+        void meth() {
+          char *c1 = this->p;
+          ...
+        }
+      };
+
+      struct s2 : s1 {
+        char b;
+      };
+    \end{cppcode}
+    \subcaption{C++ Source}\label{structsens/fig/typeincompat:cxx}
+  \end{minipage}%
+  \begin{minipage}[b]{.7\linewidth}
+    \centering\large
+    \begin{bitcode}
+      ; Types
+
+      %struct.s1 = type { i8*, i8, [7 x i8] }
+      %struct.s1.base = type { i8*, i8 }
+      %struct.s2 = type { %struct.s1.base, i8, [6 x i8] }
+
+      ; Methods
+
+      define void @s1_meth(%struct.s1* %this) {
+        %1 = getelementptr %struct.s1* %this, i64 0, i32 0
+        ...
+      }
+    \end{bitcode}
+    \subcaption{LLVM Bitcode}
+    \label{structsens/fig/typeincompat:bitcode}
+  \end{minipage}
+  \caption{Padding, Inheritance, and Type Incompatibility}
+  \label{structsens/fig/typeincompat}
+\end{figure}
+
+Figure~\ref{structsens/fig/typeincompat} illustrates this case. The
+generated LLVM bitcode uses the unpadded version of \code{s1} as its
+first field (inherited objects are always translated to normal fields,
+in bitcode), to reduce its overall padding to just 6 bytes. Had an
+object \(\alloc{o}\) of type \(\tp{s2}\) flowed to the points-to set
+of \code{s1::meth()}'s \code{this} argument, it would be filtered out
+in the \code{getelementptr} instruction due to type inequality of
+\(\tp{s1}\) and \(\tp{s2}\), as per our \textsc{Field} inference rule
+of Section~\ref{structsens/sect/approach}.
+
+Note that, had not a \code{\%struct.s1.base} type existed for padding
+reasons, our object alias rules of Figure~\ref{structsens/fig/aliases}
+alone would suffice in this case:
+\begin{itemize}[\(\cdot\)]
+\item the \(\alloc{o.f_{s1}}\) subobject, representing the first field
+  of \(\alloc{o}\) (i.e., its \(\tp{s1}\) base object) would be
+  considered an alias of \(\alloc{o}\), since its byte offset is zero
+\item \code{\%this} would, hence, also point to \(\alloc{o.f_{s1}}\)
+  besides \(\alloc{o}\)
+\item \code{getelementptr} would not filter out \(\alloc{o.f_{s1}}\),
+  since its type would be equal to the expected declared type
+  \(\tp{s1}\)
+\item \code{\%1} would finally point to the \(\alloc{o.f_{s1}.p}\)
+  subobject.
+\end{itemize}
+
 
 \section{Evaluation}
 \label{structsens/sect/eval}
