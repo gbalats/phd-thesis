@@ -1730,10 +1730,10 @@ filters (such as in \emph{address-of-field} instructions).
       %struct.s1.base = type { i8*, i8 }
       %struct.s2 = type { %struct.s1.base, i8, [6 x i8] }
 
-
       ; Methods
 
       define void @s1_meth(%struct.s1* %this) {
+        ; the second 0 offset is that of field p
         %1 = getelementptr %struct.s1* %this, i64 0, i32 0
         ...
       }
