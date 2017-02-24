@@ -1703,7 +1703,7 @@ filters (such as in \emph{address-of-field} instructions).
 
 \begin{figure}[h!t]
   \begin{minipage}[b]{.3\linewidth}
-    \begin{cppcode}
+    \begin{lcppcode}
       struct s1 {
         char *p;
         char c;
@@ -1717,18 +1717,19 @@ filters (such as in \emph{address-of-field} instructions).
       struct s2 : s1 {
         char b;
       };
-    \end{cppcode}
+    \end{lcppcode}
     \subcaption{C++ Source}\label{structsens/fig/typeincompat:cxx}
   \end{minipage}%
   \qquad
   \begin{minipage}[b]{.6\linewidth}
     \centering\large
-    \begin{bitcode}
+    \begin{bitcodelinum}
       ; Types
 
       %struct.s1 = type { i8*, i8, [7 x i8] }
       %struct.s1.base = type { i8*, i8 }
       %struct.s2 = type { %struct.s1.base, i8, [6 x i8] }
+
 
       ; Methods
 
@@ -1736,7 +1737,7 @@ filters (such as in \emph{address-of-field} instructions).
         %1 = getelementptr %struct.s1* %this, i64 0, i32 0
         ...
       }
-    \end{bitcode}
+    \end{bitcodelinum}
     \subcaption{LLVM Bitcode}
     \label{structsens/fig/typeincompat:bitcode}
   \end{minipage}
@@ -1773,14 +1774,15 @@ alone would suffice in this case:
 Such reasoning can be encoded in this complex derivation:
 
 \begin{minipage}{\linewidth}
+  \small
   \begin{math}
     \inferrule* [left=Field\;]
     {\inferrule* [left=Vpt$^+$\;]
       {\alloc{o.f_{s1}} \sim \alloc{o}
         \\ \vpt{this}{o}}
       {\vpt{this}{o.f_{s1}}}
-      \\ \fieldaccess{\%1}{this}{p}
-      \\ \alloctype{o.f_{s1}} = \gtype{\var{this}}
+      \\ \fieldaccess[11]{\%1}{this}{p}
+      \\ \alloctype{o.f_{s1}} = \gtype{\var{this}} = \tp{s1}
     }
     {\vpt{\%1}{o.f_{s1}.p}
       \\ \alloctype{o.f_{s1}.p} = \tp{char*}}
