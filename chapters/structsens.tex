@@ -1749,7 +1749,7 @@ of Section~\ref{structsens/sect/approach}.
 Note that, had not a \code{\%struct.s1.base} type existed for padding
 reasons, our object alias rules of Figure~\ref{structsens/fig/aliases}
 alone would suffice in this case:
-\begin{itemize}[\(\cdot\)]
+\begin{compactitem}[\(\cdot\)]
 \item the \(\alloc{o.f_{s1}}\) subobject, representing the first field
   of \(\alloc{o}\) (i.e., its \(\tp{s1}\) base object) would be
   considered an alias of \(\alloc{o}\), since its byte offset is zero
@@ -1760,7 +1760,24 @@ alone would suffice in this case:
   \(\tp{s1}\)
 \item \code{\%1} would finally point to the \(\alloc{o.f_{s1}.p}\)
   subobject.
-\end{itemize}
+\end{compactitem}
+
+Such reasoning can be encoded in this complex derivation:
+
+\begin{minipage}{\linewidth}
+  \begin{math}
+    \inferrule* [left=Field\;]
+    {\inferrule* [left=Vpt$^+$\;]
+      {\alloc{o.f_{s1}} \sim \alloc{o}
+        \\ \vpt{this}{o}}
+      {\vpt{this}{o.f_{s1}}}
+      \\ \fieldaccess{\%1}{this}{p}
+      \\ \alloctype{o.f_{s1}} = \gtype{\var{this}}
+    }
+    {\vpt{\%1}{o.f_{s1}.p}
+      \\ \alloctype{o.f_{s1}.p} = \tp{char*}}
+  \end{math}
+\end{minipage}
 
 
 \section{Evaluation}
