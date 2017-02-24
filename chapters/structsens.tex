@@ -1773,6 +1773,7 @@ alone would suffice in this case:
 
 Such reasoning can be encoded in the following complex derivation:
 
+\vspace{0.5em}
 \begin{minipage}{\linewidth}
   \small
   \begin{math}
@@ -1788,6 +1789,94 @@ Such reasoning can be encoded in the following complex derivation:
       \\ \alloctype{o.f_{s1}.p} = \tp{char*}}
   \end{math}
 \end{minipage}
+\vspace{0.5em}
+
+We can relax our type equality constraints by introducing a notion of
+\emph{type compatibility}. We list the following cases of compatible
+types:
+\begin{itemize}[--]
+\item a type is type compatible with itself (reflexive)
+\item two array types \tp{T[]}, \tp{U[]} are type compatible if
+  \begin{inparaenum}[(i)]
+  \item their respective component types \tp{T}, \tp{U} are type
+    compatible, and
+  \item they are either of the same size (e.g., \tp{T[5]}, \tp{U[5]}),
+    or at least one of them does not specify a size (e.g., \tp{T[7]},
+    \tp{U[]})
+  \end{inparaenum}
+\item two function types
+  \(\tp{R} (\tp{T}_1, \tp{T}_2, \tp{T}_3, \ldots, \tp{T}_n)\) and
+  \(\tp{S} (\tp{U}_1, \tp{U}_2, \tp{U}_3, \ldots, \tp{T}_n)\) are type
+  compatible if
+  \begin{inparaenum}[(i)]
+  \item their return types \tp{R} and \tp{S} are type
+    compatible, and
+  \item so are their arguments types (i.e., \(\tp{T}_i\) is type
+    compatible with \(\tp{U}_i\) for every \(i \in 1,\ldots ,n\))
+  \end{inparaenum}
+\item a function type
+  \(\tp{R} (\tp{T}_1, \tp{T}_2, \tp{T}_3, \ldots, \tp{T}_n)\) is also
+  type compatible with the variadic function type
+  \(\tp{S} (\tp{U}_1, \tp{U}_2, \tp{U}_3, \ldots, \tp{U}_m, \ldots)\)
+  if
+  \begin{inparaenum}[(i)]
+  \item \(m < n\),
+  \item their return types \tp{R} and \tp{S} are type compatible, and
+  \item so is the common subset of their arguments types (i.e.,
+    \(\tp{T}_i\) is type compatible with \(\tp{U}_i\) for every
+    \(i \in 1,\ldots ,m\))
+  \end{inparaenum}
+\item two struct types \(\tp{S}_1\) and \(\tp{S}_2\), whose declared
+  fields are respectively
+  \(\tp{F}_1, \tp{F}_2, \tp{F}_3, \ldots, \tp{F}_n\) and
+  \(\tp{Q}_1, \tp{Q}_2, \tp{Q}_3, \ldots, \tp{Q}_m\) (in that order)
+  are type compatible \emph{up to field} \(k\), if field type
+  \(\tp{F}_i\) is type compatible with \(\tp{Q}_i\) for every
+  \(i \in 1,\ldots ,k\); moreover, \(\tp{S}_1\) and \(\tp{S}_2\) are
+  type compatible, if they are type compatible up to field \(m\) and
+  \(m\) equals \(n\)
+\item a struct type \(\tp{S}_1\) is an \emph{eligible base} of type
+  \(\tp{S}_2\) (with respective fields
+  \(\tp{F}_1, \ldots, \tp{F}_n\)), if \(\tp{S}_1\) is type compatible
+  with \(\tp{F}_1\) up to field \(n\)
+\item two pointer types \tp{T*}, \tp{U*} are type compatible if
+  \begin{compactenum}[(1)]
+  \item their respective component types \tp{T}, \tp{U} are type
+    compatible,
+  \item either \tp{T} or \tp{U} is \code{char}, or
+  \item \tp{U} is (transitively) an \emph{eligible base} of \tp{T}
+  \end{compactenum}
+\end{itemize}
+
+Our type compatibility rules are deliberately geared towards
+structural compatibility (as is our overall structure-sensitive
+approach). Restricting the type compatibility rules to comply to some
+specific C/C++ standard would not work, since by the time the compiler
+had transformed the code to LLVM bitcode, the various transformations
+and optimizations up to this point would almost certainly violate such
+rules.
+
+As a final note, every struct type can be viewed as an array of bytes
+(as hinted by our type compatibility rules). A field could be accessed
+in such a way, via its byte
+offset. Figure~\ref{structsens/fig/byteoffset} identifies such
+accesses and treats them accordingly.
+
+\begin{figure}[ht]
+  \begin{math}
+    \inferrule* [left=Byte Offset\;]
+    {\ptraccess[i]{p}{q}{c}
+      \\ \gtype{q} = \tp{char*}
+      \\ \vpt{q}{o}
+      \\ \alloctype{o} = \tp{T}
+      \\\\ \offsetof(\tp{T}.f) = c
+      \\ \gtype{\tp{T}.f} = \tp{F} }
+    {\vpt{p}{o.f}
+      \\ \alloctype{o.f} = \tp{F}}
+  \end{math}
+  \caption{Accessing field via byte offset.}
+  \label{structsens/fig/byteoffset}
+\end{figure}
 
 
 \section{Evaluation}
