@@ -1889,6 +1889,86 @@ accesses and treats them accordingly.
 \end{figure}
 
 
+\subsection{Copying memory areas}
+
+There are various functions in C that copy memory from a pointer to
+another (e.g., \code{memcpy()}, \code{memmove()}, \code{bcopy()},
+etc). Such operations have an obvious effect on the points-to sets of
+objects: an object that is copied to another location should have its
+points-to set copied as well.
+
+\begin{figure}[ht]
+  \begin{math}
+    \inferrule* [left=Memcpy Base\;]
+    {\callinstr[i]{p}{a_0}[a_1][a_2,\ldots]
+      \\ i \xrightarrow{calls} \texttt{memcpy}\,(\ldots)
+      \\ \opt{a_1}{o_{to}}
+      \\ \opt{a_2}{o_{from}}
+      \\\\ \alloctype{o_{to}} = \tp{T}
+      \\ \alloctype{o_{from}} = \tp{U}
+      \\ \typecompat{\tp{T}}{\tp{U}}
+    }
+    {\cp{o_{to}}{o_{from}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Memcpy Rec I\;\;\:]
+    {\cp{o_1}{o_2}
+      \\ \alloctype{o_1[*]} = \tp{T}
+      \\ \alloctype{o_2[*]} = \tp{U}
+      \\ \typecompat{\tp{T}}{\tp{U}}}
+    {\cp{o_1[*]}{o_2[*]}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Memcpy Rec II\;\:]
+    {\cp{o_1}{o_2}
+      \\ \alloctype{o_1[c]} = \tp{T}
+      \\ \alloctype{o_2[c]} = \tp{U}
+      \\ \typecompat{\tp{T}}{\tp{U}}}
+    {\cp{o_1[c]}{o_2[c]}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Memcpy Rec III\;]
+    {\cp{o_1}{o_2}
+      \\ \alloctype{o_1.f} = \tp{T}
+      \\ \alloctype{o_2.f} = \tp{U}
+      \\ \typecompat{\tp{T}}{\tp{U}}}
+    {\cp{o_1.f}{o_2.f}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Memcpy Deref$^+$\;]
+    {\cp{o_{to}}{o_{from}}
+      \\ \derefpt{o_{from}}{o}}
+    {\derefpt{o_{to}}{o}}
+  \end{math}
+  \caption{Handling memory copying.}
+  \label{structsens/fig/memcpy}
+\end{figure}
+
+To support memory copying, we first identify copied objects. The first
+rule of Figure~\ref{structsens/fig/memcpy} marks that an abstract
+object \(\alloc{o_{from}}\) was copied to another object
+\(\alloc{o_{to}}\), if a (direct or indirect) call to the
+\code{memcpy()} routine was made and these were the objects pointed by
+\code{memcpy()}'s operands. (Note that we use the objects pointed by
+the actual and not the formal arguments, to avoid associating objects
+of unrelated \code{memcpy} calls. This could also be achieved with
+context-sensitivity based on call-sites.) Additionally, we require
+that the objects are of compatible types, to filter imprecision. The
+next three rules of Figure~\ref{structsens/fig/memcpy} extend our
+notion of copied objects recursively, by marking subobjects as well
+(as long as they remain type compatible to each other). The last rule
+performs the propagation of the points-to set of an object that was
+copied to another.
+
+
 \section{Evaluation}
 \label{structsens/sect/eval}
 
