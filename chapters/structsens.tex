@@ -1856,6 +1856,15 @@ had transformed the code to LLVM bitcode, the various transformations
 and optimizations up to this point would almost certainly violate such
 rules.
 
+Henceforth, we will use the notation ``\typecompat{\tp{T}}{\tp{U}}''
+to signify that types \tp{T} and \tp{U} are type compatible, according
+to the previous rules. Even though we will forgo rewriting any
+previous inference rules of our analysis to make use of the type
+compatibility relation, the reader should assume that any strict type
+equality premise clauses therein, such as
+``\(\alloctype{o} = \tp{T}\)\,'', should be replaced with the more
+generic ``\(\typecompat{\alloctype{o}}{\tp{T}}\)''.
+
 As a final note, every struct type can be viewed as an array of bytes
 (as hinted by our type compatibility rules). A field could be accessed
 in such a way, via its byte
@@ -1870,7 +1879,7 @@ accesses and treats them accordingly.
       \\ \vpt{q}{o}
       \\ \alloctype{o} = \tp{T}
       \\\\ \offsetof(\tp{T}.f) = c
-      \\ \gtype{\tp{T}.f} = \tp{F} }
+      \\ \tp{F} = \gtype{\tp{T}.f}}
     {\vpt{p}{o.f}
       \\ \alloctype{o.f} = \tp{F}}
   \end{math}
