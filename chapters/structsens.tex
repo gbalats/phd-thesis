@@ -1972,15 +1972,15 @@ copied to another.
 \section{Evaluation}
 \label{structsens/sect/eval}
 
-We compare our structure-sensitive analysis to a
-re-implementation of the Pearce et
-al. \cite{paste/PearceKH04,toplas/PearceKH07} analysis in \cclyzer{},
-that also operates over the full LLVM bitcode language. We will refer
-to this analysis as \pearce{}. Both analyses were implemented using
-Datalog, and include many enhancements to deal with various features
-(such as \code{memcpy} instructions, hidden copies of struct instances
-due to pass-by-value semantics, type compatibility rules, etc.) that
-arise in practice.
+We compare our structure-sensitive analysis to a re-implementation of
+the Pearce et al. \cite{paste/PearceKH04,toplas/PearceKH07} analysis
+in \cclyzer{}, that also operates over the full LLVM bitcode
+language. We will refer to this analysis as \pearce{}. Both analyses
+were implemented using Datalog, and include the enhancements of
+Section~\ref{structsens/sect/addons} and a few more to deal with
+various features (hidden copies of struct instances due to
+pass-by-value semantics, constant expressions, etc.) that arise in
+practice.
 
 %
 For our benchmark suite, we use the 8 largest programs (in terms of
@@ -2252,10 +2252,10 @@ not employ any kind of type back-propagation to create more
 (fine-grained) abstract objects for polymorphic allocation
 sites. Instead, they consider objects used with multiple types as
 possible type violations. Finally, they extend type compatibility with
-a form of structural equivalence to mark types with identical
-physical layouts as compatible. The implementation of \cclyzer{} 
-applies a more general form of type compatibility, which has
-been omitted from this paper for space reasons.
+a form of structural equivalence to mark types with identical physical
+layouts as compatible. The implementation of \cclyzer{} applies a more
+general form of type compatibility, presented in
+Section~\ref{structsens/sect/addons}.
 
 \citeauthor{lctrts/Mine06} \cite{lctrts/Mine06} presents a highly
 precise analysis, expressed in the abstract interpretation framework,
@@ -2294,8 +2294,10 @@ they pose to the problem of pointer analysis. We describe our
 structure-sensitive points-to analysis in depth in
 Section~\ref{structsens/sect/approach}, and discuss how the techniques
 it employs make it suitable for analyzing C++ programs in
-Section~\ref{structsens/sect/cxx}. Finally, we evaluate our approach
-by comparing it to a standard field-sensitive analysis in
+Section~\ref{structsens/sect/cxx}. In
+Section~\ref{structsens/sect/addons} we present various enhancements,
+essential for a realistic implementation. Finally, we evaluate our
+approach by comparing it to a standard field-sensitive analysis in
 Section~\ref{structsens/sect/eval}.
 
 % We presented a structure-sensitive points-to analysis for C and
