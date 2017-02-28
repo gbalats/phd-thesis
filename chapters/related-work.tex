@@ -1,3 +1,72 @@
+\section{C/C++ Pointer Analysis}
+
+We discussed some closely related work throughout the paper. Most C
+and C++ analyses in the past have focused on scalability, at the
+expense of precision. Several (e.g.,
+\cite{antgrasshopper,popl/ZhengR08,popl/Lhotak11}) do not model more
+than a small fraction of the functionality of modern intermediate
+languages.
+
+One important addition is the DSA work of Lattner et
+al.~\cite{pldi/LattnerLA07}, which was the original points-to analysis
+in LLVM. The analysis is no longer maintained, so comparing
+experimentally is not possible. In terms of a qualitative comparison,
+the DSA analysis is a sophisticated but ad hoc mix of techniques, some
+of which add precision, while others sacrifice it for scalability. For
+instance, the analysis is field-sensitive using byte offsets, at both
+the source and the target of points-to edges. However, when a single
+abstract object is found to be used with two different types, the
+analysis reverts to collapsing all its fields. (Our analysis would
+instead create two abstract objects for the two different types.)
+Furthermore, the DSA analysis is unification-based (a Steensgaard
+analysis), keeping coarser abstract object sets and points-to sets
+than our inclusion-based analysis. Finally, the DSA analysis uses deep
+context-sensitivity, yet discards it inside a strongly connected
+component of methods.
+%Overall, the DSA
+%analysis is intriguing and it would be interesting to compare its
+%precision with our approach, 
+
+The field-sensitive inclusion-based analysis of Avots et
+al. \cite{icse/AvotsDLL05} uses type information to improve its
+precision. As in this work, they explicitly track the types of objects
+and their fields, and filter out field accesses whose base object has
+an incompatible type (which may arise due to analysis
+imprecision). However, their approach is array-insensitive and does
+not employ any kind of type back-propagation to create more
+(fine-grained) abstract objects for polymorphic allocation
+sites. Instead, they consider objects used with multiple types as
+possible type violations. Finally, they extend type compatibility with
+a form of structural equivalence to mark types with identical physical
+layouts as compatible. The implementation of \cclyzer{} applies a more
+general form of type compatibility, presented in
+Section~\ref{structsens/sect/addons}.
+
+\citeauthor{lctrts/Mine06} \cite{lctrts/Mine06} presents a highly
+precise analysis, expressed in the abstract interpretation framework,
+that translates any field and array accesses to pointer arithmetic. By
+relying on an external numerical interval analysis, this technique is
+able to handle arbitrary integer computations, and, thus, any kind of
+pointer arithmetic. However, the precision comes with scalability and
+applicability limitations: the technique can only analyze programs
+without dynamic memory allocation or recursion.
+%(which commonly applies only to embedded critical software).
+
+There are similarly other C/C++-based analyses that claim
+field-sensitivity~\cite{popl/HardekopfL09,cgo/HardekopfL11}, but it is
+unclear at what granularity this is implemented. Existing descriptions
+in the literature do not match the precision of our
+structure-sensitive approach, which maintains maximal structure
+information (with typed abstract objects and full distinction of subobjects), at
+both sources and targets of points-to relationships. Nystrom et
+al.~\cite{paste/NystromKH04} have a fine-grained heap abstraction that
+corresponds to standard use of ``heap cloning''
+(a.k.a. ``context-sensitive heap'').% techniques.
+
+
+
+\section{Miscellaneous}
+
 %% -----------------------------------------------------------------------------
 %   CFL Reachability Problems
 %% -----------------------------------------------------------------------------
