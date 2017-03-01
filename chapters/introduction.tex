@@ -275,6 +275,19 @@ obtainable artifact (for the aforementioned reasons), it would be too
 restrictive from the part of a static analysis to require a whole
 program to analyze.
 
+Moreover, requiring the whole program (which could comprise a
+multitude of libraries due to transitive dependencies) could be
+inconsequential as well. A program often uses an external library
+\(A\), which in turn depends on another library \(B\), but only needs
+a subset of \(A\)'s functionality that does not touch \(B\) in any
+way. Library \(B\) is a transitive dependency but may be entirely
+redundant in any possible execution of the program.
+\begin{displayquote}
+  The analysis of partial Java programs is, thus, meaningful as some
+  missing parts of code are neither required nor needed for a program
+  to run.
+\end{displayquote}
+
 This raises the question:
 \begin{displayquote}
   What are the challenges of statically analyzing partial Java
@@ -325,8 +338,9 @@ completely different settings due to their generality:
 \item[Multiple Inheritance.] Given a directed acyclic graph, with a
   subset of ``fixed'' nodes (which correspond to our \emph{known}
   non-phantom classes), and a set of binary path constraints among the
-  nodes, how can we extend the graph by adding new edges that do not
-  originate from the ``fixed'' nodes, so that
+  nodes (of the form \(Y\) reachable from \(X\)), how can we extend
+  the graph by adding new edges that do not originate from the
+  ``fixed'' nodes, so that
   \begin{inparaenum}[(i)]
   \item the graph remains acyclic, and
   \item all path constraints are satisfied (i.e., for each constraint
