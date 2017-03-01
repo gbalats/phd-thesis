@@ -56,12 +56,12 @@ optimizations).
 
 \paragraph{Thesis.}
 \begin{displayquote}
-In this dissertation we argue that there is \emph{implicit structural
-  information} in the program, about the memory it will allocate, that
-can improve the quality of the abstract memory model constructed by
-static analysis. This structural information is not readily available,
-but may be recovered via inference, primarily by tracking the use of
-types in the program.
+  There is \emph{implicit structural information} in the program,
+  about the memory it will allocate, that can improve the quality of
+  the abstract memory model constructed by static analysis. This
+  structural information is not readily available, but may be
+  recovered via inference, primarily by tracking the use of types in
+  the program.
 \end{displayquote}
 
 We provide a number of techniques that recover such
@@ -71,7 +71,7 @@ lost memory structure, in two different settings:
   direct memory access, where the program's memory structure is often
   lost due to specific programming idioms and the inherent low-level
   nature of the language, and
-\item in Java programs, where despite the high-level nature of the
+\item in Java programs, where, despite the high-level nature of the
   language, structural information may be lost
   \begin{inparaenum}[(a)]
   \item for \emph{partial programs} (i.e., libraries or any programs that
@@ -383,7 +383,7 @@ objects on-the-fly by inspecting their normal flow in the
 pointer analysis itself. Specifically, we can treat casts (that
 reflectively generated objects flow to) as type hints for their
 respective class objects, if we lack more precise type
-information. The principle is the same: to interleave into the main
+information. The principle is the same: to interleave, into the main
 points-to analysis, logic that associates types to statically untyped
 abstract objects, so that these two analysis components can profit
 from their symbiotic relationship (one being both consumer and
