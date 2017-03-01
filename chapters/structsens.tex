@@ -82,12 +82,12 @@ been extended over time and successfully applied to higher-level
 object-oriented languages, such as Java
 \cite{pldi/BerndlLQHU03,oopsla/BravenboerS09,issta/MilanovaRR02,oopsla/RountevMR01,oopsla/WhaleyR99}.
 Surprisingly, precision-enhancing features that are common practice in
-the analysis of Java programs, such as field-sensitivity or online
+the analysis of Java programs, such as field sensitivity or online
 call-graph construction are absent in many analyses of C/C++
 \cite{antgrasshopper,toplas/HindBCC99,popl/ZhengR08,pldi/HeintzeT01a,pldi/Das00,sas/HardekopfL07}.
 
 
-In the case of field-sensitivity, the reason behind its frequent
+In the case of field sensitivity, the reason behind its frequent
 omission when analyzing C is that it is much harder to implement
 correctly than in Java. As noted by Pearce et
 al. \cite{toplas/PearceKH07}, the crucial difference is that, in C/C++,
@@ -110,7 +110,7 @@ be able to express that a variable \code{p} \emph{at some offset}
 array elements.
 
 The best-documented approach on how to incorporate
-field-sensitivity in a C/C++ points-to analysis is that of Pearce et
+field sensitivity in a C/C++ points-to analysis is that of Pearce et
 al. \cite{paste/PearceKH04,toplas/PearceKH07}. The authors extend the
 constraint-graph of the analysis by adding (positive) weights to 
 edges; the weights correspond to the respective field indices. For
@@ -358,7 +358,7 @@ may point to $\alloc{o_2}$.
 
 The line of work by Pearce et al.
 \cite{paste/PearceKH04,toplas/PearceKH07} introduces a form of
-\emph{field-sensitivity}, such that the analysis differentiates between
+\emph{field sensitivity}, such that the analysis differentiates between
 different fields of an object by representing them with distinct
 symbolic offsets. For instance, the $i$-th field of \code{p} is
 encoded as $p + i$. Thus, the effect of an \emph{address-of-field}
@@ -973,7 +973,7 @@ symmetrically. For instruction $\loadinstr{p}{q}$, we first
   $\alloc{o}$.
 \end{inparaenum}
 
-The next three rules (\textsc{Field, Array--Const, Array--Var}) model field-sensitivity. The rule
+The next three rules (\textsc{Field, Array--Const, Array--Var}) model field sensitivity. The rule
 handling field accesses, such as $\fieldaccess{p}{q}{f}$, finds any
 object $\alloc{o}$ that base variable $\var{q}$ may point to, and
 returns $\alloc{o}\,$'s relevant field subobject
@@ -2214,7 +2214,7 @@ target of some virtual register, due to the SSA representation.
 
 We began this chapter by introducing the needs for a revised abstract
 memory model for points-to analysis when analyzing C/C++, which can
-fully support field-sensitivity and maintain maximal structural
+fully support field sensitivity and maintain maximal structural
 information for its abstract objects. We accomplish this by increasing
 object granularity to force the creation of typed objects and by fully
 distinguishing subobjects as well. We give a brief overview of our

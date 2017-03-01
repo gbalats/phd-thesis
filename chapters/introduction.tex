@@ -14,15 +14,15 @@ term for many different methodologies (%
   \item data-flow analysis
     \cite{popl/Kildall73,books/daglib/0030999,books/mk/Muchnick1997,journals/acta/KamU77,popl/RepsHS95,books/ph/SharirP81},
 \end{inparablank}
-and so on), that aim to automatically obtain an
+and so on) that aim to automatically obtain an
 understanding of a program's behavior, without running it. Nowadays,
 one form or another of static analysis can be found in many different
-contexts: compilers, IDEs, editors, linters, or even dedicated static
-analysis tools or frameworks. The ends of a static analysis tool are
+contexts: compilers, IDEs, editors, linters, or even dedicated bug
+finders and security analyzers. The ends of a static analysis tool are
 equally diversified, ranging from bug finding and program
 verification to optimization, or even aided program comprehension.
 
-Along with static analysis tools, the programming languages have
+Along with static analysis tools, programming languages have
 evolved as well, becoming more high-level throughout the years,
 introducing many layers of abstraction, before eventually translating
 the program to the machine's native opcodes. High-level languages are
@@ -49,17 +49,20 @@ rely on the creation of some \emph{abstract memory model} of the
 program. What objects will the memory contain, at some state of
 execution? What will their structure be like?  A faithful abstract
 representation of the actual memory is, however, a demanding task; its
-precision often detrimental to the value of whatever the static
+precision often decisive for the value of whatever the static
 analysis is aiming to eventually compute (be it the identification of
 complex bug patterns or the opportunities for effective
 optimizations).
 
+\paragraph{Thesis.}
+\begin{displayquote}
 In this dissertation we argue that there is \emph{implicit structural
   information} in the program, about the memory it will allocate, that
 can improve the quality of the abstract memory model constructed by
 static analysis. This structural information is not readily available,
 but may be recovered via inference, primarily by tracking the use of
 types in the program.
+\end{displayquote}
 
 We provide a number of techniques that recover such
 lost memory structure, in two different settings:
@@ -69,9 +72,9 @@ lost memory structure, in two different settings:
   lost due to specific programming idioms and the inherent low-level
   nature of the language, and
 \item in Java programs, where despite the high-level nature of the
-  language, structural information may be lost for
+  language, structural information may be lost
   \begin{inparaenum}[(a)]
-  \item \emph{partial programs} (i.e., libraries or any programs that
+  \item for \emph{partial programs} (i.e., libraries or any programs that
     lack some of their parts), which, in the form of Java Archives
     (JARs), constitute the main distributable code entity of this
     managed language, or
@@ -95,7 +98,7 @@ this dissertation, from both a scientific and a practical perspective.
 A weakly-typed language, such as C or C++, exposes pointers as numeric
 values and allows the programmer to perform arbitrary arithmetic on
 them. These \emph{pointer arithmetic} capabilities can be used to
-bypass the language's type system. Objects may be allocated on memory
+bypass the language's type system. Objects may be allocated in memory
 without any local information about their intended type, at the
 allocation site. In fact, the norm for most heap-allocating routines
 (e.g., \code{malloc()}) is to return just an array of bytes. These
@@ -111,9 +114,9 @@ the values of pointer variables or expressions. For each pointer, it
 computes a set of memory allocations that the pointer may point to. We
 refer to this as the \emph{points-to set} of a variable. Since
 computing an exact model of memory is undecidable, a static analysis
-needs to sacrifice performance for computability. Thus, the memory
+needs to sacrifice precision for computability. Thus, the memory
 allocations of pointer analysis are mere abstractions; a single
-allocation may represent many concrete objects at some program
+allocation may represent many concrete objects during some program
 execution. One such popular abstraction represents memory objects by
 their allocation sites. Hence, any number of concrete objects
 allocated at the same instruction correspond to a single abstract
@@ -126,25 +129,25 @@ abstract objects (not just one per allocation site). Such a finer
 granularity, in terms of memory abstraction, is a key step for the
 analysis to maintain strong type information for its abstract
 objects. After all, the same allocation site can be used in C to
-create allocations of more than one distinct types. Also, as will be
+create allocations of more than one distinct type. Also, as will be
 explained later, C allows a pointer variable to point to some field of
 an allocated object. We tackle this by representing fields and array
 indices of abstract objects as separate abstract (sub-)objects with
 their own points-to sets. Hence, the pointer analysis can
 differentiate between pointing to some abstract object, and pointing
 to one of its fields (or array indices). This is commonly known as
-\emph{field-sensitivity}. Due to C's expos\'{e} of pointers, a
-field-sensitive pointer analysis is much harder to implement, than in
-a language that doesn't provide direct memory access (e.g., Java). Our
+\emph{field sensitivity}. Due to C's exposure of pointers, a
+field-sensitive pointer analysis is much harder to implement than in
+a language that does not provide direct memory access (e.g., Java). Our
 revised memory model aims to extend the domain of abstract objects to
 naturally express field sensitivity for C and C++.
 
-The second scientific contribution in the C/C++ setting of this work
+The second scientific contribution in the C/C++ setting
 is a technique to enhance pointer analysis precision by
-``dynamically'' associating and maintaining type information for all
-abstract objects in memory.  By the term ``dynamically'', we mean that
+\emph{on-the-fly} associating and maintaining type information for all
+abstract objects in memory.  By the term ``on-the-fly'', we mean that
 any object-type association is performed simultaneously with the
-pointer analysis itself (in a manner similar to \emph{on-the-fly}
+pointer analysis itself (in a manner similar to on-the-fly
 call-graph construction). The pointer analysis uses the inferred types
 of abstract objects to produce new points-to facts or filter spurious
 inferences due to type incompatibility. The points-to sets, on the
@@ -154,10 +157,10 @@ in an interdependent recursive cycle of computation.
 
 We use this technique to collect type hints---indications that some
 abstract object has type \(T\)---and for each type discovered we
-(dynamically again) create a new (typed) variant of the original
+(on-the-fly again) create a new (typed) variant of the original
 abstract object. Thus, the same allocation site may produce multiple
 abstract objects for different types, while those types will be
-determined on-the-fly (i.e., through the pointer analysis itself). The
+determined through the pointer analysis itself. The
 plethora of abstract objects generated by this technique is in line
 with the fine-grained property of our revised abstract memory model.
 
@@ -184,9 +187,9 @@ abstract subobject that represents field \code{f} of
 be able to recover potentially lost structural information.
 
 In the realm of Java, the challenges are quite different. Java is a
-statically and strongly typed language that doesn't expose
-pointers. All objects (except that of primitive types) are allocated
-in the heap, and accessed via references (allocated on the
+statically and strongly typed language that does not expose
+pointers. All objects (except those of primitive types) are allocated
+on the heap, and accessed via references (allocated on the
 stack). References are the disciplined equivalent of a C pointer, and
 allow no pointer arithmetic at all. All heap allocations of Java have
 a single (dynamic) type, declared at the allocation site. Objects of
@@ -213,7 +216,7 @@ well. Build tools, such as Apache Maven \cite{www:maven}, Gradle
 \cite{www:gradle}, and Apache Ant \cite{www:ant} have been developed
 that provide dependency management for Java projects, by automatically
 downloading Java libraries (in the form of JARs) from online
-repositories. A Java project needs only to provide a list of
+repositories. A Java project needs only provide a list of
 dependencies, in the form of a well-defined library name and a version
 number, and its build tool will handle the rest (such as resolving the
 libraries, and downloading the relevant JARs, including any transitive
@@ -246,7 +249,7 @@ in Java. To list a few complications:
   to form an executable program. All classes are linked dynamically in
   Java (via class loaders), when they are loaded into the JVM. Classes
   are loaded on demand and the runtime system does not need to know
-  about specific filesystem paths, at all. You could even compile a
+  about specific filesystem paths, at all. One could even compile a
   class against one version of a library, but provide another version
   at runtime, as long as the relevant signatures match.  In C++,
   compilation involves linking as well.
@@ -261,15 +264,16 @@ in Java. To list a few complications:
 \end{itemize}
 
 All these limitations would make distributing compiled artifacts of
-C/C++ marginally better than to distribute the code itself.
+C/C++ only marginally better than distributing the code itself.
 
 Now that we have established some of the reasons that account for the
 prevalence of JARs, we can now switch our focus to static analysis
-again. As far as static analysis is considered, JARs can be thought of
+again. As far as static analysis is concerned, JARs can be thought of
 as \emph{partial programs}, since they only contain a subset of the
-program's classes. For a static analysis to require a whole program to
-analyze, would be too restrictive in the Java world, where JARs are
-the most easily obtainable artifact, for the aforementioned reasons.
+program's classes. In the Java world, where JARs are the most easily
+obtainable artifact (for the aforementioned reasons), it would be too
+restrictive from the part of a static analysis to require a whole
+program to analyze.
 
 This raises the question:
 \begin{displayquote}
@@ -281,7 +285,7 @@ This raises the question:
 One of the main challenges is that any partial program may fail to
 satisfy even basic soundness guarantees, as those presumed by the Java
 verifier itself. Static analysis tools are rarely robust enough to
-analyze such programs without risking a great disruptive effects to
+analyze such programs without risking disruptive effects to
 their results---that is, if they succeed at running at all. Handling
 \emph{phantom types} (e.g., classes referenced in the partial program,
 with missing definitions), for which no structural information exists,
@@ -308,14 +312,14 @@ Hence, we outline the problem of \emph{class hierarchy
   bytecode specification \cite{Lindholm:1999:JVM:553607}.
 \end{displayquote}
 
-To compute such a complete class hierarchy is far from trivial, as one
-may initially expect. If not done correctly, we could easily end up
+To compute such a complete class hierarchy is far from trivial.
+If not done correctly, we could easily end up
 introducing cyclic dependencies between types (e.g., \code{A} is a
 subtype of \code{B} and \code{B} is a subtype of \code{A}), which
 would violate the language semantics. We can express this problem in
 pure graph-theoretic terms. The result is two interesting, if not
 fundamental, graph-theoretic problems that could as well arise in
-completely different settings due to their genericity:
+completely different settings due to their generality:
 
 \begin{description}
 \item[Multiple Inheritance.] Given a directed acyclic graph, with a
@@ -329,9 +333,9 @@ completely different settings due to their genericity:
     between nodes \(X\) and \(Y\), there exists a path from \(X\) to
     \(Y\) in the final graph).
   \end{inparaenum}
-\item [Single Inheritance.] Same as in the previous setting, with one
-  more constraint: the output graph should be a directed \emph{tree}
-  (instead of a DAG).
+\item [Single Inheritance.] The problem statement is the same as in
+  the previous setting, with one more constraint: the output graph
+  should be a directed \emph{tree} (instead of a DAG).
 \end{description}
 
 As to the solution of the class hierarchy complementation problem, we
@@ -344,7 +348,7 @@ inheritance cases. More specifically,
   %
   For the single inheritance setting,
 \item we provide a polynomial-time algorithm for a slightly simplified
-  setting (yet practically quite common): that where no phantom
+  setting (yet practically quite common): when no phantom
   supertypes for fixed (i.e., \emph{non-phantom}) nodes are allowed.
   %
   For the general (single inheritance) case,
@@ -359,8 +363,8 @@ inheritance cases. More specifically,
 \end{inparaenum}
 
 Finally, another ubiquitous feature of Java programs that accounts for
-leaked structural information in most types of static analyses is none
-other than Java's \emph{reflection}. Reflection allows programmers to
+leaked structural information in most kinds of static analyses is
+Java's \emph{reflection}. Reflection allows programmers to
 dynamically inspect objects and classes, find out what methods and
 fields they declare, and access or modify them in whatever way
 possible. Given that a Java program can reflectively obtain a member
@@ -374,10 +378,10 @@ precisely enough by the value analysis at hand.
 
 A technique that can be used to recover missing types in reflective
 operations, without any need for string analysis, is similar to the
-one we use in the C/C++ setting to dynamically discover the types of
-untyped abstract objects by inspecting their normal flow in the
-pointer analysis itself. Specifically, we can treat the casts that
-reflectively generated objects flow to as type hints for their
+one we use in the C/C++ setting to discover the types of untyped abstract
+objects on-the-fly by inspecting their normal flow in the
+pointer analysis itself. Specifically, we can treat casts (that
+reflectively generated objects flow to) as type hints for their
 respective class objects, if we lack more precise type
 information. The principle is the same: to interleave into the main
 points-to analysis, logic that associates types to statically untyped
@@ -392,12 +396,13 @@ this dissertation in both the C/C++ and Java settings:
 \item a revised abstract memory model for field-sensitive points-to
   analysis of C/C++ programs
 \item a technique to recover missing structural information and
-  enhance C/C++ pointer analysis precision by ``dynamically''
+  enhance C/C++ pointer analysis precision by \emph{on-the-fly}
   associating and inferring missing type information for abstract
   objects in memory
 \item a technique to recover missing structural information in Java
-  programs that use reflection, that works with the same principle but
-  targets objects involved in reflective operations
+  programs that use reflection that is based on the same principle as
+  in the C/C++ analysis but targets objects involved in reflective
+  operations
 \item the graph-theoretic modeling of the class hierarchy
   complementation problem for partial Java programs
 \item algorithms that solve the class hierarchy complementation
@@ -444,9 +449,9 @@ reporting a bug by identifying it in some low-level IR (that the
 programmer knows nothing about) is meaningless, unless the problem can
 be traced back to the original source code.
 %
-Apart from technical matters, another thing to consider is the
+Apart from technical matters, another factor to consider is the
 availability of the source code. A programmer that uses a static
-analysis tool may not be able, or not willing to provide source code
+analysis tool may not be able, or willing, to provide source code
 in the first place.
 
 A diametrically opposed alternative is to analyze the final product of
@@ -464,7 +469,7 @@ discrepancies, are:
   compiler
 \item dynamically linked libraries (DLLs), which are typically not
   available in source-code form
-\item inlined assembly code
+\item inlined assembly code.
 \end{compactitem}
 Also, analyzing binaries has, in general, wider applicability, since
 the same analysis can handle any number of compiled language(s).
@@ -476,14 +481,14 @@ is, a static analyzer may opt to target an intermediate representation
 JVM~\cite{Lindholm:1999:JVM:553607}. The advantages of analyzing Java
 bytecode, for instance, are the following:
 \begin{compactitem}[\(\cdot\)]
-\item Java Bytecode is, syntactically, much simpler than Java and
+\item Java bytecode is, syntactically, much simpler than Java and
   hence easier to analyze
 \item most libraries are available in bytecode format; thus, the
   analysis does not need to provide stubs that model library behavior
 \item the analysis may, in principle, support any language that runs
-  on the JVM (since it will be compiled to bytecode)
+  on the JVM (since it will be compiled to bytecode).
 \end{compactitem}
-However, it shares many of the downsides of both the source-code and
+However, analyzing bytecode shares many of the downsides of both the source-code and
 binary approaches. The WYSINWYX phenomenon may still arise, and
 requiring to have a working build for a project may be too optimistic
 in some cases. Hence, all three approaches have their respective
@@ -491,8 +496,8 @@ benefits and limitations; none is clearly superior to another.
 
 The first major practical contribution of this work is an
 implementation of our techniques for analyzing C/C++ programs in
-\cclyzer{}\footnote{\cclyzer{} is publicly available at
-  \url{https://github.com/plast-lab/cclyzer}}, a static analysis tool
+\cclyzer{},\footnote{\cclyzer{} is publicly available at
+  \url{https://github.com/plast-lab/cclyzer}} a static analysis tool
 for LLVM bitcode. LLVM bitcode is a low-level RISC-like intermediate
 representation, used by the LLVM compiler infrastructure
 \cite{cgo/LattnerA04} that we will thoroughly present in
@@ -500,7 +505,7 @@ Chapter~\ref{chapter:structsens}. Hence, instead of analyzing source
 or binaries, we chose this IR as our analysis target for reasons
 similar to those presented for preferring Java bytecode.
 
-Besides field-sensitivity and our revised abstract memory model to
+Besides field sensitivity and our revised abstract memory model to
 fully support it, Chapter~\ref{chapter:structsens} introduces a
 limited form of array sensitivity, so that the analysis can
 differentiate between different array indices in some cases. The
@@ -521,18 +526,19 @@ a virtual call is translated to a series of instructions:
   method of the call
 \item a second load instruction that dereferences this specific
   v-table slot to get the actual (possibly overriden) method that will
-  be called
+  be called.
 \end{compactitem}
 
 A virtual call in Java bytecode would instead by translated to an
 \code{invokevirtual} instruction, without exposing the object layout
 internals or the implementation of dynamic dispatch. However, due to
 the low-level nature of C/C++, this is not an option for any IR
-generic enough to support the full spectrum of the language. Our
-analysis is able to precisely resolve the method being called, given
-such translations, as long as it can determine the dynamic type of the
-receiver object. This is the same level of precision, as one would
-expect from a typical points-to analysis targeting Java.
+generic enough to support the full language. Therefore, a practical
+contribution of \cclyzer{} is that the analysis it performs is able to
+precisely resolve the method being called, given such translations, as
+long as it can determine the dynamic type of the receiver object. This
+is the same level of precision as one would expect from a typical
+points-to analysis targeting Java.
 
 Regarding the Java setting and the class hierarchy complementation
 problem, we have implemented JPhantom, a tool that accepts any partial
