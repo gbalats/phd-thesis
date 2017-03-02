@@ -267,7 +267,7 @@ All these limitations would make distributing compiled artifacts of
 C/C++ only marginally better than distributing the code itself.
 
 Now that we have established some of the reasons that account for the
-prevalence of JARs, we can now switch our focus to static analysis
+prevalence of JARs, we can switch our focus to static analysis
 again. As far as static analysis is concerned, JARs can be thought of
 as \emph{partial programs}, since they only contain a subset of the
 program's classes. In the Java world, where JARs are the most easily
@@ -281,7 +281,9 @@ inconsequential as well. A program often uses an external library
 \(A\), which in turn depends on another library \(B\), but only needs
 a subset of \(A\)'s functionality that does not touch \(B\) in any
 way. Library \(B\) is a transitive dependency but may be entirely
-redundant in any possible execution of the program.
+redundant in any possible execution of the program. (As we have
+already noted, a C/C++ program cannot even execute in case of
+undefined symbols, even those due to missing transitive dependencies.)
 \begin{displayquote}
   The analysis of partial Java programs is, thus, meaningful as some
   missing parts of code are neither required nor needed for a program
