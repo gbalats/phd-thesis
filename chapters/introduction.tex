@@ -431,12 +431,17 @@ this dissertation in both the C/C++ and Java settings:
 \subsection{Practical Contributions}
 
 Aside from the scientific contributions of this work, there are
-significant practical aspects as well. A crucial engineering choice of
-any static analysis framework is to determine its interaction with the
-language's build system(s), if any, and the exact point when the
-analyzer can intervene in the software's build cycle in order to
-analyze it. This will also have direct repercussions on the nature of
-the analysis inputs.
+significant practical aspects as well. Our techniques are reified in
+two tools offering immediate real-world benefits. Before we go into
+these tools and consider their respective gains, we first discuss an
+important point in the design space of static analyzers, in general,
+and in that of our tools in particular.
+
+A crucial engineering choice of any static analysis framework is to
+determine its interaction with the language's build system(s), if any,
+and the exact point when the analyzer can intervene in the software's
+build cycle in order to analyze it. This will also have direct
+repercussions on the nature of the analysis inputs.
 
 For instance, a static analysis tool may choose to completely ignore
 the compilation and build process, and directly analyze \emph{source
