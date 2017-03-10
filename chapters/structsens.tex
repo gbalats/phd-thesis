@@ -765,10 +765,31 @@ relations:
   or none at all. Since our analysis uses types to filter redundant
   derivations, the more types it establishes for abstract objects, the
   more points-to edges it will compute.
+  %
+  Figure~\ref{structsens/fig/typeinf} establishes some basic type
+  relations between the subobjects created by the analysis.
 \item[Call-graph edges.] Edge $i \xrightarrow{calls} f \in L \times F$
   records that invocation site $i$ may call function $f$. This also
   accounts for indirect calls that use function pointers.
 \end{description}
+
+\begin{figure}[t]
+  \begin{math}
+    \inferrule* [left=Struct Type\;]
+    {\alloctype{o} = \tp{S}
+      \\ \gtype{\tp{S}.f} = \tp{F}}
+    {\alloctype{o.f} = F}
+  \end{math}
+  \;
+  \begin{math}
+    \inferrule* [left=Array Type\;]
+    {\alloctype{o} = [\tp{T}]}
+    {\alloctype{o[*]} = \tp{T}
+      \\ \alloctype{o[c]} = \tp{T}}
+  \end{math}
+  \caption{Basic Type Inferences for Abstract Objects.}
+  \label{structsens/fig/typeinf}
+\end{figure}
 
 
 \subsection{Techniques - Rules}
