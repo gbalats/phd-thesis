@@ -721,7 +721,10 @@ fall into one of the following categories:
 
 \noindent
 When not using any special notation, we shall refer to a generic
-abstract object that could be of any of the above forms.
+abstract object that could be of any of the above forms. This also
+applies to the base object of the last three categories (which, thus,
+serve as recursive definitions), allowing us to define arbitrarily
+complex subobjects such as \(\alloc{o.f[4].g[*]}\).
 
 By representing field and array subobjects as separate abstract
 objects themselves, the handling of instructions that return addresses
