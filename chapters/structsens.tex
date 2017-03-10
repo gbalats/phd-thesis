@@ -686,38 +686,40 @@ Our analysis defines several different kinds of abstract objects that
 express the exact nature of the allocation. Any abstract object must
 fall into one of the following categories:
 
-\noindent
-\begin{tabular}{@{--\ }l@{\quad}p{0.87\textwidth}}
-  $\alloc{o_i}$
-  & A stack or heap allocation for instruction (allocation site) $i \in L$.
-  \\[3pt]
-  $\alloc{o_{i,\tp{T}}}$
-  & A (heap) allocation for instruction $i \in L$, specialized for type
-    $\tp{T} \in T$.
-  \\[3pt]
-%  $\alloc{o_{v,i}}$
-%  & A stack allocation for instruction (allocation site) $i \in L$,
-%    assigned to virtual register $v \in V$.
-%  \\[3pt]
-  $\alloc{o_{g}}$
-  & A global allocation for global variable or function $g \in G$.
-  \\[3pt]
-%  $\alloc{o_{f}}$
-%  & A global allocation for function $f \in F$.
-%  \\[3pt]
-  $\alloc{o.fld}$
-  & A field subobject that corresponds to field ``$fld\,$'' of base object
-    $\alloc{o} \in O$.
-  \\[3pt]
-  $\alloc{o[c]}$
-  & An array subobject that corresponds to the element at constant
-    index $c \in C$ of base object $\alloc{o} \in O$.
-  \\[1pt]
-  $\alloc{o[*]}$
-  & An array subobject that corresponds to any elements at unknown
-    indices of base object $\alloc{o} \in O$.
-  \\
-\end{tabular}
+\begin{minipage}{\linewidth}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{@{--\ }l@{\quad}p{0.87\textwidth}}
+    $\alloc{o_i}$
+    & A stack or heap allocation for instruction (allocation site) $i \in L$.
+    \\[3pt]
+    $\alloc{o_{i,\tp{T}}}$
+    & A (heap) allocation for instruction $i \in L$, specialized for type
+      $\tp{T} \in T$.
+    \\[3pt]
+    % $\alloc{o_{v,i}}$
+    % & A stack allocation for instruction (allocation site) $i \in L$,
+    % assigned to virtual register $v \in V$.
+    % \\[3pt]
+    $\alloc{o_{g}}$
+    & A global allocation for global variable or function $g \in G$.
+    \\[3pt]
+    % $\alloc{o_{f}}$
+    % & A global allocation for function $f \in F$.
+    % \\[3pt]
+    $\alloc{o.fld}$
+    & A field subobject that corresponds to field ``$fld\,$'' of base object
+      $\alloc{o} \in O$.
+    \\[3pt]
+    $\alloc{o[c]}$
+    & An array subobject that corresponds to the element at constant
+      index $c \in C$ of base object $\alloc{o} \in O$.
+    \\[1pt]
+    $\alloc{o[*]}$
+    & An array subobject that corresponds to any elements at unknown
+      indices of base object $\alloc{o} \in O$.
+    \\
+  \end{tabular}
+\end{minipage}
 
 \noindent
 When not using any special notation, we shall refer to a generic
