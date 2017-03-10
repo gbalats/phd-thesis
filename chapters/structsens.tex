@@ -1,20 +1,19 @@
 \label{chapter:structsens}
 
 In the first chapter, we discussed how a static analysis needs to
-compute an abstract model of the memory, but often fails to provide
+compute an abstract model of memory, but often fails to provide
 the right abstractions to handle certain aspects of the language being
 analyzed. This, in turn, leads to a memory model that lacks essential
 structural information about objects allocated in memory. In C/C++, as
 a typical example of a language that provides direct memory access,
-field-insensitive analyses providing crude abstractions that even fail
-to distinguish an object from its fields have long been the favorite
+field-insensitive analyses (providing crude abstractions that even fail
+to distinguish an object from its fields) have long been the favorite
 approach of most pointer analyses in the literature, due to their
 simplicity and speed.
 %
-Needless to say, such imprecision is prohibitive for a meaningful
-analysis of C++ programs, where one must extend beyond
-field sensitivity and be able to reason about v-tables and virtual
-calls, as well, with the utmost precision.
+Such imprecision is prohibitive for a meaningful analysis of C++
+programs, where one must extend beyond field sensitivity to be able
+to reason about v-tables and virtual calls precisely enough.
 
 This chapter presents a points-to analysis for C/C++ that recovers
 much of the available high-level structure information of types and
