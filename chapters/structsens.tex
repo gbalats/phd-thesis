@@ -778,7 +778,7 @@ relations:
     \inferrule* [left=Struct Type\;]
     {\alloctype{o} = \tp{S}
       \\ \gtype{\tp{S}.f} = \tp{F}}
-    {\alloctype{o.f} = F}
+    {\alloctype{o.f} = \tp{F}}
   \end{math}
   \;
   \begin{math}
@@ -1515,7 +1515,7 @@ we are interested in.
   \begin{math}
     \inferrule* [left=Pointer -- Var I\quad \;]
     {\ptraccess[i]{p}{q}{\var{j}}
-      \\ \gtype{q} = \tp{T}*
+      \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}}
     {\vpt{p}{o[*]}
@@ -1526,7 +1526,7 @@ we are interested in.
   \begin{math}
     \inferrule* [left=Pointer -- Var II\quad \;]
     {\ptraccess[i]{p}{q}{\var{j}}
-      \\ \gtype{q} = \tp{T}*
+      \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[*]}
       \\ \alloctype{o[*]} = \tp{T}}
     {\vpt{p}{o[*]}}
@@ -1536,7 +1536,7 @@ we are interested in.
   \begin{math}
     \inferrule* [left=Pointer -- Const I\;]
     {\ptraccess[i]{p}{q}{c}
-      \\ \gtype{q} = \tp{T}*
+      \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[*]}
       \\ \alloctype{o[*]} = \tp{T}}
     {\vpt{p}{o[*]}}
@@ -1546,7 +1546,7 @@ we are interested in.
   \begin{math}
     \inferrule* [left=Pointer -- Const II\;]
     {\ptraccess[i]{p}{q}{c}
-      \\ \gtype{q} = \tp{T}*
+      \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}
       \\\\  k + c \in \indices{T}}
@@ -1558,7 +1558,7 @@ we are interested in.
   \begin{math}
     \inferrule* [left=Pointer -- Const III\;]
     {\ptraccess[i]{p}{q}{c}
-      \\ \gtype{q} = \tp{T}*
+      \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}
       \\\\  k + c \notin \indices{T}}
@@ -1599,7 +1599,7 @@ define the function \emph{indices} as follows:
     \indices{T} =
     \{ 0 \}
     & \cup
-    \{ c :  \exists \; \ptraccess{p}{q}{c} \,\land\, \gtype{q} = \tp{T}*
+    \{ c :  \exists \; \ptraccess{p}{q}{c} \,\land\, \gtype{q} = \tp{T\,*}
     \}
     \\
     & \cup \{ c :  \exists \; \arrayaccess{p}{q}{c} \,\land\, \gtype{q} = [\tp{T}]
@@ -1811,7 +1811,7 @@ Such reasoning can be encoded in the following complex derivation:
       \\ \alloctype{o.f_{s1}} = \gtype{\var{this}} = \tp{s1}
     }
     {\vpt{\%1}{o.f_{s1}.p}
-      \\ \alloctype{o.f_{s1}.p} = \tp{char*}}
+      \\ \alloctype{o.f_{s1}.p} = \tp{char\,*}}
   \end{math}
 \end{minipage}
 \vspace{0.5em}
@@ -1901,7 +1901,7 @@ accesses and treats them accordingly.
   \begin{math}
     \inferrule* [left=Byte Offset\;]
     {\ptraccess[i]{p}{q}{c}
-      \\ \gtype{q} = \tp{char*}
+      \\ \gtype{q} = \tp{char\,*}
       \\ \vpt{q}{o}
       \\ \alloctype{o} = \tp{T}
       \\\\ \offsetof(\tp{T}.f) = c
