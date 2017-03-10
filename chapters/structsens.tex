@@ -824,14 +824,16 @@ implicit), and record their types.
 
   \begin{math}
     \inferrule* [left=Global\;]
-    {\constant{f} \in F}
+    {\constant{f} \in F
+      \\ \gtype{f} = \tp{F\,*}}
     {\cpt{f}{o_f}
-      \\ \alloctype{o_f} = \gtype{f}}
+      \\ \alloctype{o_f} = \tp{F}}
     \quad
     \inferrule*
-    {\var{g} \in (G \setminus F)}
+    {\var{g} \in (G \setminus F)
+      \\ \vartype{g} = \tp{T\,*}}
     {\vpt{g}{o_g}
-      \\ \alloctype{o_g} = \vartype{g}}
+      \\ \alloctype{o_g} = \tp{T}}
   \end{math}
   \\
   % \begin{math}
@@ -892,10 +894,9 @@ implicit), and record their types.
     \inferrule* [left=Field\;]
     {\fieldaccess[i]{p}{q}{f}
       \\ \vpt{q}{o}
-      \\ \alloctype{o} = S
-      \\ \gtype{q} = S}
-    {\vpt{p}{o.f}
-      \\ \alloctype{o.f} = \gtype{S.f}}
+      \\ \alloctype{o.f} = \gtype{\tp{S}.f}
+      \\ \vartype{q} = \tp{S\,*}}
+    {\vpt{p}{o.f}}
   \end{math}
   \\
 
@@ -903,10 +904,9 @@ implicit), and record their types.
     \inferrule* [left=Array -- Const\;]
     {\arrayaccess[i]{p}{q}{c}
       \\ \vpt{q}{o}
-      \\ \alloctype{o} = [\tp{T}]
-      \\ \gtype{q} = [\tp{T}]}
-    {\vpt{p}{o[c]}
-      \\ \alloctype{o[c]} = \tp{T}}
+      \\ \alloctype{o[c]} = \tp{T}
+      \\ \vartype{q} = [\tp{T}]\,\code{*}}
+    {\vpt{p}{o[c]}}
   \end{math}
   \\
 
@@ -914,10 +914,9 @@ implicit), and record their types.
     \inferrule* [left=Array -- Var\quad \;]
     {\arrayaccess[i]{p}{q}{\var{j}}
       \\ \vpt{q}{o}
-      \\ \alloctype{o} = [\tp{T}]
-      \\ \gtype{q} = [\tp{T}]}
-    {\vpt{p}{o[*]}
-      \\ \alloctype{o[*]} = \tp{T}}
+      \\ \alloctype{o[*]} = \tp{T}
+      \\ \vartype{q} = [\tp{T}]\,\code{*}}
+    {\vpt{p}{o[*]}}
   \end{math}
   \\
   
@@ -945,7 +944,7 @@ implicit), and record their types.
   \begin{math}
     \inferrule* [left=Heap-bp\;]
     {\mallocinstr[i]{p}{nbytes}
-      \\ \castinstr[j]{w}{T}{q}
+      \\ \castinstr[j]{w}{T\,*}{q}
       \\ \vpt{q}{o_{i}}}
     {\vpt{p}{o_{i,\tp{T}}}
       \\ \alloctype{o_{i,\tp{T}}} = \tp{T}}
@@ -1518,8 +1517,7 @@ we are interested in.
       \\ \gtype{q} = \tp{T\,*}
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}}
-    {\vpt{p}{o[*]}
-      \\ \alloctype{o[*]} = \tp{T}}
+    {\vpt{p}{o[*]}}
   \end{math}
   \\
 
@@ -1550,8 +1548,7 @@ we are interested in.
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}
       \\\\  k + c \in \indices{T}}
-    {\vpt{p}{o[k+c]}
-      \\ \alloctype{o[k+c]} = \tp{T}}
+    {\vpt{p}{o[k+c]}}
   \end{math}
   \\
 
@@ -1562,8 +1559,7 @@ we are interested in.
       \\ \vpt{q}{o[k]}
       \\ \alloctype{o[k]} = \tp{T}
       \\\\  k + c \notin \indices{T}}
-    {\vpt{p}{o[*]}
-      \\ \alloctype{o[*]} = \tp{T}}
+    {\vpt{p}{o[*]}}
   \end{math}
   \caption{Dealing with pointer arithmetic}
   \label{structsens/fig/ptrarithm}
@@ -1906,8 +1902,7 @@ accesses and treats them accordingly.
       \\ \alloctype{o} = \tp{T}
       \\\\ \offsetof(\tp{T}.f) = c
       \\ \gtype{\tp{T}.f} = \tp{F}}
-    {\vpt{p}{o.f}
-      \\ \alloctype{o.f} = \tp{F}}
+    {\vpt{p}{o.f}}
   \end{math}
   \caption{Accessing field via byte offset.}
   \label{structsens/fig/byteoffset}
