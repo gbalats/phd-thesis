@@ -983,7 +983,7 @@ object $\alloc{o}$ that base variable $\var{q}$ may point to, and
 returns $\alloc{o}\,$'s relevant field subobject
 $\alloc{o.f}$. However, a key element is that $\alloc{o}$
 is only considered as a base object if its type matches the declared
-(struct) type of $\var{g}$ (recall that LLVM bitcode is strongly
+(struct) type of $\var{q}$ (recall that LLVM bitcode is strongly
 typed). This precludes any untyped heap allocations as possible base
 objects. Otherwise, the analysis would end up creating untyped field
 subobjects too, further fueling imprecision. Thus, we are able to
