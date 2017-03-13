@@ -815,7 +815,7 @@ implicit), and record their types.
     {\vpt{p}{o_{i}}
       \\ \alloctype{o_{i}} = \tp{T}}
   \end{math}
-  \quad
+  \qquad
   \begin{math}
     \inferrule* [left=Heap\;]
     {\mallocinstr[i]{p}{nbytes}}
@@ -825,11 +825,10 @@ implicit), and record their types.
 
   \begin{math}
     \inferrule* [left=Global\;]
-    {\constant{f} \in F
-      \\ \gtype{f} = \tp{F\,*}}
+    {\constant{f} \in F}
     {\cpt{f}{o_f}
-      \\ \alloctype{o_f} = \tp{F}}
-    \quad
+      \\ \alloctype{o_f} = \gtype{f}}
+    \qquad
     \inferrule*
     {\var{g} \in (G \setminus F)
       \\ \vartype{g} = \tp{T\,*}}
@@ -866,7 +865,7 @@ implicit), and record their types.
       \\ \vpt{q}{o}}
     {\vpt{p}{o}}
   \end{math}
-  \quad
+  \qquad
   \begin{math}
     \inferrule* [left=Phi\;]
     {\phiinstr[i]{p}{l_1 : a_1}{l_2 : a_2}}
@@ -895,7 +894,8 @@ implicit), and record their types.
     \inferrule* [left=Field\;]
     {\fieldaccess[i]{p}{q}{f}
       \\ \vpt{q}{o}
-      \\ \alloctype{o.f} = \gtype{\tp{S}.f}
+      \\ \alloctype{o} = \tp{S}
+      % TODO consider adding \\ f \in \fields{S}
       \\ \vartype{q} = \tp{S\,*}}
     {\vpt{p}{o.f}}
   \end{math}
@@ -905,7 +905,7 @@ implicit), and record their types.
     \inferrule* [left=Array -- Const\;]
     {\arrayaccess[i]{p}{q}{c}
       \\ \vpt{q}{o}
-      \\ \alloctype{o[c]} = \tp{T}
+      \\ \alloctype{o} = [\tp{T}]
       \\ \vartype{q} = [\tp{T}]\,\code{*}}
     {\vpt{p}{o[c]}}
   \end{math}
@@ -915,7 +915,7 @@ implicit), and record their types.
     \inferrule* [left=Array -- Var\quad \;]
     {\arrayaccess[i]{p}{q}{\var{j}}
       \\ \vpt{q}{o}
-      \\ \alloctype{o[*]} = \tp{T}
+      \\ \alloctype{o} = [\tp{T}]
       \\ \vartype{q} = [\tp{T}]\,\code{*}}
     {\vpt{p}{o[*]}}
   \end{math}
@@ -924,7 +924,8 @@ implicit), and record their types.
   \begin{math}
     \inferrule* [left=Call\;]
     {\callinstr[i]{p}{a_0}[a_1][a_2,\ldots,a_n]
-      \\ \opt{a_0}{o_f}}
+      \\ \opt{a_0}{o_f}
+      \\ f \in F }
     {i \xrightarrow{calls} f(\op{p_1},\, \op{p_2},\, \ldots,\,
       \op{p_n})
       \\ \forall j:\ \opt{a_j}{o} \;\Rightarrow\; \opt{p_j}{o}}
@@ -936,7 +937,7 @@ implicit), and record their types.
     {\callinstr[i]{p}{a_0}
       \\ i \xrightarrow{calls} f(\ldots)
       \\ \returninstr[j]{q}
-      \\ j \in \text{body}(f)
+      \\ j \in \body{f}
       \\ \vpt{q}{o}}
     {\vpt{p}{o}}
   \end{math}
@@ -1504,7 +1505,7 @@ we are interested in.
     {\vpt{p}{o_{i}[0]}
       \\ \alloctype{o_{i}[0]} = \tp{T}}
   \end{math}
-  \quad
+  \qquad
   \begin{math}
     \inferrule* [left=Heap\;]
     {\mallocinstr[i]{p}{nbytes}}
