@@ -1411,8 +1411,8 @@ in favor of choosing an intermediate representation such as LLVM
 bitcode, so that the analysis need not concern itself with superfluous
 syntactic constructs.
 
-However, we have not delved in the various pointer arithmetic idioms
-so far, that are supported by C/C++ and we would like for our
+However, we have not so far delved into the various pointer arithmetic
+idioms that are supported by C/C++ and that we would like for our
 structure-sensitive analysis to support as well. A pointer in C is a
 memory address, which is a numeric value. One can perform arithmetic
 operations on a pointer just as with other numeric values. For
@@ -1439,24 +1439,39 @@ general form is:
   \ldots
 \]
 
+Assuming that \code{\%base} may point to an array of objects (in the
+general case), the first index selects an element of this
+array. (Expressions such as ``\mintinline{c++}{ptr->fld}''---being
+equivalent to ``\mintinline{c++}{ptr[0].fld}''---implicitly refer to
+the first element and thus produce a zero first index.)
+%
 Any index after the first corresponds to a field or array element
-access. A variable can only be used in place of \code{\%idx1} (to
-index into the base pointer) or in any subsequent array indices (as
-opposed to field indices that always require a constant index). Even
+access.
+% A variable can only be used in place of \code{\%idx1} (to
+% index into the base pointer) or in any subsequent array indices (as
+% opposed to field indices that always require a constant index).
+Even
 though the generic form of GEP may contain multiple indices to be able
 to return the address of deeply nested elements, in practice, such
 complex GEP instructions are split into multiple chained GEPs with at
-most 2 indices. Each one will step in a single field or array element
-of its base (and return its address), roughly corresponding to the
-\emph{address-of-field} and \emph{address-of-array-index} instructions
-that we have previously shown (if we assume a zero first index). Note
-that GEP instructions do not perform any memory dereference (as the
-instruction \instr{load} does), but only compute a relative offset.
+most 2 indices.
+%
+Each one will descend in a single field or array index, roughly
+corresponding to the \emph{address-of-field} and
+\emph{address-of-array-index} instructions that we have previously
+shown. Returning the address corresponding to a complex access path
+such as ``\mintinline{c++}{ptr->f[4].g[k]}'' will require as many GEPs
+as the depth of the access path: two field and two array accesses,
+four in total.
+%
+Note that GEP instructions do not perform any memory dereference (as
+the \instr{load} instruction does), but only compute a relative
+offset.
 
 So far we have not examined GEP instructions whose first index is
-non-zero (thus retrieving the address of an element of some other than
-the first object of the base pointer array). Fortunately, we can
-further decompose such instructions to a GEP instruction with a single
+non-zero (thus retrieving the address of an element other than the
+first, given a base pointer array). Fortunately, we can further
+decompose such instructions to a GEP instruction with a single
 non-zero index and a second GEP instruction of 2 indices, whose first
 index is always zero.
 
@@ -1485,7 +1500,7 @@ index is always zero.
 \end{figure}
 
 Figure~\ref{structsens/fig/gep} demonstrates such a decomposition that
-breaks a complex GEP instruction to multiple simpler ones. The last
+breaks a complex GEP instruction into multiple simpler ones. The last
 two instructions of the decomposed version of
 Figure~\ref{structsens/fig/gep2} correspond to our familiar notions of
 \emph{address-of-array-index} and \emph{address-of-field}
@@ -1569,7 +1584,8 @@ we are interested in.
 
 Figure~\ref{structsens/fig/ptrarithm} presents an extension of our
 analysis to handle such pointer increment operations. The first two
-rules slightly change the objects we allocate to resemble the first
+rules replace the previous ones (for base allocations) by slightly
+changing the objects we allocate to resemble the first
 elements of potential array allocations. In cases where an instruction
 allocates a single object, such zero offsets may be redundant but
 facilitate the increment operations of the following rules. The next
@@ -1586,7 +1602,7 @@ analysis tries to compute a new constant index \(k+c\) and point to
 the relevant object (\(\alloc{o[k+c]}\)). However, such general
 treatment could potentially lead to the creation of infinite
 objects. To avoid this, we only point to \(\alloc{o[k+c]}\) if the new
-index \(k+c\) statically appears on the source code (and is associated
+index \(k+c\) statically appears in the source code (and is associated
 with type \(\tp{T}\)). Otherwise, the analysis falls back to using
 \(\alloc{o[*]}\).
 
