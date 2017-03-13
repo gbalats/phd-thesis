@@ -783,7 +783,8 @@ relations:
   \;
   \begin{math}
     \inferrule* [left=Array Type\;]
-    {\alloctype{o} = [\tp{T}]}
+    {\alloctype{o} = [\tp{T}]
+      \\ c \in C}
     {\alloctype{o[*]} = \tp{T}
       \\ \alloctype{o[c]} = \tp{T}}
   \end{math}
