@@ -18,6 +18,7 @@
 \usepackage{marvosym}
 \usepackage{multirow}
 \usepackage{multicol}
+\usepackage{mathtools}
 \usepackage[defblank]{paralist}
 % \usepackage{boxedminipage}
 % \usepackage{varwidth}
@@ -87,6 +88,10 @@
 
 % Separation logic operators
 \newcommand{\sep}{-\kern-.6em\raisebox{-.659ex}{*}\ }
+
+% Additional math operators
+\newcommand{\dotrel}[1]{\mathrel{\dot{#1}}}
+\newcommand{\simless}{\dotrel{\sim}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
