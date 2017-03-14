@@ -1836,18 +1836,19 @@ types:
 \begin{itemize}[--]
 \item a type is type compatible with itself (making the relation
   reflexive)
-\item two array types \tp{T[]}, \tp{U[]} are type compatible if
+\item an array type \tp{T[]} is type compatible with another array
+  type \tp{U[]}, if
   \begin{inparaenum}[(i)]
-  \item their respective component types \tp{T}, \tp{U} are type
-    compatible, and
+  \item its component type \tp{T} is type compatible with \tp{U}, and
   \item they are either of the same size (e.g., \tp{T[5]}, \tp{U[5]}),
     or at least one of them does not specify a size (e.g., \tp{T[7]},
     \tp{U[]})
   \end{inparaenum}
-\item two function types
-  \(\tp{R} (\tp{T}_1, \tp{T}_2, \tp{T}_3, \ldots, \tp{T}_n)\) and
-  \(\tp{S} (\tp{U}_1, \tp{U}_2, \tp{U}_3, \ldots, \tp{T}_n)\) are type
-  compatible if
+\item a function type
+  \(\tp{R} (\tp{T}_1, \tp{T}_2, \tp{T}_3, ..., \tp{T}_n)\) is type
+  compatible with function type
+  \(\tp{S} (\tp{U}_1, \tp{U}_2, \tp{U}_3, ..., \tp{T}_n)\)
+  if
   \begin{inparaenum}[(i)]
   \item their return types \tp{R} and \tp{S} are type
     compatible, and
@@ -1866,15 +1867,17 @@ types:
     \(\tp{T}_i\) is type compatible with \(\tp{U}_i\) for every
     \(i \in 1,\ldots ,m\))
   \end{inparaenum}
-\item two struct types \(\tp{S}_1\) and \(\tp{S}_2\), whose declared
-  fields are respectively
-  \(\tp{F}_1, \tp{F}_2, \tp{F}_3, \ldots, \tp{F}_n\) and
-  \(\tp{Q}_1, \tp{Q}_2, \tp{Q}_3, \ldots, \tp{Q}_m\) (in that order)
-  are type compatible \emph{up to field} \(k\), if field type
-  \(\tp{F}_i\) is type compatible with \(\tp{Q}_i\) for every
-  \(i \in 1,\ldots ,k\); moreover, \(\tp{S}_1\) and \(\tp{S}_2\) are
-  type compatible, if they are type compatible up to field \(m\) and
-  \(m\) equals \(n\)
+\item a struct type \(\tp{S}_1\) (consisting of fields
+  \(\tp{F}_1, \tp{F}_2, \tp{F}_3, \ldots, \tp{F}_n\), in that order),
+  is type compatible \emph{up to field} \(k\) with struct type
+  \(\tp{S}_2\) (consisting of fields
+  \(\tp{Q}_1, \tp{Q}_2, \tp{Q}_3, \ldots, \tp{Q}_m\)),
+  %
+  if field type \(\tp{F}_i\) is type compatible with
+  \(\tp{Q}_i\) for every \(i \in 1,\ldots ,k\);
+  %
+  moreover, \(\tp{S}_1\) and \(\tp{S}_2\) are type compatible, if they
+  are type compatible up to field \(m\) and \(m\) equals \(n\)
 \item a struct type \(\tp{S}_1\) is an \emph{eligible base} of type
   \(\tp{S}_2\), if the first field of \(\tp{S}_2\), \(\tp{F}_1\), is
   type compatible with \(\tp{S}_1\) up to field \(n\)---where \(n\) is
@@ -1883,12 +1886,12 @@ types:
     % eligible base of \code{\%struct.s2} because
     % \code{\%struct.s1.base} is type compatible with \code{\%struct.s1}
     % up to field 2.}
-\item two pointer types \tp{T*}, \tp{U*} are type compatible if
+\item a pointer type \tp{T*} is type compatible with another pointer
+  type \tp{U*}, if
   \begin{compactenum}[(1)]
-  \item their respective component types \tp{T}, \tp{U} are type
-    compatible,
+  \item its component type \tp{T} is type compatible with \tp{U},
   \item either \tp{T} or \tp{U} is \code{char}, or
-  \item \tp{U} is (transitively) an \emph{eligible base} of \tp{T}
+  \item \tp{U} is (transitively) an \emph{eligible base} of \tp{T}.
   \end{compactenum}
 \end{itemize}
 
@@ -1901,7 +1904,7 @@ and optimizations up to this point would almost certainly violate such
 rules.
 
 Henceforth, we will use the notation ``\typecompat{\tp{T}}{\tp{U}}''
-to signify that types \tp{T} and \tp{U} are type compatible, according
+to signify that type \tp{T} is type compatible with \tp{U}, according
 to the previous rules. Even though we will forgo rewriting any
 previous inference rules of our analysis to make use of the type
 compatibility relation, the reader should assume that any strict type
