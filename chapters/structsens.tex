@@ -1945,11 +1945,11 @@ points-to set copied as well.
       \\ i \xrightarrow{calls} \texttt{memcpy}\,(\ldots)
       \\ \opt{a_1}{o_{to}}
       \\ \opt{a_2}{o_{from}}
-      \\\\ \alloctype{o_{to}} = \tp{T}
-      \\ \alloctype{o_{from}} = \tp{U}
+      \\\\ \alloctype{o_{from}} = \tp{T}
+      \\ \alloctype{o_{to}} = \tp{U}
       \\ \typecompat{\tp{T}}{\tp{U}}
     }
-    {\cp{o_{to}}{o_{from}}}
+    {\cp{o_{from}}{o_{to}}}
   \end{math}
   \\
 
@@ -1985,7 +1985,7 @@ points-to set copied as well.
 
   \begin{math}
     \inferrule* [left=Memcpy Deref$^+$\;]
-    {\cp{o_{to}}{o_{from}}
+    {\cp{o_{from}}{o_{to}}
       \\ \derefpt{o_{from}}{o}}
     {\derefpt{o_{to}}{o}}
   \end{math}
