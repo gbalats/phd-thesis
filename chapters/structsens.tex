@@ -1876,9 +1876,13 @@ types:
   type compatible, if they are type compatible up to field \(m\) and
   \(m\) equals \(n\)
 \item a struct type \(\tp{S}_1\) is an \emph{eligible base} of type
-  \(\tp{S}_2\) (with respective fields
-  \(\tp{F}_1, \ldots, \tp{F}_n\)), if \(\tp{S}_1\) is type compatible
-  with \(\tp{F}_1\) up to field \(n\)
+  \(\tp{S}_2\), if the first field of \(\tp{S}_2\), \(\tp{F}_1\), is
+  type compatible with \(\tp{S}_1\) up to field \(n\)---where \(n\) is
+  the number of fields of \(\tp{F}_1\)% \footnote{In the example of
+    % Figure~\ref{structsens/fig/typeincompat}, \code{\%struct.s1} is an
+    % eligible base of \code{\%struct.s2} because
+    % \code{\%struct.s1.base} is type compatible with \code{\%struct.s1}
+    % up to field 2.}
 \item two pointer types \tp{T*}, \tp{U*} are type compatible if
   \begin{compactenum}[(1)]
   \item their respective component types \tp{T}, \tp{U} are type
@@ -1918,8 +1922,7 @@ accesses and treats them accordingly.
       \\ \gtype{q} = \tp{char\,*}
       \\ \vpt{q}{o}
       \\ \alloctype{o} = \tp{T}
-      \\\\ \offsetof(\tp{T}.f) = c
-      \\ \gtype{\tp{T}.f} = \tp{F}}
+      \\\\ \offsetof(\tp{T}.f) = c}
     {\vpt{p}{o.f}}
   \end{math}
   \caption{Accessing field via byte offset.}
@@ -2002,7 +2005,7 @@ context-sensitivity based on call-sites.) Additionally, we require
 that the objects are of compatible types, to filter imprecision. The
 next three rules of Figure~\ref{structsens/fig/memcpy} extend our
 notion of copied objects recursively, by marking subobjects as well
-(as long as they remain type compatible to each other). The last rule
+(as long as they remain type compatible with each other). The last rule
 performs the propagation of the points-to set of an object that was
 copied to another.
 
