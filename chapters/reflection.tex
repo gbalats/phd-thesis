@@ -412,6 +412,14 @@ variables point to. Thus, under the Livshits et al. approach,
 reflection analysis and points-to analysis become mutually recursive,
 or effectively a single analysis.
 
+Recall that, in the C/C++ setting of Chapter~\ref{chapter:structsens},
+we used the same insight to associate untyped abstract objects with
+their possible types. The points-to analysis is used as both a
+producer and consumer of type information: new type-object
+associations drive the creation of new abstract objects, altering the
+points-to results that may, again, produce new type information, and so
+on.
+
 This mutual recursion introduces significant complexity.  Fortunately,
 a large amount of research in points-to analysis has focused on
 specifying analyses declaratively
