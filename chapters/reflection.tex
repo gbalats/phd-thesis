@@ -10,10 +10,10 @@ memory access.
 Still, essential structural information is often lost in Java programs
 too, yet for different reasons. As stated in
 Chapter~\ref{chapter:intro}, a source of analysis imprecision,
-especially in determining the types of the abstract objects
-constructed by the analysis, lies in the usage of Java's reflection
-mechanism: the ability to inspect and dynamically call classes,
-methods, attributes, etc. at runtime.
+especially in determining the types of abstract objects constructed by
+the analysis, lies in the usage of Java's reflection mechanism: the
+ability to inspect and dynamically retrieve classes, methods, attributes,
+etc. at runtime.
 
 By using the Reflection API, Java programs can encompass dynamic
 behavior. However, statically reasoning about the behavior of software
@@ -49,7 +49,7 @@ missing call-graph edges) and increased performance.
 % reachable methods) to be statically undiscovered, we achieve over 97\%
 % completeness at virtually no extra cost.
 
-\section{Introduction}
+\section{Intro: Static Analysis and Java Reflection}
 
 Whole-program static analysis is the engine behind several modern
 programming facilities for program development and
@@ -98,7 +98,7 @@ fully sound result. Based on such metrics, one can make comparisons
 
 %Empirical soundness is the quantification of the gap between soundy and
 %(the unattainable) fully sound. The techniques presented in this
-%paper serve as a step in that direction: beyond soundy, yet not fully
+%chapter serve as a step in that direction: beyond soundy, yet not fully
 %sound.
 
 
@@ -147,7 +147,7 @@ A representative quote~\cite{popl/SmaragdakisBL11} illustrates:
 \end{quote}
 
 %\noindent
-In this paper, we describe an approach to analyzing reflection in the
+In this chapter, we describe an approach to analyzing reflection in the
 Java points-to analysis setting.
 %Points-to analysis consists
 %of computing which objects (abstracted as allocation sites) a program
@@ -370,7 +370,7 @@ work:
 \end{itemize}
 
 %%%SPACE
-%The rest of the paper introduces important background on static
+%The rest of the chapter introduces important background on static
 %reflection analysis (Section~\ref{reflection/sec:model}), presents our new
 %techniques (Section~\ref{reflection/soundiness}), evaluates them
 %(Section~\ref{reflection/sec:experiments}), and compares to related work
@@ -1979,7 +1979,7 @@ principle, this is a similar approach to our use-based techniques
 specifics differ. The conceptual precursor to both approaches is the
 work on reflection by Livshits et
 al.~\cite{aplas/LivshitsWL05,livshits:thesis}, which has been
-extensively discussed and contrasted throughout the paper (see
+extensively discussed and contrasted throughout this chapter (see
 Sections~\ref{reflection/sec:model}, and \ref{reflection/sec:use-based}).
 
 Advanced techniques for string analysis have been presented by
