@@ -1,31 +1,53 @@
 \label{chapter:reflection}
 
-Reflection is a highly dynamic language feature that poses grave
-problems for static analyses.  In the Java setting, reflection is
-ubiquitous in large programs.
-%static reflection handling is hard because of the ubiquity of reflection in real
-%programs and because of the size of Java programs and libraries. 
+In Chapter~\ref{chapter:structsens}, we targeted the problem of lost
+structural information in C/C++ programs by employing a pointer
+analysis that recovers lost memory structure via a variety of
+techniques. In this chapter and the next, we shift our focus to Java:
+a higher-level strongly-typed language with no capabilities for direct
+memory access.
+%
+Still, essential structural information is often lost in Java programs
+too, yet for different reasons. As stated in
+Chapter~\ref{chapter:intro}, a source of analysis imprecision,
+especially in determining the types of the abstract objects
+constructed by the analysis, lies in the usage of Java's reflection
+mechanism: the ability to inspect and dynamically call classes,
+methods, attributes, etc. at runtime.
+
+By using the Reflection API, Java programs can encompass dynamic
+behavior. However, statically reasoning about the behavior of software
+that uses reflection can be especially cumbersome.
+%
+Unfortunately, reflection is ubiquitous in large Java programs.
+% static reflection handling is hard because of the ubiquity of reflection in real
+% programs and because of the size of Java programs and libraries.
+%
 Any handling of reflection will be approximate, and overestimating its
 reach in a large codebase can be catastrophic for precision and
-scalability. We present an approach for handling reflection with
-improved empirical soundness (as measured against prior approaches and
-dynamic information) in the context of a points-to analysis. Our
-approach is based on the combination of string-flow and points-to
-analysis from past literature augmented with (a) substring analysis
-and modeling of partial string flow through string builder classes;
-(b) new techniques for analyzing reflective entities based on
-information available at their use-sites.
-%The resulting analysis is general, without any need for hand-tuning. 
+scalability. In this chapter, we present an approach for handling
+reflection with improved empirical soundness (as measured against
+prior approaches and dynamic information), again, in the context of a
+points-to analysis. Our approach is based on the combination of
+string-flow and points-to analysis from past literature augmented with
+\begin{inparaenum}[(a)]
+\item substring analysis and modeling of partial string flow through
+  string builder classes;
+\item new techniques for analyzing reflective entities based on
+  information available at their use-sites (similar to those presented
+  in Chapter~\ref{chapter:structsens}).
+\end{inparaenum}
+% The resulting analysis is general, without any need for hand-tuning. 
 In experimental comparisons with prior approaches, we demonstrate a
 combination of both improved soundness (recovering the majority of
 missing call-graph edges) and increased performance.
 
-%achieves near-complete coverage of the target program: our static
-%heuristics seem to truly offer an over-approximation of dynamic
-%behavior, without sacrificing scalability. Whereas past studies have
-%shown hundreds of methods (as much as 40\% of the dynamically
-%reachable methods) to be statically undiscovered, we achieve over 97\%
-%completeness at virtually no extra cost.
+% achieves near-complete coverage of the target program: our static
+% heuristics seem to truly offer an over-approximation of dynamic
+% behavior, without sacrificing scalability. Whereas past studies have
+% shown hundreds of methods (as much as 40\% of the dynamically
+% reachable methods) to be statically undiscovered, we achieve over 97\%
+% completeness at virtually no extra cost.
 
 \section{Introduction}
 
