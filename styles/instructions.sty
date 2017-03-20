@@ -123,3 +123,109 @@
   \IfValueTF {#1}{#1:\ }{}
   {\var{#2} = \var{#3} + #4}
 }
+
+
+
+%--------------------------------------------------------------------
+% Java Bytecode Instructions
+%--------------------------------------------------------------------
+
+% Heap Alloc Instruction
+\NewDocumentCommand{\newinstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \instr{new}\;\tp{#3}\,()}
+}
+
+% Move Instruction
+\NewDocumentCommand{\moveinstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \var{#3}}
+}
+
+% Field Load Instruction
+\NewDocumentCommand{\fldloadinstr}{ o m m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \var{#3}\,.\,\code{#4}}
+}
+
+% Field Store Instruction
+\NewDocumentCommand{\fldstoreinstr}{ o m m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2}\,.\,\code{#3} = \var{#4}}
+}
+
+% Virtual Call Instruction
+\NewDocumentCommand{\vcallinstr}{ o m m m o >{\SplitList{,}} o }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \var{#3}\,.\,\code{#4}(
+    \IfNoValueTF {#5}{\ldots}{#5 \ProcessList{#6}{\processarg}}
+    )
+  }
+}
+
+% Static Call Instruction
+\NewDocumentCommand{\scallinstr}{ o m m m o >{\SplitList{,}} o }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \tp{#3}\,.\,\code{#4}(
+    \IfNoValueTF {#5}{\ldots}{#5 \ProcessList{#6}{\processarg}}
+    )
+  }
+}
+
+\newcommand{\fieldpt}[3]{\alloc{#1} \xrightarrow{\code{#2}} \alloc{#3}}
+
+\newcommand{\javastring}[1]{\code{"#1"}}
+\newcommand{\reifiedclass}[1]{cls_{\,\tp{#1}}}
+\newcommand{\reifiedmethod}[1]{mth_{\,\code{#1}}}
+\newcommand{\vptstr}[2]{\var{#1} \mapsto \javastring{#2}}
+
+\newcommand{\lookup}[2]{%
+  \text{\emph{lookup}}(\tp{#1},\, \code{#2})}
+
+\newcommand{\subtypeof}[2]{%
+  \tp{#1} \code{<:} \tp{#2}}
+
+\newcommand{\classForName}[1]{\instr{Class.forName}\; (\var{#1})}
+\newcommand{\classNewInstance}[1]{\instr{\var{#1}.newInstance}\; ()}
+\newcommand{\classGetMethod}[2]{\instr{\var{#1}.getMethod}\; (\var{#2})}
+\newcommand{\methodInvoke}[2]{\instr{\var{#1}.invoke}\; (\var{#2})}
+\newcommand{\append}[2]{\instr{\var{#1}.append}\; (\var{#2})}
+\newcommand{\toString}[1]{\instr{\var{#1}.toString}\; ()}
+
+\newcommand{\reflObjects}{\text{\emph{reflectionObjs}}}
+
+% Class.forName Instruction
+\NewDocumentCommand{\classForNameInstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \classForName{#3}}
+}
+
+% Class.newInstance Instruction
+\NewDocumentCommand{\classNewInstanceInstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \classNewInstance{#3}}
+}
+
+% Class.getMethod Instruction
+\NewDocumentCommand{\classGetMethodInstr}{ o m m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \classGetMethod{#3}{#4}}
+}
+
+% Method.invoke Instruction
+\NewDocumentCommand{\methodInvokeInstr}{ o m m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \methodInvoke{#3}{#4}}
+}
+
+% *.append Instruction
+\NewDocumentCommand{\appendInstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\append{#2}{#3}}
+}
+
+% *.toString Instruction
+\NewDocumentCommand{\toStringInstr}{ o m m }{%
+  \IfValueTF {#1}{#1:\ }{}
+  {\var{#2} = \toString{#3}}
+}

@@ -377,7 +377,248 @@ work:
 %(Section~\ref{reflection/sec:related}).
 
 
-\section{Background: Joint Reflection and Points-To Analysis}
+\section{Points-to Analysis in Java}
+\label{reflection/sec:javapt}
+
+In Chapter~\ref{chapter:structsens}, we presented a points-to analysis
+for C/C++ that includes various enhancements to make it
+structure-sensitive. Before presenting our enhancements towards better
+handling of Java's reflection, we first present a typical points-to
+analysis for Java and discuss the fundamental differences from
+analysis of C/C++.
+
+The domains of the analysis include:
+\begin{compactitem}[\(\cdot\)]
+\item variables, \(V\)
+\item (class) types, \(T\)
+\item fields, \(F\)
+\item methods, \(M\)
+\item abstract (heap) objects, \(H\)
+\item instruction labels, \(L\)
+\item and strings.
+\end{compactitem}
+
+\begin{figure}[t]
+  \centering
+  \begin{tabular}{l@{\quad}l@{\qquad}l}
+    \toprule
+    \emph{Java Instruction}
+    & \emph{Operand Types}
+    & \emph{Description} \\
+    \midrule
+    \(\newinstr{p}{C}\)
+    & \(V \!\times\! T\)
+    & Heap Allocations
+    \\
+    \(\castinstr{p}{T}{q}\)
+    & \(V \!\times\! T \!\times\! V\)
+    & Casts
+    \\
+    \(\moveinstr{p}{q}\)
+    & \(V \!\times\! V\)
+    & Assignments
+    \\
+    \(\fldloadinstr{p}{q}{f}\)
+    & \(V \!\times\! V \!\times\! F\)
+    & Field Loads
+    \\
+    \(\fldstoreinstr{p}{f}{q}\)
+    & \(V \!\times\! F \!\times\! V\)
+    & Field Stores
+    \\
+    \(\vcallinstr{p}{v}{meth}\)
+    & \(V \!\times\! V \!\times\! M \!\times\! V^n\)
+    & Virtual Calls
+    \\
+    \(\scallinstr{p}{C}{meth}\)
+    & \(V \!\times\! T \!\times\! M \!\times\! V^n\)
+    & Static Calls
+    \\
+    \(\returninstr{p}\)
+    & \(V\)
+    & Method Returns
+    \\
+    \bottomrule
+  \end{tabular}
+  \caption[Java Instruction Set]{%
+    Java Instruction Set. We also prepend a label $l \in L$ to each
+    instruction (that we omit in this figure). Each such label can be
+    used to uniquely identify its instruction. %
+  }
+  \label{structsens/fig/javair}
+\end{figure}
+
+Figure~\ref{structsens/fig/javair} lists the basic Java instructions,
+relevant to a points-to analysis. We note some basic differences from
+the C/C++ setting:
+\begin{itemize}[--]
+\setlength\itemsep{0.3em}
+\item there are no pointer types, or any way to directly operate on
+  memory addresses
+\item there is a clear distinction between variables (allocated on the
+  stack) and objects (allocated on the heap)
+\item loads and stores need a field operand
+\item there are two types of method call instructions:
+  \begin{inparaenum}[(i)]
+  \item virtual calls (that perform dynamic dispatch based on the
+    dynamic type of the receiver), and
+  \item static calls.
+  \end{inparaenum}
+\end{itemize}
+
+\begin{figure}[h!t]
+  \begin{math}
+    \inferrule* [left=Alloc\,]
+    {\newinstr[i]{p}{T}}
+    {\vpt{p}{o_{i}}
+      \\ \alloctype{o_{i}} = \tp{T}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Cast\,]
+    {\castinstr[i]{p}{T}{q}
+      \\ \vpt{q}{o_{i}}
+      \\ \alloctype{o_{i}} = \tp{T'}
+      \\ \subtypeof{T'}{T}}
+    {\vpt{p}{o_{i}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Move\,]
+    {\moveinstr[i]{p}{q}
+      \\ \vpt{q}{o_{i}}}
+    {\vpt{p}{o_{i}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Load\;]
+    {\fldloadinstr[i]{p}{q}{f}
+      \\ \vpt{q}{o_b}
+      \\ \fieldpt{o_b}{f}{o}}
+    {\vpt{p}{o}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Store\;]
+    {\fldstoreinstr[i]{p}{f}{q}
+      \\ \vpt{p}{o_b}
+      \\ \vpt{q}{o}}
+    {\fieldpt{o_b}{f}{o}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=VCall\;]
+    {\vcallinstr[i]{p}{v}{meth}
+      \\ \vpt{v}{o}
+      \\ \alloctype{o} = \tp{T}
+      \\ \lookup{T}{meth} = \code{meth}\rq}
+    {i \xrightarrow{calls} \code{meth}\rq\,(\ldots)
+      \\ \vpt{this\(_{\,\code{meth}\rq}\)}{o}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=SCall\;]
+    {\scallinstr[i]{p}{C}{meth}}
+    {i \xrightarrow{calls} \tp{C}\,.\,\code{meth}\,(\ldots)}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Args\;]
+    {\callinstr[i]{p}{x\,.\,\code{meth}}[\var{a}_1][\var{a}_2,\ldots,\var{a}_n]
+      \\ i \xrightarrow{calls} \code{meth}\rq\,(\var{v}_1,\, \var{v}_2,\, \ldots,\,\var{v}_n)}
+    {\forall j:\ \opt{\var{a}_j}{o} \;\Rightarrow\; \opt{\var{v}_j}{o}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Ret\;]
+    {\callinstr[i]{p}{x\,.\,\code{meth}}
+      \\ i \xrightarrow{calls} \code{meth}\rq\,(\ldots)
+      \\ \returninstr[j]{q}
+      \\ j \in \body{\code{meth}\rq}
+      \\\\ \vpt{q}{o}}
+    {\vpt{p}{o}}
+  \end{math}
+  \caption{Inference Rules for Java Points-to Analysis}
+  \label{reflection/fig/javapointsto}
+\end{figure}
+
+Figure~\ref{reflection/fig/javapointsto} presents a typical points-to
+analysis, expressed in inference rules as those of
+Chapter~\ref{chapter:structsens}. The basic relations it computes
+are:
+\begin{description}
+\item[Variable points-to edges.] Edge \(\vpt{v}{o} \in V \times H\)
+  records that variable \var{v} may point to abstract object
+  \(\alloc{o}\).
+\item[Field points-to edges.] Edge
+  \(\fieldpt{o_b}{fld}{o} \in H \times F \times H\) records that
+  abstract object \(\alloc{o_b}\) may point to abstract object
+  \(\alloc{o}\), via field \(\code{fld}\). Field points-to edges can
+  only be established by field store instructions.
+\item[Abstract object types.] The partial function
+  \(\typefunc: H \nrightarrow T\) records the type of an abstract
+  object. Reflection aside, each abstract object will be associated
+  with a single type that will be readily available at the allocation
+  site.
+\item[Call-graph edges.] Edge
+  \(i \xrightarrow{calls} m \in L \times M\) records that invocation
+  site \(i\) may call method \(m\) (after the dynamic dispatch has
+  been resolved).
+\end{description}
+
+Note that, without reflection, a points-to analysis needs only create
+a single kind of abstract object that represents heap allocations
+based on the allocation site. There is no need for abstract
+subobjects, since
+\begin{inparaenum}[(i)]
+\item heap objects can only contain references to other objects but
+  cannot embed the actual allocations; complex structures need to be
+  dispersed through the heap and accessed via multiple field loads
+\item a variable can only point to the start of a heap allocation.
+\end{inparaenum}
+However, more types of abstract objects that serve our
+reflection-related enhancements will be introduced later.
+
+The first rule of Figure~\ref{reflection/fig/javapointsto} creates a
+typed abstract object that represents the given allocation site, and
+assigns it to the target variable. The next two rules, handling cast
+and move instructions, simply copy the points-to set of the source to
+that of the target variable. For cast instructions, however, we also
+perform a type check to filter objects of incompatible types (by
+checking if the type of the allocation is a subtype of the variable's
+type). Since Java is strongly-typed, this is the only place where we
+can benefit from such a type check; any other points-to edges
+established by the rest of the rules are guaranteed to be
+type-compatible.
+
+The next two rules handle load and store instructions. To load from a
+field, we have to follow the relevant field points-to edge of any base
+object that we may load from. Inversely, storing to a field
+establishes such field points-to edges between any heap objects that
+the base and source variable may point to.
+
+For virtual calls, we first have to determine the type(s) of the
+receiver object(s), and determine the actual method that will be
+called after method resolution. (For this purpose, we assume the
+existence of a \emph{lookup} function that performs the actual
+resolution.) Then, we can establish a call-graph edge for the given
+allocation site, as well as a points-to edge for variable \code{this}
+of the resolved method. Static calls are simpler, since they require
+no method resolution and have no receivers. The last two rules apply
+to both virtual and static calls, and model call and return
+instructions as (interprocedural) assignments (similarly to the C/C++
+setting), regarding their arguments and returned values.
+
+
+\section{Joint Reflection and Points-To Analysis}
 \label{reflection/sec:model}
 
 As necessary background, we next present an abstracted model of the
