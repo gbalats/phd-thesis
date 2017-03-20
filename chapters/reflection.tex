@@ -384,8 +384,8 @@ In Chapter~\ref{chapter:structsens}, we presented a points-to analysis
 for C/C++ that includes various enhancements to make it
 structure-sensitive. Before presenting our enhancements towards better
 handling of Java's reflection, we first present a typical points-to
-analysis for Java and discuss the fundamental differences from
-analysis of C/C++.
+analysis for Java and discuss its fundamental differences from
+analyzing C/C++.
 
 The domains of the analysis include:
 \begin{compactitem}[\(\cdot\)]
@@ -449,7 +449,7 @@ The domains of the analysis include:
 \end{figure}
 
 Figure~\ref{structsens/fig/javair} lists the basic Java instructions,
-relevant to a points-to analysis. We note some basic differences from
+relevant to a points-to analysis. We note some key differences from
 the C/C++ setting:
 \begin{itemize}[--]
 \setlength\itemsep{0.3em}
@@ -550,10 +550,9 @@ the C/C++ setting:
   \label{reflection/fig/javapointsto}
 \end{figure}
 
-Figure~\ref{reflection/fig/javapointsto} presents a typical points-to
-analysis, expressed in inference rules as those of
-Chapter~\ref{chapter:structsens}. The basic relations it computes
-are:
+Figure~\ref{reflection/fig/javapointsto} presents a standard Java
+points-to analysis, expressed in inference rules as those of
+Chapter~\ref{chapter:structsens}. The basic relations it computes are:
 \begin{description}
 \item[Variable points-to edges.] Edge \(\vpt{v}{o} \in V \times H\)
   records that variable \var{v} may point to abstract object
@@ -575,7 +574,7 @@ are:
 \end{description}
 
 Note that, without reflection, a points-to analysis needs only create
-a single kind of abstract object that represents heap allocations
+a single kind of abstract objects that represents heap allocations
 based on the allocation site. There is no need for abstract
 subobjects, since
 \begin{inparaenum}[(i)]
@@ -593,9 +592,9 @@ assigns it to the target variable. The next two rules, handling cast
 and move instructions, simply copy the points-to set of the source to
 that of the target variable. For cast instructions, however, we also
 perform a type check to filter objects of incompatible types (by
-checking if the type of the allocation is a subtype of the variable's
-type). Since Java is strongly-typed, this is the only place where we
-can benefit from such a type check; any other points-to edges
+checking if the type of the allocation is a subtype of the type of the
+variable). Since Java is strongly-typed, this is the only place
+where we can benefit from such a type check; any other points-to edges
 established by the rest of the rules are guaranteed to be
 type-compatible.
 
@@ -615,7 +614,7 @@ of the resolved method. Static calls are simpler, since they require
 no method resolution and have no receivers. The last two rules apply
 to both virtual and static calls, and model call and return
 instructions as (interprocedural) assignments (similarly to the C/C++
-setting), regarding their arguments and returned values.
+setting), regarding method arguments and returned values.
 
 
 \section{Joint Reflection and Points-To Analysis}
