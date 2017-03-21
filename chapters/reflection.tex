@@ -814,12 +814,14 @@ following:
 
   \begin{math}
     \inferrule* [left=Method.invoke\;]
-    {\methodInvokeInstr[i]{p}{m}{r}
+    {\vcallinstr[i]{p}{m}{invoke}[\var{r}][\var{a}_1,\var{a}_2,\ldots]
       \\ \vpt{m}{\reifiedmethod{meth}}
-      \\ \vpt{r}{o}
-      \\ \alloctype{o} = \tp{T}
-      \\\\ \lookup{T}{meth} = \code{meth}'}
-    {i \xrightarrow{calls} \code{meth}'}
+      \\ \vpt{r}{o_b}
+      \\\\ \alloctype{o_b} = \tp{T}
+      \\ \lookup{T}{meth} = \code{meth}'}
+    {i \xrightarrow{calls} \code{meth}'(\var{v}_1,\, \var{v}_2,\, \ldots)
+      \\ \vpt{this\(_{\,\code{meth}'}\)}{o_b}
+      \\ \forall j:\ \opt{\var{a}_j}{o} \;\Rightarrow\; \opt{\var{v}_j}{o}}
   \end{math}
   \caption[Handling Java Reflection]{%
     Handling Java Reflection. We assume the existence of an overloaded
@@ -957,9 +959,10 @@ inferred from the invocation site, \(i\), of a reflective
 \code{invoke} call to a method \(\code{meth}'\), if the receiver,
 \var{m}, of the \code{invoke} points to a reflective object encoding
 method \(\code{meth}\), and the argument, \var{r}, of the
-\code{invoke} points to an object, \(\alloc{o}\), of a class in which
-the lookup of \(\code{meth}\)'s signature produces the method
-\(\code{meth}'\).
+\code{invoke} points to an object, \(\alloc{o_b}\), of a class in
+which the lookup of \(\code{meth}\)'s signature produces the method
+\(\code{meth}'\). Method parameters are handled similarly to ordinary
+method calls (i.e., as interprocedural assignments).
 
 The four rules of Figure~\ref{reflection/fig/reflrules} are a small
 part of a realistic implementation of reflection handling, but they
