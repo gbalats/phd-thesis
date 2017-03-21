@@ -785,7 +785,8 @@ following:
   \begin{math}
     \inferrule* [left=Class.forName\;]
     {\classForNameInstr[i]{c}{s}
-      \\ \vptstr{s}{\emph{class name of} \tp{T}}
+      \\ \fqnameof{T} = \alloc{str}
+      \\ \vpt{s}{str}
       \\ \tp{T} \in T}
     {\vpt{c}{\reifiedclass{T}}}
   \end{math}
@@ -802,8 +803,9 @@ following:
   \begin{math}
     \inferrule* [left=Class.getMethod\;]
     {\classGetMethodInstr[i]{m}{c}{s}
-      \\ \vptstr{s}{\emph{method name of} meth}
-      \\\\ \code{meth} \in M
+      \\ \fqnameof{meth} = \alloc{str}
+      \\ \code{meth} \in M
+      \\\\ \vpt{s}{str}
       \\ \vpt{c}{\reifiedclass{T}}
       \\ \lookup{T}{meth} = \_}
     {\vpt{p}{\reifiedmethod{meth}}}
@@ -819,7 +821,12 @@ following:
       \\\\ \lookup{T}{meth} = \code{meth}'}
     {i \xrightarrow{calls} \code{meth}'}
   \end{math}
-  \caption{Handling Java Reflection}
+  \caption[Handling Java Reflection]{%
+    Handling Java Reflection. We assume the existence of an overloaded
+    function \(\fqname : (T \cup F \cup M) \rightarrow H \), that,
+    given a class, field, or method, returns the string constant
+    containing its fully qualified name. E.g.
+    \(\fqnameof{Object} = \javastring{java.lang.Object}\).}
   \label{reflection/fig/reflrules}
 \end{figure}
 
