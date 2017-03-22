@@ -1289,9 +1289,14 @@ that will identify the \code{forName} call.
 
 The final rule ties the logic together: if a cast to type \tp{T} is
 found, where the cast variable points to a special object,
-\(o_{i,\tp{*}}\,\), then retrieve the object's \code{forName} invocation
-site, \var{i}, and infer that this invocation site returns a class
-object of type \tp{T'}, where \tp{T'} is a subtype of \var{T}.
+\(o_{i,\tp{*}}\,\), then retrieve the object's \code{forName}
+invocation site, \var{i}, and infer that this invocation site returns
+a class object of type \tp{T'}, where \tp{T'} is a subtype of
+\var{T}. Using casts as type hints is exactly what we resorted to in
+Chapter~\ref{chapter:structsens}, as well, to deal with untyped heap
+allocations. The logic here is fairly similar, but instead of patching
+prior \code{malloc} instructions, it is used to patch \code{forName}
+calls.
 
 
 \paragraph{Other use-cases.}
