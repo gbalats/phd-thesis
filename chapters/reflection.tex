@@ -794,7 +794,13 @@ call is a class object for class type \(\tp{T}\), and the
 \code{newInstance} call is assigned to variable \var{p}, then make
 \var{p} point to the special (i.e., invented) abstract object
 \(\alloc{o_{i,\tp{T}}}\) that designates objects of type \tp{T}
-allocated at the \code{newInstance} call site.
+allocated at the \code{newInstance} call site. Note the analogy
+between this kind of abstract objects, \(o_{i,\tp{T}}\,\), and the
+abstract objects of Chapter~\ref{chapter:structsens}, representing the
+various typed variants of a seemingly untyped allocation (e.g,
+\code{malloc()}). In both cases, the same allocation site may produce
+multiple abstract objects, one per each type associated with this
+site, as computed by the pointer analysis itself.
 
 The third rule gives semantics to \code{getMethod} calls.  It states
 that if such a call is made with receiver \var{c} (for ``base'') and
