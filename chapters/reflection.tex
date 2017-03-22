@@ -1223,66 +1223,75 @@ is as follows:
 
 The algorithm for the above treatment can be elegantly expressed via
 rules that are mutually recursive with the base points-to analysis.
-The rules for the \code{forName}-\code{newInstance}-cast pattern
-are representative. We use extra input relations
-\pred{ReifiedForName}{i: I, h: H}, and
-\pred{ReifiedNewInstance}{i: I, h: H}, analogous to our earlier
-``\predname{Reified...}'' relations. The first relation gives, for
-each \code{forName} invocation site, \args{i}, a special object,
-\args{h}, that identifies the invocation site. The second relation
-gives a special object, \args{h}, that stands for all unknown objects
-returned by a \code{newInstance} call, which was, in turn, performed on
-the special object returned by a \code{forName} call, at invocation site
-\args{i}. The rules then become:
+The rules for the \code{forName}-\code{newInstance}-cast pattern are
+representative.
 
-\begin{minipage}{0.95\columnwidth}
-  \begin{rules}
-    \pred{VarPointsTo}{v, h} \rulearrow \\
-    \tab \pred{Call}{i, \code{"Class.forName"}}, \\
-    \tab \pred{AssignRetValue}{i, v}, \pred{ReifiedForName}{i, h}.\\
-  \end{rules}
+As before, we have to introduce new kinds of abstract objects to
+implement this technique:
+
+\begin{minipage}{\linewidth}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{@{--\ }l@{\quad}p{0.87\textwidth}}
+    \(\alloc{\reifiedclass{i,*}}\)
+    & A marker class object (of no specific type) that is
+      produced by calling \code{forName} at an allocation site \(i \in L\).
+    \\[3pt]
+    \(o_{i,\tp{*}}\)
+    & Represents all objects (again, of no specific type) returned by
+      a \code{newInstance} call, which was, in turn, performed on
+      the special (marker) object returned by a \code{forName} call, at
+      invocation site \(i \in L\).
+    \\
+  \end{tabular}
 \end{minipage}
 
-\noindent In words: the variable that was assigned the result of a \code{forName}
-invocation points to the special object representing all missing objects from
-this invocation site. In this way, the special object can then propagate through
-the points-to analysis.
+\begin{figure}[t]
+  \begin{math}
+    \inferrule* [left=Mark Class\;]
+    {\classForNameInstr[i]{c}{p}}
+    {\vpt{c}{\reifiedclass{i,*}}}
+  \end{math}
+  \\
 
-\begin{minipage}{0.95\columnwidth}
-  \begin{rules}
-    \pred{VarPointsTo}{r, h_n} \rulearrow \\
-    \tab \pred{Call}{i_n, \code{"Class.newInstance"}}, \\
-    \tab \pred{ActualArg}{i_n, 0, v}, \pred{VarPointsTo}{v, h}, \\
-    \tab \pred{AssignRetValue}{i_n, r}, \\
-    \tab \pred{ReifiedForName}{i, h}, \pred{ReifiedNewInstance}{i, h_n}.
-  \end{rules}
-\end{minipage}
+  \begin{math}
+    \inferrule* [left=Mark Object\;]
+    {\classNewInstanceInstr[j]{p}{c}
+      \\ \vpt{c}{\reifiedclass{i,*}}}
+    {\vpt{p}{o_{i,\tp{*}}}}
+  \end{math}
+  \\
 
-\noindent According to this rule, when analyzing a \code{newInstance}
-call, if the receiver is a special object that was produced by a
-\code{forName} invocation, \args{i}, then the result of the
-\code{newInstance} will be another special object (of appropriate
-type---determined by the contents of \code{ReifiedNewInstance}) that
-will identify the \code{forName} call.
+  \begin{math}
+    \inferrule* [left=Back Prop\;]
+    {\classForNameInstr[i]{c}{x}
+      \\ \castinstr[j]{p}{T}{q}
+      \\ \subtypeof{T'}{T}
+      \\ \vpt{q}{o_{i,\tp{*}}}}
+    {\vpt{c}{\reifiedclass{T'}}}
+  \end{math}
+  \caption{Extending reflection handling with back propagation}
+  \label{reflection/fig/backproprules}
+\end{figure}
 
-The final rule uses input relation \pred{Cast}{v': V, v: V, t: T} (with
-\args{v'} being the variable to which the cast result is stored and
-\args{v} the variable being cast) and
-\pred{Subtype}{t: T, u:T} with its expected meaning:
+Figure~\ref{reflection/fig/backproprules} contains the rules that we
+have to add. The first rule makes the variable that was assigned the
+result of a \code{forName} invocation point to the special object
+representing all missing objects from this invocation site. In this
+way, the special object can then propagate through the points-to
+analysis.
 
-\begin{minipage}{0.95\columnwidth}
-  \begin{rules}
-    \pred{ClassObject}{i, t'} \rulearrow \\
-    \tab \pred{Cast}{\_, v, t}, \pred{Subtype}{t', t}, \\
-    \tab \pred{VarPointsTo}{v, h_n}, \pred{ReifiedNewInstance}{i, h_n}.\\
-  \end{rules}
-\end{minipage}
+The second rule reads: when analyzing a \code{newInstance} call, if
+the receiver is a special object that was produced by a \code{forName}
+invocation, \(i\), then the result of the \code{newInstance} will be
+another special object
+% (of appropriate type---determined by the contents of \code{ReifiedNewInstance})
+that will identify the \code{forName} call.
 
-\noindent The rule ties the logic together: if a cast to type \args{t}
-is found, where the cast variable points to a special object,
-\args{h_n}, then retrieve the object's \code{forName} invocation site,
-\args{i}, and infer that this invocation site returns a class object
-of type \args{t'}, where \args{t'} is a subtype of \args{t}.
+The final rule ties the logic together: if a cast to type \tp{T} is
+found, where the cast variable points to a special object,
+\(o_{i,\tp{*}}\,\), then retrieve the object's \code{forName} invocation
+site, \var{i}, and infer that this invocation site returns a class
+object of type \tp{T'}, where \tp{T'} is a subtype of \var{T}.
 
 
 \paragraph{Other use-cases.}
