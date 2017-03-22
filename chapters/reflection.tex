@@ -50,6 +50,7 @@ missing call-graph edges) and increased performance.
 % completeness at virtually no extra cost.
 
 \section{Intro: Static Analysis and Java Reflection}
+\label{reflection/sec:intro}
 
 Whole-program static analysis is the engine behind several modern
 programming facilities for program development and
@@ -1665,16 +1666,16 @@ minimizes the potential for noise back-propagating and polluting all
 subsequent program paths that depend on the original reflection call.
 
 A second technique for employing back-propagation without sacrificing
-precision and scalability adjusts the flow of special objects (i.e.,
-objects in \predname{ReifiedForName} or
-\predname{ReifiedNewInstance}). Although we want such objects
+precision and scalability adjusts the flow of special abstract objects
+that we introduced with our extensions.  Although we want such objects
 to flow inter-procedurally, we can disallow their tracking through the
 heap (i.e., through objects or arrays), allowing only their flow
 through local variables. This is consistent with expected
 inter-procedural usage patterns of reflection results: although such
 results will likely be returned from methods (cf. the quote from
-\cite{aplas/LivshitsWL05} in Section~\ref{reflection/sec:back-propagation}),
-they are less likely to be stored in heap objects. 
+\cite{aplas/LivshitsWL05} in
+Section~\ref{reflection/sec:back-propagation}), they are less likely
+to be stored in heap objects.
 
 We employ both of the above techniques by default in our analysis
 (with $c$ = $d$ = 5). The user can configure their application
@@ -1756,8 +1757,9 @@ We use Oracle JDK 1.7.0\_25 for the analysis.
 %To our knowledge, this
 %is the most modern version of the JDK and the largest benchmarks to
 %have been used in the literature of scalable points-to analysis.  
-(For comparison, consider the quote from \cite{www:wala-reflection} in the
-Introduction, refers to the smaller JDK 1.6.)
+(For comparison, consider that the quote from
+\cite{www:wala-reflection} in the first section of this chapter,
+refers to the smaller JDK 1.6.)
 
 %referring to the inability to analyze realistic
 %benchmarks with reflection under
@@ -1802,7 +1804,7 @@ analysis to a dynamic call-graph---a comparison also found in other
 recent work~\cite{pppj/StancuWBLF14}. For a sound static analysis, no
 edge should occur dynamically but not predicted statically. However,
 this is not the case in practice, due to the unsound handling of
-dynamic features, as discussed in the Introduction.
+dynamic features, as discussed in Section~\ref{reflection/sec:intro}.
 
 \paragraph{Results.}
 
@@ -1957,8 +1959,9 @@ edges).
 %We compare our techniques to the \textsc{Elf} system
 %\cite{ecoop/LiTSX14}, which also attempts to improve reflection
 %analysis for Java. 
-% Missing bars labeled ``n/a'' correspond to analyses
-% that did not terminate in 90mins (5400sec). 
+Missing bars labeled ``n/a'' correspond to analyses
+that did not terminate in 90mins (5400sec).
+%
 Each chart plots the
 missing dynamic call-graph edges that are not discovered by the
 corresponding static analysis. We use separate bars for the
