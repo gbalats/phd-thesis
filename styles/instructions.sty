@@ -189,6 +189,10 @@
 \newcommand{\fqnameof}[1]{%
   \fqname(\,\tp{#1}\,)}
 
+\newcommand{\matchesfunc}{\text{\emph{matches}}}
+\newcommand{\matches}[2]{%
+  \matchesfunc(\,\alloc{#1},\,\tp{#2}\,)}
+
 \newcommand{\classForName}[1]{\instr{Class.forName}\; (\var{#1})}
 \newcommand{\classNewInstance}[1]{\instr{\var{#1}.newInstance}\; ()}
 \newcommand{\classGetMethod}[2]{\instr{\var{#1}.getMethod}\; (\var{#2})}
