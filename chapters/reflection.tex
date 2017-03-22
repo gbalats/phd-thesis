@@ -2349,6 +2349,110 @@ object flow tracking, in benchmarks that do use reflection seriously.
 
 \end{comment}
 
+\begin{comment}
+\begin{figure}[h!t]
+  \begin{math}
+    \inferrule* [left=Class.forName\;]
+    {\classForNameInstr[i]{c}{p}
+      \\ \vptstr{p}{T}}
+    {\vpt{c}{\reifiedclass{T}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Class.newInstance\;]
+    {\classNewInstanceInstr[i]{p}{c}
+      \\ \vpt{c}{\reifiedclass{T}}}
+    {\vpt{p}{o_{i,\tp{T}}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Class.getMethod\;]
+    {\classGetMethodInstr[i]{p}{c}{m}
+      \\ \vpt{c}{\reifiedclass{T}}
+      \\ \vptstr{m}{A::meth}
+      \\\\ \lookup{T}{A::meth} = \_}
+    {\vpt{p}{\reifiedmethod{A::meth}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Method.invoke\;]
+    {\methodInvokeInstr[i]{p}{m}{r}
+      \\ \vpt{m}{\reifiedmethod{A::meth}}
+      \\ \vpt{r}{o}
+      \\ \alloctype{o} = \tp{T}
+      \\\\ \lookup{T}{A::meth} = \code{B::meth}}
+    {i \xrightarrow{calls} \code{B::meth}}
+  \end{math}
+  \\\\
+
+  \begin{math}
+    \inferrule* [left=String Builder\;]
+    {\appendInstr[i]{b\(_1\)}{s}
+      \\ \toStringInstr[j]{r}{b\(_2\)}
+      \\ \vpt{b\(_1\)}{o_{b}}
+      \\ \vpt{b\(_2\)}{o_{b}}
+      \\\\ \alloctype{o_b} = \code{StringBuilder}
+      \\ \vpt{s}{o_r}
+      \\ \alloc{o_r} \in \reflObjects}
+    {\vpt{r}{o_r}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Class Substr\;]
+    {\classForNameInstr[i]{c}{p}
+      \\ \vpt{p}{str}
+      \\ \javastring{\ldots} + \alloc{str} + \javastring{\ldots} = \javastring{T}}
+    {\vpt{c}{\reifiedclass{T}}}
+  \end{math}
+  \\\\
+
+  \begin{math}
+    \inferrule* [left=Class.forName\(^{+}\)\;]
+    {\classForNameInstr[i]{c}{p}}
+    {\vpt{c}{\reifiedclass{i,*}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Class.newInstance\(^{+}\)\;]
+    {\classNewInstanceInstr[j]{p}{c}
+      \\ \vpt{c}{\reifiedclass{i,*}}}
+    {\vpt{p}{o_{i,\tp{*}}}}
+  \end{math}
+  \\
+
+  \begin{math}
+    \inferrule* [left=Cast\;]
+    {\classForNameInstr[i]{c}{x}
+      \\ \castinstr[j]{p}{T}{q}
+      \\ \subtypeof{T'}{T}
+      \\ \vpt{q}{o_{i,\tp{*}}}}
+    {\vpt{c}{\reifiedclass{T'}}}
+  \end{math}
+  \\\\
+
+  \begin{math}
+    \inferrule* [left=Class.newInstance\(^{++}\)\;]
+    {\classNewInstanceInstr[i]{p}{c}}
+    {\vpt{p}{m_{i}}}
+  \end{math}
+  \quad
+  \begin{math}
+    \inferrule* [left=Invent\;]
+    {\castinstr[j]{p}{T}{q}
+      \\ \vpt{q}{m_{i}}}
+    {\vpt{p}{m_{i,\tp{T}}}}
+  \end{math}
+  \caption{Inference Rules}
+  \label{reflection/fig/rules}
+\end{figure}
+
+\end{comment}
+
 
 %%% Local Variables:
 %%% mode: latex
