@@ -1513,45 +1513,52 @@ reflection calls such as \javasignature{Constructor.newInstance}, as
 well as \javasignature{Method.invoke} and \javasignature{Field.get}.
 
 As in the back-propagating analysis, we use special marker
-objects.  These are represented by input relations
-\pred{ReifiedMarkerNewInstance}{i: I, h: H}, and
-\pred{ReifiedInventedObject}{i: I, t: T, h: H}. The first relation
-gives, for each \code{newInstance} invocation site, \args{i}, a special
-object, \args{h}, that identifies the invocation site. The second
-relation gives an invented object, \args{h} of type \args{t}, for each
-\code{newInstance} invocation site, \args{i}, and type \args{t} that
-appears in a cast.  The algorithm is captured by two rules:
+objects.
 
-\begin{minipage}{0.95\columnwidth}
-  \begin{rules}
-    \pred{VarPointsTo}{v, h} \rulearrow \\
-    \tab \pred{Call}{i, \code{"Class.newInstance"}}, \pred{AssignRetValue}{i, v}, \\
-    \tab \pred{ReifiedMarkerNewInstance}{i, h}.\\
-  \end{rules}
+\begin{minipage}{\linewidth}
+  \renewcommand{\arraystretch}{1.5}
+  \begin{tabular}{@{--\ }l@{\quad}p{0.87\textwidth}}
+    \(o_{i,\tp{*}}^{+}\)
+    & An invented object of unknown type for a given
+      \code{newInstance} invocation site, \(i \in L\).
+    \\[3pt]
+    \(o_{i,\tp{T}}^{+}\)
+    & An invented object of type \(\tp{T} \in T\) for a given
+      \code{newInstance} invocation site, \(i \in L\).
+    \\
+  \end{tabular}
 \end{minipage}
 
-\noindent That is, the variable assigned the result of a \code{newInstance}
-invocation points to a special object marking that it was produced
-by a reflection call. The marker object can then propagate through
-the points-to analysis.
+\begin{figure}[t]
+  \begin{math}
+    \inferrule* [left=Class.newInstance\(^{+}\)\;]
+    {\classNewInstanceInstr[i]{p}{c}}
+    {\vpt{p}{o_{i,\tp{*}}^{+}}}
+  \end{math}
+  \quad
+  \begin{math}
+    \inferrule* [left=Invent\;]
+    {\castinstr[j]{p}{T}{q}
+      \\ \vpt{q}{o_{i,\tp{*}}^{+}}}
+    {\vpt{p}{o_{i,\tp{T}}^{+}}}
+  \end{math}
+  \caption{Extending reflection handling with object invention}
+  \label{reflection/fig/inventrules}
+\end{figure}
+
+The algorithm is captured in the two rules of
+Figure~\ref{reflection/fig/inventrules}. The first one states that the
+variable assigned the result of a \code{newInstance} invocation points
+to a special object marking that it was produced by a reflection
+call. The marker object can then propagate through the points-to
+analysis.
 
 The key part of the algorithm is to then invent an object at a cast
-site.
-
-\begin{minipage}{0.95\columnwidth}
-  \begin{rules}
-    \pred{VarPointsTo}{r, h} \rulearrow \\
-    \tab \pred{Cast}{r, v, t}, \pred{VarPointsTo}{v, h_m},\\
-    \tab \pred{ReifiedMarkerNewInstance}{i, h_m}, \\
-    \tab \pred{ReifiedInventedObject}{i, t, h}.
-  \end{rules}
-\end{minipage}
-
-\noindent In words, if a variable, \args{v}, is cast to a type
-\args{t} and points to a marker object that was produced by a
-\code{newInstance} call, then the variable, \args{r}, storing the result
-of the cast, points to a newly invented object, with the right type,
-\args{t}.
+site. This happens in the second rule: if a variable, \var{q}, is cast
+to a type \tp{T} and points to a marker object that was produced by a
+\code{newInstance} call, then the variable, \var{p}, storing the
+result of the cast, points to a newly invented object, with the right
+type, \tp{T}.
 
 Note that in terms of empirical soundness the object invention
 approach is weaker than the back-propagation analysis: if a type is
