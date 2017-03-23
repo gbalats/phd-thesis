@@ -928,33 +928,33 @@ some basic string transformation, are common in practice.)
 \begin{figure}[tb]
   \begin{javacode}
     boolean setAttrVal(..., ElemTemplateElement el) {
-      String setterString = getSetterMethodName();
-      Object val = processValue(..., el);
+        String setterString = getSetterMethodName();
+        Object val = processValue(..., el);
 
-      Object[] args = new Object[]{ val };
-      Class[] argTypes = new Class[]{ val.getClass() };
+        Object[] args = new Object[]{ val };
+        Class[] argTypes = new Class[]{ val.getClass() };
 
-      Method meth = el.getClass().getMethod(setterString, argTypes);
-      meth.invoke(el, args);
+        Method meth = el.getClass().getMethod(setterString, argTypes);
+        meth.invoke(el, args);
     }
 
     public String getSetterMethodName() {
-      StringBuffer outBuf = new StringBuffer();
-      outBuf.append("set");
+        StringBuffer outBuf = new StringBuffer();
+        outBuf.append("set");
 
-      for (int i = 0; i < m_name.length(); i++) {
-        char c = m_name.charAt(i);
-        if ('-' == c) {
-          i++;
-          c = m_name.charAt(i);
-          c = Character.toUpperCase(c);
+        for (int i = 0; i < m_name.length(); i++) {
+            char c = m_name.charAt(i);
+            if ('-' == c) {
+                i++;
+                c = m_name.charAt(i);
+                c = Character.toUpperCase(c);
+            }
+            else if (0 == i) {
+                c = Character.toUpperCase(c);
+            }
+            outBuf.append(c);
         }
-        else if (0 == i) {
-          c = Character.toUpperCase(c);
-        }
-        outBuf.append(c);
-      }
-      return outBuf.toString();
+        return outBuf.toString();
     }
   \end{javacode}
   \caption{Example of reflection leveraging partial strings.}
