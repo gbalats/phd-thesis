@@ -132,6 +132,7 @@ clean:
 	$(RM) $(subst .pdf,.bbl,$(thesis.pdf))
 	$(RM) $(subst .pdf,.blg,$(thesis.pdf))
 	$(RM) $(subst .pdf,.out,$(thesis.pdf))
+	$(RM) -r $(thesis.pdf:%.pdf=_minted-%/)
 	$(RM) $(thesis.pdf)
 
 
