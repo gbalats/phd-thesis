@@ -64,6 +64,112 @@ corresponds to standard use of ``heap cloning''
 (a.k.a. ``context-sensitive heap'').% techniques.
 
 
+\section{Static Analysis and Java Reflection}
+
+The traditional handling of reflection in static analysis has been
+through integration of user input or dynamic information.  The
+Tamiflex tool~\cite{icse/BoddenSSOM11} exemplifies the state of the
+art. The tool observes the reflective calls in an actual execution of
+the program and rewrites the original code to produce a version
+without reflection calls. Instead, all original reflection calls
+become calls that perform identically to the observed execution. This
+is a practical approach, but results in a blend of dynamic and static
+analysis.
+% Clearly, the greatest motivation for
+%static analysis is to capture all possible program behaviors.
+It is unrealistic to expect that uses of reflection will always yield
+the same results in different dynamic executions---or there would be
+little reason to have the reflection (as opposed to static code) in
+the first place. Our approach attempts to restore the benefits of
+static analysis, with reasonable empirical soundness.
+
+An alternative approach is that of Hirzel et
+al.~\cite{ecoop/HirzelDH04,toplas/HirzelDDH07}, where an online
+pointer analysis is used to deal with reflection and dynamic loading
+by monitoring their run-time occurrence, recording their results, and
+running the analysis again, incrementally. This approach is quite
+interesting when applicable. However, it is not applicable in many
+static analysis settings. Maintaining and running a precise static
+analysis during program run time is often not realistic (e.g., for
+expensive context-sensitive analyses). Furthermore, the approach does
+not offer the off-line soundness guarantees one may expect from static
+analysis: it is not possible to ask questions regarding all methods
+that may ever be called via reflection, only the ones that have been
+called so far.
+
+Interesting work on static treatments of reflection is often in the
+context of dynamic languages, where resolving reflective invocations
+is a necessity.  Furr et al.~\cite{oopsla/FurrAF09} offer an analysis
+of how dynamic features are used in the Ruby language. Their
+observations are similar to ours: dynamic features (reflection in our
+case) are often used either with sets of constant arguments (in order
+to avoid writing verbose, formulaic code), or with known
+prefixes/suffixes (e.g., to re-locate within the file system).
+
+Madsen et al.~\cite{sigsoft/MadsenLF13} employ a use-based analysis
+technique in the context of Javascript. When objects are retrieved
+from unknown code (typically libraries) the analysis infers the
+object's properties from the way it is used in the client. In
+principle, this is a similar approach to our use-based techniques
+(both object invention and back-propagation) although the technical
+specifics differ. The conceptual precursor to both approaches is the
+work on reflection by Livshits et
+al.~\cite{aplas/LivshitsWL05,livshits:thesis}, which has been
+extensively discussed and contrasted throughout this chapter (see
+Sections~\ref{reflection/sec:model}, and \ref{reflection/sec:use-based}).
+
+Advanced techniques for string analysis have been presented by
+Christensen et al.~\cite{sas/ChristensenMS03}. They analyze complex
+string expressions and abstract them via a context-free grammar that
+is then widened to a regular language. The regular approximations
+produced by this approach are richer than the prefix and suffix
+matching of our substring analysis, and can thus better approximate
+the possible values of arbitrary string expressions. Reflection is one
+of their examples but they only apply it to small benchmarks.
+
+\citeauthor{ecoop/AliL12}~\cite{ecoop/AliL12,ecoop/AliL13} offer
+comparisons of dynamic and static call-graph edge metrics.  They
+discover hundreds of missing edges in several of the DaCapo
+2006-10-MR2 benchmarks.  However, their experiments do not integrate
+the vastly improved support for reflection (e.g., modeling of
+\javasignature{Object.getClass}) offered by \textsc{Elf} or our
+current work.
+
+%were performed
+%before numerous engineering improvements in the \textsc{Doop}
+%framework.
+%These improvements handle many common API calls, such as
+%\javasignature{Object.getClass}.
+%Furthermore, some benchmarks could not be run with reflection enabled
+%due to scalability issues. Therefore, o
+%%SPACE
+%Our experiments are substantially more representative in regards to
+%the actual empirical soundness of a joint reflection and pointer
+%analysis.
+Stancu et al.~\cite{pppj/StancuWBLF14} empirically
+%present an empirical study that
+compare profiling data with a points-to static analysis.
+%,but do not support reflection.
+However, they target only the most reflection-light benchmarks of the
+DaCapo 9.12-Bach suite (\emph{avrora, luindex, and lusearch}), and
+patch the code to avoid reflection entirely.
+
+% TODO consider adding, after move
+%Some of the most closely related work to ours is the Li et
+%al. work~\cite{ecoop/LiTSX14}, discussed earlier. Li et al. also
+%improve on the engineering aspects of reflection handling in the
+%\textsc{Doop} framework, as well as employ a back-propagation
+%technique. The work is concurrent to ours and we have only been able
+%to obtain a preprint at the time of this writing. Nevertheless, the
+%differences of the two approaches seem quite clear, as also discussed
+%in Section~\ref{reflection/sec:back-propagation}. Furthermore, the Li et al.
+%technique does not employ substring matching or substring flow
+%analysis and does not emphasize empirical soundness. Instead it
+%eagerly under-approximates many more reflective calls and resolves
+%such calls only when forward and backward reflection analysis
+%information agrees. A valuable aspect of the Li et al. work is a
+%detailed study of how reflection is used in practical programs.
+
 
 \section{Miscellaneous}
 
