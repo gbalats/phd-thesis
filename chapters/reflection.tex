@@ -610,7 +610,8 @@ the base and source variable may point to.
 For virtual calls, we first have to determine the type(s) of the
 receiver object(s), and determine the actual method that will be
 called after method resolution. (For this purpose, we assume the
-existence of a \emph{lookup} function that performs the actual
+existence of a \emph{lookup} function
+\(:\, T \times M \rightarrow M \;\) that performs the actual
 resolution.) Then, we can establish a call-graph edge for the given
 allocation site, as well as a points-to edge for variable \code{this}
 of the resolved method. Static calls are simpler, since they require
