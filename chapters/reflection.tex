@@ -4,14 +4,14 @@ In Chapter~\ref{chapter:structsens}, we targeted the problem of lost
 structural information in C/C++ programs by employing a pointer
 analysis that recovers lost memory structure via a variety of
 techniques. In this chapter and the next, we shift our focus to Java:
-a higher-level strongly-typed language with no capabilities for direct
+a higher-level, strongly-typed language with no capabilities for direct
 memory access.
 %
 Still, essential structural information is often lost in Java programs
 too, yet for different reasons. As stated in
 Chapter~\ref{chapter:intro}, a source of analysis imprecision,
 especially in determining the types of abstract objects constructed by
-the analysis, lies in the usage of Java's reflection mechanism: the
+the analysis, lies in the use of Java's reflection mechanism: the
 ability to inspect and dynamically retrieve classes, methods, attributes,
 etc. at runtime.
 
@@ -347,7 +347,7 @@ to a dynamic analysis) from \textsc{Elf}'s reflection analysis.  This
 improvement in empirical soundness is accompanied by \emph{increased}
 performance relative to \textsc{Elf}, demonstrating that near-sound
 handling of reflection is often practically possible. Concretely, our
-work:
+work in this chapter:
 \begin{itemize}[\(\cdot\)]
 %\item offers the first static handling of Java reflection that 
 % exhibits both high empirical soundness and performance for
@@ -554,8 +554,8 @@ the C/C++ setting:
 Figure~\ref{reflection/fig/javapointsto} presents a standard Java
 points-to analysis
 \cite{uss/GuarnieriL09,pldi/KastrinisS13,aplas/WhaleyACL05}, expressed
-in inference rules (as those of Chapter~\ref{chapter:structsens}). The
-basic relations it computes are:
+in inference rules (such as those of Chapter~\ref{chapter:structsens}). The
+main relations it computes are:
 \begin{description}
 \item[Variable points-to edges.] Edge \(\vpt{v}{o} \in V \times H\)
   records that variable \var{v} may point to abstract object
@@ -579,7 +579,7 @@ basic relations it computes are:
 Note that, without reflection, a points-to analysis needs only create
 a single kind of abstract objects that represents heap allocations
 based on the allocation site. There is no need for abstract
-subobjects, since
+subobjects, as in the C/C++ setting, since
 \begin{inparaenum}[(i)]
 \item heap objects can only contain references to other objects but
   cannot embed the actual allocations; complex structures need to be
@@ -708,7 +708,7 @@ following:
     \(\alloc{\reifiedmethod{m}}\)
     & Represents the reflective object for method \(\code{m} \in M\).
     \\[3pt]
-    \(o_{i,\tp{T}}\)
+    \(\alloc{o_{i,\tp{T}}}\)
     & Represents objects of type \(\tp{T} \in T\) that are allocated with a
       \code{newInstance()} call at invocation site \(i \in L\).
     \\
@@ -754,7 +754,7 @@ following:
       \\\\ \vpt{s}{str}
       \\ \vpt{c}{\reifiedclass{T}}
       \\ \lookup{T}{meth} = \_}
-    {\vpt{p}{\reifiedmethod{meth}}}
+    {\vpt{m}{\reifiedmethod{meth}}}
   \end{math}
   \\
 
@@ -792,7 +792,7 @@ call is a class object for class type \(\tp{T}\), and the
 \var{p} point to the special (i.e., invented) abstract object
 \(\alloc{o_{i,\tp{T}}}\) that designates objects of type \tp{T}
 allocated at the \code{newInstance} call site. Note the analogy
-between this kind of abstract objects, \(o_{i,\tp{T}}\,\), and the
+between this kind of abstract objects, \(\alloc{o_{i,\tp{T}}}\,\), and the
 abstract objects of Chapter~\ref{chapter:structsens}, representing the
 various typed variants of a seemingly untyped allocation (e.g,
 \code{malloc()}). In both cases, the same allocation site may produce
@@ -1233,7 +1233,7 @@ implement this technique:
     & A marker class object (of no specific type) that is
       produced by calling \code{forName} at an allocation site \(i \in L\).
     \\[3pt]
-    \(o_{i,\tp{*}}\)
+    \(\alloc{o_{i,\tp{*}}}\)
     & Represents all objects (again, of no specific type) returned by
       a \code{newInstance} call, which was, in turn, performed on
       the special (marker) object returned by a \code{forName} call, at
@@ -1286,7 +1286,7 @@ that will identify the \code{forName} call.
 
 The final rule ties the logic together: if a cast to type \tp{T} is
 found, where the cast variable points to a special object,
-\(o_{i,\tp{*}}\,\), then retrieve the object's \code{forName}
+\(\alloc{o_{i,\tp{*}}}\,\), then retrieve the object's \code{forName}
 invocation site, \var{i}, and infer that this invocation site returns
 a class object of type \tp{T'}, where \tp{T'} is a subtype of
 \var{T}. Using casts as type hints is exactly what we resorted to in
@@ -1515,11 +1515,11 @@ objects.
 \begin{minipage}{\linewidth}
   \renewcommand{\arraystretch}{1.5}
   \begin{tabular}{@{--\ }l@{\quad}p{0.87\textwidth}}
-    \(o_{i,\tp{*}}^{+}\)
+    \(\alloc{o_{i,\tp{*}}^{+}}\)
     & An invented object of unknown type for a given
       \code{newInstance} invocation site, \(i \in L\).
     \\[3pt]
-    \(o_{i,\tp{T}}^{+}\)
+    \(\alloc{o_{i,\tp{T}}^{+}}\)
     & An invented object of type \(\tp{T} \in T\) for a given
       \code{newInstance} invocation site, \(i \in L\).
     \\
@@ -2194,12 +2194,12 @@ of context-sensitivity.
 
 \section{Summary}
 
-In this chapter, we consider the problem of recovering structural
+In this chapter, we considered the problem of recovering structural
 information for static analysis of Java. Structural information can be
 lost due to inadequate reasoning of prior approaches about common
 reflection patterns. Such reasoning often fails to identify the true
 types of many memory allocations and leads to unsoundness. We
-introduce the notion of empirical soundness, a metric that quantifies
+introduced the notion of empirical soundness, a metric that quantifies
 how much of the actual dynamic behavior the static analysis covers.
 
 Section~\ref{reflection/sec:intro} discusses the need for better
