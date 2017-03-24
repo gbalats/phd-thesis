@@ -1012,7 +1012,7 @@ a \code{toString} method is tantamount to an assignment.
       \\ \vpt{b\(_2\)}{o_{b}}
       \\\\ \alloctype{o_b} = \code{StringBuilder}
       \\ \vpt{s}{o_r}
-      \\ \alloc{o_r} \in \reflObjects}
+      \\ \matches{o_r}{\_}}
     {\vpt{r}{o_r}}
   \end{math}
   \\
@@ -1020,9 +1020,9 @@ a \code{toString} method is tantamount to an assignment.
   \begin{math}
     \inferrule* [left=Class Substr\;]
     {\classForNameInstr[i]{c}{s}
-      \\ \vpt{s}{str}
-      \\ \tp{T} \in T
-      \\ \matches{str}{T}}
+      \\ \vpt{s}{o_r}
+      \\ \matches{o_r}{T}
+      \\ \tp{T} \in T}
     {\vpt{c}{\reifiedclass{T}}}
   \end{math}
   \caption{Extending reflection handling with substring matching}
@@ -1033,11 +1033,10 @@ Figure~\ref{reflection/fig/substringrules} contains a simplified
 version of the logic. It assumes that we have already computed the
 following:
 \begin{description}
-\item[\(\reflObjects\)] a set of string constants that partially match
-  method, field, or class names, as described above
-\item[\(\matchesfunc : H \,\times\, T \rightarrow \{0,1\} \)] a
-  function that returns 1 if a string constant matches a class type,
-  or 0 otherwise.
+\item[\(\matchesfunc : H \,\times\, T \rightarrow \{\, true,\, false
+  \,\} \)] a predicate that is true if a heap object is a string
+  constant that matches a class type (as described above), or false
+  otherwise.
 \end{description}
 
 The first rule of Figure~\ref{reflection/fig/substringrules} states:
@@ -1054,12 +1053,12 @@ to relax the association between string constants and class types, by
 also allowing partial strings to map to their matching types.
 
 In this way, the flow of partial string expressions through the
-program is tracked. By appropriately adjusting the \(\reflObjects\)
-set and the \(\matchesfunc\) function, we can estimate which
-reflective entities can be returned at the site of a \code{forName}
-call. (Calls to \code{getMethod} call can be similarly extended.) In
-this way, the joint points-to and reflection analysis is enhanced with
-substring reasoning without requiring any changes to the base logic of
+program is tracked. By appropriately adjusting the \(\matchesfunc\)
+predicate, we can estimate which reflective entities can be returned at
+the site of a \code{forName} call. (Calls to \code{getMethod} call can
+be similarly extended.) In this way, the joint points-to and
+reflection analysis is enhanced with substring reasoning without
+requiring any changes to the base logic of
 Section~\ref{reflection/sec:model}. String flow through buffers
 becomes just an enhancement of the points-to logic, which is already
 leveraged by reflection analysis.
