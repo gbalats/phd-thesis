@@ -732,8 +732,8 @@ following:
   \begin{math}
     \inferrule* [left=Class.forName\;]
     {\classForNameInstr[i]{c}{s}
-      \\ \fqnameof{T} = \alloc{str}
       \\ \vpt{s}{str}
+      \\ \fqnameof{T} = \alloc{str}
       \\ \tp{T} \in T}
     {\vpt{c}{\reifiedclass{T}}}
   \end{math}
@@ -750,10 +750,9 @@ following:
   \begin{math}
     \inferrule* [left=Class.getMethod\;]
     {\classGetMethodInstr[i]{m}{c}{s}
+      \\ \vpt{s}{str}
       \\ \fqnameof{meth} = \alloc{str}
-      \\ \code{meth} \in M
-      \\\\ \vpt{s}{str}
-      \\ \vpt{c}{\reifiedclass{T}}
+      \\\\ \vpt{c}{\reifiedclass{T}}
       \\ \lookup{T}{meth} = \_}
     {\vpt{m}{\reifiedmethod{meth}}}
   \end{math}
