@@ -1558,24 +1558,23 @@ result of the cast, points to a newly invented object, with the right
 type, \tp{T}.
 
 Note that in terms of empirical soundness the object invention
-approach is weaker than the back-propagation analysis: if a type is
-inferred to be produced by an earlier \code{forName} call, it will flow
-down to the point of the cast, removing the need for object
-invention. (Conversely, inventing objects at the cast site will not
-catch all cases covered by back-propagation, since the special object
-of the back-propagation analysis may never flow to a cast.)
-Nevertheless, back-propagation is often less scalable. Thus, the
-benefit of object invention is that it allows to selectively turn off
-back-propagation while still taking advantage of information from a
-cast.
-
+approach is weaker, in most cases,\footnote{Although it is not weaker
+  when (due to other unsoundness, e.g., dynamic loading or unrelated
+  reflection) the value returned by a \code{forName} call is not
+  detected to flow to the appropriate \code{newInstance}.} than the
+back-propagation analysis: if a type is inferred to be produced by an
+earlier \code{forName} call, it will flow down to the point of the
+cast, removing the need for object invention. (Conversely, inventing
+objects at the cast site will not catch all cases covered by
+back-propagation, since the special object of the back-propagation
+analysis may never flow to a cast.)  Nevertheless, back-propagation is
+often less scalable. Thus, the benefit of object invention is that it
+allows to selectively turn off back-propagation while still taking
+advantage of information from a cast.
 
 %\subsection{Contrasting Approaches}
 
 %Although we compare to related work in Section~\ref{reflection/sec:related}
-
-
-
 
 %%%% THIS NEEDS CORRECTIONS
 %Their logic is intra-procedural and 
