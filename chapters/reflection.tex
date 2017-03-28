@@ -2189,6 +2189,24 @@ of context-sensitivity.
 % hopefully make such language features a lot more feasible to analyze
 % statically.
 
+As a final note, the improved soundness due to the techniques
+presented in this chapter supports our thesis statement:
+%
+\emph{the abstract model of memory is, indeed, improved by recovering
+  implicit structural information via inference, primarily by tracking
+  the use of types in the program.}
+%
+The use-based techniques leverage the way objects (returned by
+reflective calls) are later used in the program: i.e., what types they
+are cast to, what fields they access, and so on.  By inspecting the
+use of reflective objects, these techniques are able to infer and
+partly recover the objects' structure, which is not evident at the
+site of their allocation, since the declared types involved in
+reflective operations are too generic to accurately describe
+them. Recovering such implicit structural information leads to a
+better memory model; one that more faithfully abstracts the memory
+that will be allocated by any actual execution.
+
 
 \section{Summary}
 
