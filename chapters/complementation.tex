@@ -1,16 +1,33 @@
+\label{chapter:complementation}
+
+In the previous chapter, we examined the problems caused by Java's
+reflection and presented a reflection analysis, integrated into a
+standard points-to analysis, that recovers structural information for
+reflective objects. In this chapter, we will continue to examine the
+problem of lost memory structure in Java, yet in a completely
+different context: that of \emph{partial Java programs}.
+
+As stated in Chapter~\ref{chapter:intro}, analyzing partial programs
+is crucial for Java, whose dynamic class loading allows JAR files to
+depend on an abundance of external libraries, even though only a
+subset of them will be required at runtime---at any possible
+execution. The primary challenge in analyzing partial Java programs
+concerns the implied type constraints in existing code, and their
+repercussions to the type hierarchy.
 %-------------------------------------------------------------------------------
 % Prior abstract
 %-------------------------------------------------------------------------------
+This leads to the more generic problem of class hierarchy
+complementation: given a partially known hierarchy of classes together
+with subtyping constraints (``A has to be a transitive subtype of B'')
+complete the hierarchy so that it satisfies all constraints.
 
-We present the problem of class hierarchy complementation: given a
-partially known hierarchy of classes together with subtyping
-constraints (``A has to be a transitive subtype of B'') complete the
-hierarchy so that it satisfies all constraints. The problem has immediate
-practical application to the analysis of partial programs---e.g., it
-arises in the process of providing a sound handling of ``phantom
-classes'' in the Soot program analysis framework. We provide
-algorithms to solve the hierarchy complementation problem in the
-single inheritance and multiple inheritance settings.
+The problem has immediate practical application to the analysis of
+partial programs---e.g., it arises in the process of providing a sound
+handling of ``phantom classes'' in the Soot program analysis
+framework. In this chapter, we provide algorithms to solve the
+hierarchy complementation problem in the single inheritance and
+multiple inheritance settings.
 % We show that class
 % hierarchy complementation is NP-complete for multiple
 %inheritance/subtyping while there is a polynomial algorithm for single
