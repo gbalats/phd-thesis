@@ -12,10 +12,10 @@ different context: that of \emph{partial Java programs}.
 As stated in Chapter~\ref{chapter:intro}, analyzing partial programs
 is crucial for Java, whose dynamic class loading allows JAR files to
 depend on an abundance of external libraries, even though only a
-subset of them will be required at runtime---at any possible
+subset of them will be required at runtime---in any possible
 execution. The primary challenge in analyzing partial Java programs
 concerns the implied type constraints in existing code, and their
-repercussions to the type hierarchy.
+repercussions on the type hierarchy.
 %-------------------------------------------------------------------------------
 % Prior abstract
 %-------------------------------------------------------------------------------
@@ -27,9 +27,9 @@ complete the hierarchy so that it satisfies all constraints.
 The problem has immediate practical application to the analysis of
 partial programs---e.g., it arises in the process of providing a sound
 handling of ``phantom classes'' in the Soot program analysis
-framework. In this chapter, we provide algorithms to solve the
-hierarchy complementation problem in the single inheritance and
-multiple inheritance settings.
+framework. We provide algorithms to solve the hierarchy
+complementation problem in the single inheritance and multiple
+inheritance settings.
 % We show that class
 % hierarchy complementation is NP-complete for multiple
 %inheritance/subtyping while there is a polynomial algorithm for single
