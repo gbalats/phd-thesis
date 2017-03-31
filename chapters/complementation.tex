@@ -1,4 +1,4 @@
-\label{chapter:complementation}
+\label{chapter:hiercomp}
 \epigraph{What in God's holy name are you blathering
   about?}{\textit{The Big Lebowski}}
 
@@ -77,7 +77,7 @@ large input applications and complex constraints (with a maximum of
 %-------------------------------------------------------------------------------
 
 \section{Program Complementation and Partial Type Hierarchies}
-\label{hiercomp/intro}
+\label{hiercomp/sect/intro}
 
 Whole-program static analysis is essential for clients that require
 high-precision
@@ -431,7 +431,7 @@ In brief, the contributions of our work are as follows:
 
 % In the next sections we detail
 \section{Motivation and Practical Setting}
-\label{hiercomp/motivation}
+\label{hiercomp/sect/motivation}
 
 We next discuss the practical setting that gives rise to the hierarchy
 complementation problem.
@@ -555,7 +555,7 @@ considerations, as past approaches do.
 %-------------------------------------------------------------------------------
 
 \section{Hierarchy Complementation for Multiple Inheritance}
-\label{hiercomp/multiple}
+\label{hiercomp/sect/multiple}
 
 We begin with a modeling of the hierarchy complementation problem in
 the setting of multiple inheritance. This means that every class in our
@@ -886,7 +886,7 @@ Appendix~\ref{hiercomp/correctness}.
 %-------------------------------------------------------------------------------
 
 \section{Hierarchy Complementation for Single Inheritance}
-\label{hiercomp/single}
+\label{hiercomp/sect/single}
 
 The problem for a single inheritance setting has a very similar
 statement as in the earlier case of multiple inheritance, but markedly
@@ -1068,7 +1068,7 @@ total order). In practice, we produce a partial order by using a
 variant of topological sort that generates a tree instead of a list as
 its result, but a full topological sort also satisfies the correctness
 requirements of the algorithm. (We return to the topic of why we
-actually want a weaker ordering in Section~\ref{hiercomp/java}.)
+actually want a weaker ordering in Section~\ref{hiercomp/sect/java}.)
 
 In the example of Figure~\ref{hiercomp/fig:kdirect:ex},
 Algorithm~\ref{hiercomp/alg:single:kdirect} first checks and removes the
@@ -1404,7 +1404,7 @@ w.r.t. our constraint edges (both path and direct).
 %-------------------------------------------------------------------------------
 
 \section{Single Inheritance, Multiple Subtyping: Classes and Interfaces}
-\label{hiercomp/java}
+\label{hiercomp/sect/java}
 
 It is easy to combine the single- and multiple-inheritance
 approaches of the last two sections in the context of a language that
@@ -1448,7 +1448,7 @@ lead to restricting the colors of a node. First, we have local
 constraints: we may get a node color from the initial input---i.e., an
 observed bytecode instruction (such as \code{invokeinterface}) may
 directly restrict the color of a phantom type. (More constraints of
-this form are discussed in Section~\ref{hiercomp/jphantom}.) Second, we may get
+this form are discussed in Section~\ref{hiercomp/sect/jphantom}.) Second, we may get
 transitive constraints, due to restrictions on subtyping. Interfaces
 can only subtype interfaces (except for the \code{Object} class in
 Java). This leads to two types of transitive constraints: If a black
@@ -1569,7 +1569,7 @@ existed.
 %-------------------------------------------------------------------------------
 
 \section{Implementation and Practical Evaluation}
-\label{hiercomp/jphantom}
+\label{hiercomp/sect/jphantom}
 
 We next discuss practical aspects of our implementation. First, we
 consider the \emph{program analysis} part of our work, which solves
@@ -2147,7 +2147,7 @@ constraints. Some interesting points are that:
 %-------------------------------------------------------------------------------
 
 \section{Discussion}
-\label{hiercomp/discussion}
+\label{hiercomp/sect/discussion}
 
 We next discuss the problem of hierarchy complementation speculatively,
 in settings different from ours. The general problem is that of
@@ -2234,7 +2234,7 @@ example, we discuss some of these complications below.
 
   For phantom types \code{R} and \code{X}, if some other constraint
   (e.g., of the kind induced in the case of multiple inheritance in
-  Section~\ref{hiercomp/multiple}) can be satisfied by making \code{X} a
+  Section~\ref{hiercomp/sect/multiple}) can be satisfied by making \code{X} a
   sybtype of \code{S}, then we get the additional constraint: ``if
   \code{X} becomes a subtype of \code{S} then \code{Y} must be a
   subtype of \code{R}''. This is again a very expressive constraint
@@ -2327,22 +2327,22 @@ checks of the verifier when loaded together with the generated
 complement.
 
 We discuss the need for analyzing partial programs and introduce
-hierarchy complementation in Section~\ref{hiercomp/intro}, and show how
-the problem arises in practice in Section~\ref{hiercomp/motivation}.
+hierarchy complementation in Section~\ref{hiercomp/sect/intro}, and show how
+the problem arises in practice in Section~\ref{hiercomp/sect/motivation}.
 %
 We offered algorithms for the hierarchy complementation problem in
 both the multiple and the single inheritance setting (in Sections
-\ref{hiercomp/multiple} and \ref{hiercomp/single}, respectively).
+\ref{hiercomp/sect/multiple} and \ref{hiercomp/sect/single}, respectively).
 %
-In Section~\ref{hiercomp/java}, we showed how to decompose the problem
+In Section~\ref{hiercomp/sect/java}, we showed how to decompose the problem
 in the mixed single-inheritance multiple-subtyping setting of Java,
 into separate single- and multiple-subtyping instances, and linked it
 to practice with our JPhantom bytecode complementation tool (in
-Section~\ref{hiercomp/jphantom}).
+Section~\ref{hiercomp/sect/jphantom}).
 %
 Finally, we discussed how the problem of hierarchy complementation
 changes when we transpose it to the domain of Java source code
-(instead of bytecode), in Section~\ref{hiercomp/discussion}.
+(instead of bytecode), in Section~\ref{hiercomp/sect/discussion}.
 
 % TODO put in conclusions
 % We believe that the hierarchy complementation

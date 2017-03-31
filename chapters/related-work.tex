@@ -1,7 +1,7 @@
 \epigraph{Obviously, you're not a golfer.}{\textit{The Dude}}
 
 This chapter includes related work of previous chapters (in Sections
-\ref{related:sect/structsens} -- \ref{related:sect/complementation})
+\ref{related:sect/structsens} -- \ref{related:sect/hiercomp})
 and then considers more generic directions in static analysis
 literature (in Section~\ref{related:sect/misc}).
 %
@@ -11,8 +11,8 @@ Specifically,
   Chapter~\ref{chapter:structsens};
 \item Section~\ref{related:sect/reflection} contains related work for
   Chapter~\ref{chapter:reflection}; and
-\item Section~\ref{related:sect/complementation} for
-  Chapter~\ref{chapter:complementation}.
+\item Section~\ref{related:sect/hiercomp} for
+  Chapter~\ref{chapter:hiercomp}.
 \end{inparaenum}
 
 \section{C/C++ Pointer Analysis}
@@ -192,7 +192,7 @@ patch the code to avoid reflection entirely.
 
 \section{Class Hierarchy Complementation and Static Analysis on
   Partial Programs}
-\label{related:sect/complementation}
+\label{related:sect/hiercomp}
 
 The hierarchy complementation problem is in principle new, although
 indirectly related to various other pieces of work in the literature.
@@ -244,7 +244,7 @@ Analyzing partial programs at the level of source code has been
 studied by \citeauthor{oopsla/DagenaisH08}
 \cite{oopsla/DagenaisH08}. Apart from the elaborate type constraints
 that may arise from missing source code, as discussed in
-Section~\ref{hiercomp/discussion}, another important challenge is
+Section~\ref{hiercomp/sect/discussion}, another important challenge is
 syntactic ambiguities (e.g., \emph{is it a package or a class
   name?}). The goal of \citeauthor{oopsla/DagenaisH08} is to be able
 to deal with both typing problems and syntactic ambiguities in any
@@ -280,7 +280,7 @@ compilation in the form of bytecode, and bytecode only. Second, our
 emphasis is on satisfying constraints instead of capturing them as a
 rich type. Finally, our constraints are of a very different nature
 from any in the principal typings literature. As discussed in
-Section~\ref{hiercomp/discussion}, the input and output language
+Section~\ref{hiercomp/sect/discussion}, the input and output language
 assumptions crucially determine the essence of an incomplete program
 analysis problem.
 
