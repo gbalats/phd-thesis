@@ -735,14 +735,14 @@ publications}\gdef\@lopfileinternal{#1}}
     \cleardoublepage
     \endgroup
 
-    % list of tables
-    \listoftables
-    \thispagestyle{empty}
+    % % list of tables
+    % \listoftables
+    % \thispagestyle{empty}
 
     % preface page (english version only, OPTIONAL)
-    \ifprefacepage
-	    \@preface
-    \fi
+    % \ifprefacepage
+    %     \@preface
+    % \fi
 
     % Prepare things for the rest of the document
     \clearpage
