@@ -37,13 +37,14 @@ inheritance settings.
 We also show that the problem in a language such as Java, with single
 inheritance but multiple subtyping and distinguished class
 vs. interface types, can be decomposed into separate single- and
-multiple-subtyping instances.  We implement our algorithms in a
-tool, JPhantom, which complements partial Java bytecode programs so that
-the result is guaranteed to satisfy the Java verifier
-requirements. JPhantom is highly scalable and runs in mere seconds
-even for large input applications and complex constraints (with a maximum
-of 14s for a 19MB binary).
-
+multiple-subtyping instances.  We implement our algorithms in a tool,
+JPhantom, which complements partial Java bytecode programs so that the
+result is guaranteed to satisfy the Java verifier requirements. In a
+sense, JPhantom aims to recover structural information for phantom
+classes, via inference, by tracking their use in existing
+code. JPhantom is highly scalable and runs in mere seconds even for
+large input applications and complex constraints (with a maximum of
+14s for a 19MB binary).
 
 %Static whole-program analysis requires the availability of every class
 %transitively referenced in a program, even if it is never used. For
