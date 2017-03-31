@@ -173,6 +173,101 @@ patch the code to avoid reflection entirely.
 %detailed study of how reflection is used in practical programs.
 
 
+\section{Class Hierarchy Complementation and Static Analysis on
+  Partial Programs}
+
+The hierarchy complementation problem is in principle new, although
+indirectly related to various other pieces of work in the literature.
+
+From a theory standpoint, our problem is an attempt to more fully
+determine the structure of a partially ordered set. There is no exact
+counterpart of our algorithms in the literature. However, there has
+been work on sorting a poset, i.e., completely determining the partial
+order \cite{soda/DaskalakisKMRV09}.  The challenge in such algorithmic
+research, however, is to perform the sorting with a minimal number of
+queries. None of the interesting devices of our algorithms are
+present. Specifically, the device of the single inheritance case (if a
+node can reach two others, they have to be ordered relative to each
+other) does not apply, and neither does the interesting constraint of
+the multiple inheritance case (we cannot add direct supertypes to a
+known node).
+
+Complementing a program so that the result respects static properties
+is analogous to analyzing only parts of a program but giving
+guarantees on the result. There are few examples of program analyses
+of this nature. Notably, \citeauthor{ecoop/AliL12} recently introduced
+a technique \cite{ecoop/AliL12} for analyzing an application
+separately from a library, while keeping enough information (from the
+library analysis) to guarantee that the application-level call-graph
+is correct. Furthermore, the Averroes system \cite{ecoop/AliL13} uses
+the assumption that the missing code is independently developed in
+order to produce a worst-case skeletal library. That is, Averroes
+takes an existing library and strips away the implementation, keeping
+only the interface between the library and the application. The
+implementation is replaced with code (at the bytecode level) that
+performs worst-case actions on the arguments passed into the library,
+for the purposes of call-graph construction (i.e., the generated code
+calls all methods the eliminated original code could ever
+call). Averroes is related to JPhantom but at rather opposite ends of
+the spectrum: Averroes produces worst-case skeletal implementations,
+while JPhantom produces minimal, best-case implementations that still
+respect well-formedness at the type level.  At the same time, Averroes
+assumes the library interface is available and just tries to avoid
+analyzing library implementations, while JPhantom applies precisely
+when the library is completely missing. Thus, JPhantom truly applies
+to the case of partial programs, whereas Averroes analyzes a partial
+program but under the assumption that the whole program was available
+to begin with. It would be interesting to treat a partial program
+first with JPhantom and then apply Averroes to the JPhantom-produced
+program complement to obtain the worst-case behavior of a plausible
+interface for the missing code.
+
+Analyzing partial programs at the level of source code has been
+studied by \citeauthor{oopsla/DagenaisH08}
+\cite{oopsla/DagenaisH08}. Apart from the elaborate type constraints
+that may arise from missing source code, as discussed in
+Section~\ref{hiercomp/discussion}, another important challenge is
+syntactic ambiguities (e.g., \emph{is it a package or a class
+  name?}). The goal of \citeauthor{oopsla/DagenaisH08} is to be able
+to deal with both typing problems and syntactic ambiguities in any
+given partial Java program and produce a typed IR (although it may
+contain placeholders representing unknown types and packages). Their
+approach is primarily based on heuristics that make arbitrary choices
+on various occasions (with no form of backtracking) that may
+eventually lead to wrong results. Even though they, too, identify
+similar subtype constraints and record missing class members to be
+added in the typed IR, they do not define any similar type hierarchy
+complementation problem or come up with algorithms to systematically
+construct a valid solution in such a setting.
+
+% - deal with syntactic ambiguities as well as typing problems
+% - builds a typed IR (typed AST and Jimple) from a partial program with
+%   no unknown syntactic constructs
+% - share subtype constraints and adding missing class members
+% - no backtracking, heuristic-based approach
+% - heuristics make arbitrary choices that may produce wrong results
+% - may yield unknown type and package placeholders
+
+Our hierarchy complementation problem bears a superficial resemblance
+to the \emph{principal typings} problem
+\cite{popl/AnconaZ04,popl/AnconaDDZ05,Ancona04even}.  The principal
+typings problem consists of computing types for a Java module in
+complete isolation from every other module it references. I.e.,
+principal typings aim to achieve a more aggressive form of separate
+compilation, by computing the minimal type information on other
+classes that a class needs in order to typecheck and compile. Thus,
+the motivation is fairly similar to ours, but the technical problem is
+quite different.  First, in our setting we already have the result of
+compilation in the form of bytecode, and bytecode only. Second, our
+emphasis is on satisfying constraints instead of capturing them as a
+rich type. Finally, our constraints are of a very different nature
+from any in the principal typings literature. As discussed in
+Section~\ref{hiercomp/discussion}, the input and output language
+assumptions crucially determine the essence of an incomplete program
+analysis problem.
+
+
+
 \section{Miscellaneous}
 
 %% -----------------------------------------------------------------------------
