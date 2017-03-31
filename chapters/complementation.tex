@@ -329,7 +329,7 @@ multiple-inheritance versions of hierarchy complementation.
 
 % To see why the problem has interesting depth and complexity, consider
 % a simple fragment of Java bytecode and the constraints it
-% induces. Our convention throughout the paper is that single-letter
+% induces. Our convention throughout this chapter is that single-letter
 % class names at the lower end of the alphabet (\code{A}, \code{B},
 % ...)  correspond to known types, while class names at the high end
 % of the alphabet (\code{X}, \code{Y}, \code{Z}) denote phantom types.
@@ -1114,7 +1114,7 @@ However, in order to achieve a solution that generalizes well to
 harder cases, we would like to avoid ordering nodes if there is no
 need for them to be ordered. The result will be a tree and not a
 linear order (in the general case). Specifically, we would like to
-compute a partial order relation,\footnote{Throughout the paper, our
+compute a partial order relation,\footnote{Throughout this chapter, our
 use of the term ``partial order'' denotes an irreflexive partial
 order.} $\ll$, such that:
 
@@ -1581,7 +1581,7 @@ tool to real programs.
 
 JPhantom is a practical and scalable tool for program complementation,
 based on the algorithms we have presented in this
-paper. \footnote{JPhantom is available online at
+chapter. \footnote{JPhantom is available online at
   \url{https://github.com/gbalats/jphantom}.} JPhantom uses the ASM
 library~\cite{Bruneton2002asm} to read and trasform Java
 bytecode. Given a jar file that contains phantom references, it
