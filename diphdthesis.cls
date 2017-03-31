@@ -524,49 +524,48 @@ publications}\gdef\@lopfileinternal{#1}}
 \ifenglishcommitteepage
 	SEVEN-MEMBER EXAMINATION COMMITTEE
 \else
-	{\gr ΕΠΤΑΜΕΛΗΣ ΕΞΕΤΑΣΤΙΚΗ ΕΠΙΤΡΟΠΗ }
+	{\gr ΕΠΤΑΜΕΛΗΣ ΕΞΕΤΑΣΤΙΚΗ ΕΠΙΤΡΟΠΗ}
 \fi
 }
 \end{center}
 
 {\bfseries
-\centering
-\begin{tabular*}{\textwidth}{p{0.5\textwidth} p{1.5cm} m{0.35\textwidth}}
-                                    & &                    \\[1cm]
-\ifenglishcommitteepage
-\@advisorEn{},                      & & \@boardTwoEn{},    \\
-\@advisorRankEn{} \@advisorOrgEn{}  & & \@boardTwoRankEn{} \@boardTwoOrgEn{}\\
-
-                                         & &                \\[1cm]
-\@boardThreeEn{},                        & & \@examFourEn{},\\
-\@boardThreeRankEn{} \@boardThreeOrgEn{} & &\@examFourRankEn{}
-\@examFourOrgEn{}\\
-
-                                     & &                    \\[1cm]
-\@examFiveEn{},                      & &\@examSixEn{},      \\
-\@examFiveRankEn{} \@examFiveOrgEn{} & &\@examSixRankEn{} \@examSixOrgEn{} \\
-
-                                       & &                  \\[1cm]
-\@examSevenEn{},                       & &                  \\
-\@examSevenRankEn{} \@examSevenOrgEn{} & &                  \\
-\else
-\@advisorGr{},                      & & \@boardTwoGr{},    \\
-\@advisorRankGr{} \@advisorOrgGr{}  & & \@boardTwoRankGr{} \@boardTwoOrgGr{}\\
-
-                                         & &                \\[1cm]
-\@boardThreeGr{},                        & & \@examFourGr{},\\
-\@boardThreeRankGr{} \@boardThreeOrgGr{} & &\@examFourRankGr{}
-\@examFourOrgGr{}\\
-
-                                     & &                    \\[1cm]
-\@examFiveGr{},                      & &\@examSixGr{},      \\
-\@examFiveRankGr{} \@examFiveOrgGr{} & &\@examSixRankGr{} \@examSixOrgGr{} \\
-
-                                       & &                  \\[1cm]
-\@examSevenGr{},                       & &                  \\
-\@examSevenRankGr{} \@examSevenOrgGr{} & &                  \\
-\fi
-\end{tabular*}}
+  \centering
+  \begin{tabular*}{\textwidth}{p{0.5\textwidth}@{\hskip 1.5cm}p{0.4\textwidth}}
+    & \\[0.5cm]
+    \ifenglishcommitteepage
+    \@advisorEn{}, \newline \@advisorRankEn{} \@advisorOrgEn{}
+    &
+    \@boardTwoEn{}, \newline \@boardTwoRankEn{} \@boardTwoOrgEn{}
+    \\[1cm]
+    \@boardThreeEn{}, \newline \@boardThreeRankEn{} \@boardThreeOrgEn{}
+    &
+    \@examFourEn{}, \newline \@examFourRankEn{} \@examFourOrgEn{}
+    \\[1cm]
+    \@examFiveEn{}, \newline \@examFiveRankEn{} \@examFiveOrgEn{}
+    &
+    \@examSixEn{}, \newline \@examSixRankEn{} \@examSixOrgEn{}
+    \\[1cm]
+    \@examSevenEn{}, \newline \@examSevenRankEn{} \@examSevenOrgEn{}
+    \\
+    \else
+    \@advisorGr{}, \newline \@advisorRankGr{} \@advisorOrgGr{}
+    &
+    \@boardTwoGr{}, \newline \@boardTwoRankGr{} \@boardTwoOrgGr{}
+    \\[1cm]
+    \@boardThreeGr{}, \newline \@boardThreeRankGr{} \@boardThreeOrgGr{}
+    &
+    \@examFourGr{}, \newline \@examFourRankGr{} \@examFourOrgGr{}
+    \\[1cm]
+    \@examFiveGr{}, \newline \@examFiveRankGr{} \@examFiveOrgGr{}
+    &
+    \@examSixGr{}, \newline \@examSixRankGr{} \@examSixOrgGr{}
+    \\[1cm]
+    \@examSevenGr{}, \newline \@examSevenRankGr{} \@examSevenOrgGr{}
+    \\
+    \fi
+  \end{tabular*}
+}
 
 
 \vfill
