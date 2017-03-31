@@ -76,7 +76,7 @@ large input applications and complex constraints (with a maximum of
 % Introduction
 %-------------------------------------------------------------------------------
 
-\section{Overview of Partial Type Hierarchy and Program Complementation}
+\section{Program Complementation and Partial Type Hierarchies}
 \label{hiercomp/intro}
 
 Whole-program static analysis is essential for clients that require
@@ -431,6 +431,7 @@ In brief, the contributions of our work are as follows:
 
 % In the next sections we detail
 \section{Motivation and Practical Setting}
+\label{hiercomp/motivation}
 
 We next discuss the practical setting that gives rise to the hierarchy
 complementation problem.
@@ -2310,28 +2311,44 @@ with a wealth of different constraints, possibly appropriate for
 future work.
 
 %-------------------------------------------------------------------------------
-% Conclusions
+% Summary (former Conclusions)
 %-------------------------------------------------------------------------------
 
-\section{Conclusions}
+\section{Summary}
 
-We introduced the class hierarchy complementation problem. The problem
-consists of finding definitions to complement an existing partial
-class hierarchy together with extra subtyping constraints, so that the
-resulting hierarchy satisfies all constraints. In the context of Java
-bytecode and the constraints of the bytecode verifier, our problem is
-the core challenge of complementing partial programs soundly, i.e., so
-that they pass the checks of the verifier when loaded together with
-the generated complement. We offered algorithms for the hierarchy
-complementation problem in both the single and the multiple
-inheritance setting, and linked it to practice with our JPhantom
-bytecode complementation tool.
+In this chapter, we introduced the class hierarchy complementation
+problem. The problem consists of finding definitions to complement an
+existing partial class hierarchy together with extra subtyping
+constraints, so that the resulting hierarchy satisfies all
+constraints. In the context of Java bytecode and the constraints of
+the bytecode verifier, our problem is the core challenge of
+complementing partial programs soundly, i.e., so that they pass the
+checks of the verifier when loaded together with the generated
+complement.
 
-We believe that the hierarchy complementation problem is fundamental
-and is likely to arise in different settings in the future, hopefully
-aided by our modeling of the problem and some of its solution avenues.
+We discuss the need for analyzing partial programs and introduce
+hierarchy complementation in Section~\ref{hiercomp/intro}, and show how
+the problem arises in practice in Section~\ref{hiercomp/motivation}.
+%
+We offered algorithms for the hierarchy complementation problem in
+both the multiple and the single inheritance setting (in Sections
+\ref{hiercomp/multiple} and \ref{hiercomp/single}, respectively).
+%
+In Section~\ref{hiercomp/java}, we showed how to decompose the problem
+in the mixed single-inheritance multiple-subtyping setting of Java,
+into separate single- and multiple-subtyping instances, and linked it
+to practice with our JPhantom bytecode complementation tool (in
+Section~\ref{hiercomp/jphantom}).
+%
+Finally, we discussed how the problem of hierarchy complementation
+changes when we transpose it to the domain of Java source code
+(instead of bytecode), in Section~\ref{hiercomp/discussion}.
 
-
+% TODO put in conclusions
+% We believe that the hierarchy complementation
+% problem is fundamental and is likely to arise in different settings in
+% the future, hopefully aided by our modeling of the problem and some of
+% its solution avenues.
 
 %%% Local Variables:
 %%% mode: latex
