@@ -481,6 +481,12 @@ that are compatible with the bytecode that is available to the tool
 is defined as satisfying the requirements of the Java verifier, which
 concern type well-formedness.
 
+Note that such definitions will contain essential parts of missing
+structural information for the phantom types: method and field
+members, as well as supertypes. Any subsequent static analysis that
+will operate on the types produced by JPhantom will create abstract
+objects that are much closer, in structure, to reality.
+
 Of these constraints, the hardest to satisfy are those involving
 subtyping.  Constraints on members (e.g., \code{X} has to contain a
 ``\code{Z bar(A)}'') are easy to satisfy by just adding type-correct
@@ -737,6 +743,8 @@ algorithm.
 
 %% Algorithm explanation
 
+\input{algorithms/multiple/stratifying}
+
 Algorithm~\ref{hiercomp/alg:multiple:strat} solves in polynomial time (an easy bound is
 $O(|V| \cdot |E|)$) any
 instance of the hierarchy complementation problem in the multiple
@@ -778,7 +786,7 @@ from lower to higher strata.
 
 %% Stratification Example
 
-\begin{figure*}[tp]
+\begin{figure}[th!b]
   \vspace{-5mm}
   \begin{minipage}[b]{0.5\linewidth}
     \centering
@@ -818,10 +826,7 @@ from lower to higher strata.
     produced by the multiple-inheritance solver for
     Example~\ref{hiercomp/fig:multipleHard}.}
   \label{hiercomp/fig:multiple:steps}
-\end{figure*}
-
-\input{algorithms/multiple/stratifying}
-
+\end{figure}
 
 Figure~\ref{hiercomp/fig:multiple:steps} presents an illustration of the
 algorithm's application to the example of
@@ -951,7 +956,7 @@ cases.
 
 % CHECK subcaption alignment everywhere!!
 
-\begin{figure*}[htb]
+\begin{figure*}[th!b]
   \vspace{-5mm}
   \begin{minipage}[t]{0.5\linewidth}
     \centering
@@ -1972,12 +1977,13 @@ Every benchmark is just a jar file that serves as JPhantom's
 input, which then detects all phantom references and generates the
 complemented jar.
 
-We encountered most of these benchmarks in our own work doing static
+We encountered most of these benchmarks while working on static
 program analysis with the \doop{} framework
-\cite{oopsla/BravenboerS09,pldi/KastrinisS13}. For many of the
-benchmarks it was, upon original encounter, an unexpected discovery
-that they could not be analyzed due to dependencies to unknown classes
-in other libraries.
+\cite{oopsla/BravenboerS09,pldi/KastrinisS13}. (As already mentioned,
+\doop{} has been the vehicle for our reflection analysis of the
+previous chapter, as well.) For many of the benchmarks it was, upon
+original encounter, an unexpected discovery that they could not be
+analyzed due to dependencies to unknown classes in other libraries.
 
 Figure~\ref{hiercomp/fig:exp1} presents input features and the running time of
 JPhantom for each of our benchmarks. The first column is the name of
@@ -2325,17 +2331,17 @@ We discuss the need for analyzing partial programs and introduce
 hierarchy complementation in Section~\ref{hiercomp/sect/intro}, and show how
 the problem arises in practice in Section~\ref{hiercomp/sect/motivation}.
 %
-We offered algorithms for the hierarchy complementation problem in
+We offer algorithms for the hierarchy complementation problem in
 both the multiple and the single inheritance setting (in Sections
 \ref{hiercomp/sect/multiple} and \ref{hiercomp/sect/single}, respectively).
 %
-In Section~\ref{hiercomp/sect/java}, we showed how to decompose the problem
+In Section~\ref{hiercomp/sect/java}, we show how to decompose the problem
 in the mixed single-inheritance multiple-subtyping setting of Java,
-into separate single- and multiple-subtyping instances, and linked it
+into separate single- and multiple-subtyping instances, and link it
 to practice with our JPhantom bytecode complementation tool (in
 Section~\ref{hiercomp/sect/jphantom}).
 %
-Finally, we discussed how the problem of hierarchy complementation
+Finally, we discuss how the problem of hierarchy complementation
 changes when we transpose it to the domain of Java source code
 (instead of bytecode), in Section~\ref{hiercomp/sect/discussion}.
 
