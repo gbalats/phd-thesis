@@ -2087,17 +2087,12 @@ Constraints:
 org.apache.bsf.BSFException <: Throwable
 org.apache.tools.ant.BuildException <: Throwable
 org.osgi.framework.BundleException <: Throwable
-org.jruby.embed.bsf.JRubyEngine <:
-  org.apache.bsf.util.BSFEngineImpl
-org.jruby.embed.bsf.JRubyEngine <:
-  org.apache.bsf.BSFEngine
+org.jruby.embed.bsf.JRubyEngine <: org.apache.bsf.util.BSFEngineImpl
+org.jruby.embed.bsf.JRubyEngine <: org.apache.bsf.BSFEngine
 org.jruby.ant.RakeTaskBase <: org.apache.tools.ant.Task
-org.jruby.javasupport.bsf.JRubyEngine <:
-  org.apache.bsf.BSFEngine
-org.jruby.ext.fiber.CoroutineFiber$1 <:
-  java.dyn.Coroutine
-org.jruby.javasupport.bsf.JRubyEngine <:
-  org.apache.bsf.util.BSFEngineImpl
+org.jruby.javasupport.bsf.JRubyEngine <: org.apache.bsf.BSFEngine
+org.jruby.ext.fiber.CoroutineFiber$1 <: java.dyn.Coroutine
+org.jruby.javasupport.bsf.JRubyEngine <: org.apache.bsf.util.BSFEngineImpl
 
 Class Hierarchy
 * class java.lang.Object
