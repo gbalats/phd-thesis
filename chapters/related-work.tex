@@ -7,7 +7,7 @@ and then considers more generic directions in static analysis
 literature (in Section~\ref{related:sect/misc}).
 %
 Specifically,
-\begin{inparaenum}[(i)]
+\begin{inparaenum}[(a)]
 \item Section~\ref{related:sect/structsens} contains related work for
   Chapter~\ref{chapter:structsens};
 \item Section~\ref{related:sect/reflection} contains related work for
@@ -16,12 +16,14 @@ Specifically,
   Chapter~\ref{chapter:hiercomp}.
 \end{inparaenum}
 
-\section{C/C++ Pointer Analysis}
+\section{Field-Sensitive C/C++ Pointer Analysis}
 \label{related:sect/structsens}
 
-We discussed some closely related work throughout the paper. Most C
-and C++ analyses in the past have focused on scalability, at the
-expense of precision. Several (e.g.,
+Regarding our structure-sensitive pointer analysis, we discussed some
+closely related work throughout Chapter~\ref{chapter:structsens} (most
+importantly \cite{paste/PearceKH04,toplas/PearceKH07}). More
+generally, most C and C++ analyses in the past have focused on
+scalability, at the expense of precision. Several (e.g.,
 \cite{antgrasshopper,popl/ZhengR08,popl/Lhotak11}) do not model more
 than a small fraction of the functionality of modern intermediate
 languages.
