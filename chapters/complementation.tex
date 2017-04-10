@@ -1923,6 +1923,14 @@ following issues:
   application, and expose only a handful of phantom types on the
   unknown/known code boundary.
 
+  This finding supports our thesis statement: static analysis is
+  improved (in terms of completeness\footnote{Improving completeness
+    was the same metric we used in Chapter~\ref{chapter:reflection},
+    where we compared the statically computed call-graphs against
+    dynamic call-graphs of actual executions.}), by recovering missing
+  structural information of phantom classes, via inference, by
+  tracking the use of types in the program.
+
 \end{itemize}
 
 \begin{figure}[t]
@@ -2068,7 +2076,6 @@ consider the list below, which is the actual execution output of a
 JPhantom run on the jruby benchmark:
 
 \begin{alltt}\footnotesize
-\vspace{2em}
 Phantom Classes Detected: \hfill{[constraint]}
 
 org.apache.tools.ant.BuildException \hfill{must be a class}
