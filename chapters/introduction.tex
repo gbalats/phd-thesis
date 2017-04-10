@@ -577,20 +577,55 @@ analysis tool, to allow the analysis of any partial Java program
 without having to provide custom solutions for the class hierarchy
 complementation problem or deal with missing references at all.
 
-\section{Publications}
 
-The work presented in this dissertation draws material from the
-following publications:
+\section{Outline}
 
+% The work presented in this dissertation draws material from the
+% following publications:
+% \begin{itemize}[--]
+% \item \emph{\citetitle{structsens}} \cite{structsens}
+%   (Chapter~\ref{chapter:structsens})
+% \item \emph{\citetitle{reflection}} \cite{reflection}
+%   (Chapter~\ref{chapter:reflection})
+% \item \emph{\citetitle{jphantom}} \cite{jphantom}
+%   (Chapter~\ref{chapter:hiercomp})
+% \item \emph{\citetitle{survey}} \cite{survey}
+%   (Chapter~\ref{chapter:related}).
+% \end{itemize}
+
+The rest of this dissertation is organized as follows:
 \begin{itemize}[--]
-\item \emph{\citetitle{structsens}} \cite{structsens}
-  (Chapter~\ref{chapter:structsens})
-\item \emph{\citetitle{reflection}} \cite{reflection}
-  (Chapter~\ref{chapter:reflection})
-\item \emph{\citetitle{jphantom}} \cite{jphantom}
-  (Chapter~\ref{chapter:hiercomp})
-\item \emph{\citetitle{survey}} \cite{survey}
-  (Chapter~\ref{chapter:related}).
+\item Chapter~\ref{chapter:structsens} presents a structure-sensitive
+  pointer analysis for C/C++ programs that employs a fine-grained
+  object abstraction, in order to preserve and be able to recover
+  missing structural information.
+
+  This chapter is based on research already presented in
+  \emph{\citetitle{structsens}} \cite{structsens}, but also includes
+  some extensions.
+\item Chapter~\ref{chapter:reflection} examines how the reflection
+  capabilities of Java can hinder traditional pointer analyses, and
+  then presents techniques for analyzing reflection (interwoven into
+  the main pointer analysis) to overcome such limitations.
+
+  This chapter draws material from \emph{\citetitle{reflection}}
+  \cite{reflection}.
+\item Chapter~\ref{chapter:hiercomp} introduces the class hierarchy
+  complementation problem and presents algorithms to solve it, in
+  various inheritance settings. It discusses the design and
+  implementation of JPhantom, a tool that employs such algorithms to
+  perform the actual complementation, and evaluates its performance.
+
+  This chapter presents research previously published in
+  \emph{\citetitle{jphantom}} \cite{jphantom}.
+\item Chapter~\ref{chapter:related} first discusses related work that
+  is specific to the previous chapters, and then expands to various
+  other interesting subjects in the broader realm of static analysis.
+
+  Some parts of this chapter are based on the survey
+  \emph{\citetitle{survey}} \cite{survey}.
+\item Chapter~\ref{chapter:conclusions} concludes this dissertation by
+  assessing our initial thesis and discussing future work.
 \end{itemize}
 
 %%% Local Variables:
