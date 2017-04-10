@@ -85,7 +85,7 @@ corresponds to standard use of ``heap cloning''
 (a.k.a. ``context-sensitive heap'').% techniques.
 
 
-\section{Static Analysis and Java Reflection}
+\section{Static Analysis and Reflection}
 \label{related:sect/reflection}
 
 The traditional handling of reflection in static analysis has been
@@ -132,13 +132,15 @@ Madsen et al.~\cite{sigsoft/MadsenLF13} employ a use-based analysis
 technique in the context of Javascript. When objects are retrieved
 from unknown code (typically libraries) the analysis infers the
 object's properties from the way it is used in the client. In
-principle, this is a similar approach to our use-based techniques
-(both object invention and back-propagation) although the technical
-specifics differ. The conceptual precursor to both approaches is the
-work on reflection by Livshits et
-al.~\cite{aplas/LivshitsWL05,livshits:thesis}, which has been
-extensively discussed and contrasted throughout this chapter (see
-Sections~\ref{reflection/sec:model}, and \ref{reflection/sec:use-based}).
+principle, this is a similar approach to our use-based techniques of
+Section~\ref{reflection/sec:use-based} (both object invention and
+back-propagation) although the technical specifics differ. The
+conceptual precursor to both approaches is the work on reflection by
+Livshits et al.~\cite{aplas/LivshitsWL05,livshits:thesis}, which has
+been extensively discussed and contrasted throughout
+Chapter~\ref{chapter:reflection} (see
+Sections~\ref{reflection/sec:model}, and
+\ref{reflection/sec:use-based}).
 
 Advanced techniques for string analysis have been presented by
 Christensen et al.~\cite{sas/ChristensenMS03}. They analyze complex
