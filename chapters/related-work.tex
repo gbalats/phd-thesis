@@ -299,11 +299,13 @@ analysis problem.
 %   CFL Reachability Problems
 %% -----------------------------------------------------------------------------
 
-\paragraph{CFL reachability formulation.} In
-Chapter~\ref{chapter:structsens}, we formulated pointer analysis
-algorithms in Datalog. Employing a restricted language not only offers
-guarantees of termination and complexity bounds, but also permits more
-aggressive optimization of the language features.
+\paragraph{CFL reachability formulation.} In Chapters
+\ref{chapter:structsens} and \ref{chapter:reflection}, we formulated
+pointer analysis algorithms in inference rules that can be
+straightforwardly expressed in Datalog. Employing a restricted
+language not only offers guarantees of termination and complexity
+bounds, but also permits more aggressive optimization of the language
+features.
 
 Along these lines, pointer analysis and other related analyses have
 been formulated as a \emph{context-free language (CFL) reachability}
@@ -540,7 +542,7 @@ classical logic, \emph{abduction} stands for the inference of
 
 A similar problem can be phrased by using separating conjunction
 instead of classical conjunction, which also partitions the premises:
-\[A \;*\; ??\, \;\vdash\; G \]
+\[A \;*\; M\, \;\vdash\; G \]
 
 This finally leads to the more general problem of \emph{bi-abduction},
 if we allow for leftover portions of state (the frame):
