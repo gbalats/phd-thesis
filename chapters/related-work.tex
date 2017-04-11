@@ -552,6 +552,50 @@ The notion of bi-abduction is used as the basis of a new compositional
 interprocedural shape analysis algorithm.
 
 
+\paragraph{Abstraction Strategies.} In Chapter~\ref{chapter:structsens}, we
+used an abstraction policy for memory objects that may produce more
+than one abstract objects per allocation site. The exact strategy by
+which memory objects are represented by a static analysis is a crucial
+design choice.
+
+Using the allocation site as a means of abstraction dates at least
+back to the work of \citeauthor{popl/JonesM79} \cite{popl/JonesM79},
+who use graphs to summarize heap data structures. An allocation site
+(i.e., cons instruction) is handled by creating a new graph node that
+may represent multiple concrete allocations for a given execution. The
+same principle for abstracting cons cells is used later in the work of
+\citeauthor*{pldi/ChaseWZ90} \cite{pldi/ChaseWZ90}.
+
+Previously, we also talked about shape analysis
+\cite{toplas/SagivRW02,popl/SagivRW99,toplas/SagivRW98} as another
+means of abstracting memory that goes far beyond allocation sites, by
+introducing the concept of arbitrary abstraction predicates. The
+approach of \citeauthor{sas/BalakrishnanR06}
+\cite{sas/BalakrishnanR06} lies somewhere in between. For each
+allocation site, their analysis creates two abstract objects:
+\begin{inparaenum}[(i)]
+\item the first one represents the \emph{most-recently-allocated}
+  object (for the given site), while
+\item the second one summarizes all the other (least recent)
+  objects for the same site.
+\end{inparaenum}
+Note that the first object abstracts just a \emph{single} concrete
+object and, hence, can be used to perform strong updates, which is an
+essential technique to improve the precision and scalability of a
+flow-sensitive analysis.
+%
+In contrast, shape analysis would instead record a summary abstraction
+predicate for each abstract object that captures whether it represents
+more than one concrete objects. This would naturally lead to the
+specialization of non-summary nodes that exhibit interesting shape
+properties (such as the head of some list structure) according to the
+rest of the abstraction criteria.
+
+\citeauthor{journals/corr/KanvarK14} present a thorough taxonomy of
+various other strategies in heap abstractions
+\cite{journals/corr/KanvarK14}.
+
+
 
 %%% Local Variables:
 %%% mode: latex
