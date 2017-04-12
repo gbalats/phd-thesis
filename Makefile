@@ -72,6 +72,10 @@ print:
 	$(LPR) -P$(PRINTER) $(thesis.pdf)
 	$(LPR) -P$(PRINTER)
 
+.PHONY: publish
+publish:
+	cp -f $(thesis.pdf) $(HOME)/Dropbox/gbalats-thesis.pdf
+
 #--------------------------
 # Git Revision in PDF
 #--------------------------
