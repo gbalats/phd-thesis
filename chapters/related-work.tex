@@ -389,6 +389,48 @@ often with impressive performance gains \cite{pldi/ZhangLYS13}.
 
 
 %% -----------------------------------------------------------------------------
+%   Constraint Graph Approaches
+%% -----------------------------------------------------------------------------
+
+\paragraph{Constraint graph approaches and optimizations.}
+
+Several optimization techniques have appeared in the pointer analysis
+literature, based on the concept of the \emph{constraint graph}: a
+graph whose nodes denote pointer expressions and whose edges denote
+flow between these pointer expressions.
+
+Such an edge may arise either:
+\begin{inparaenum}[(i)]
+\item \emph{before} points-to computation---due to an explicit
+  assignment instruction ``$q = p$'', for example, that the input
+  program contains---or
+\item \emph{during} points-to computation, by also taking field
+  accesses (i.e., load/store instructions) into account in order to
+  infer additional flow.
+\end{inparaenum}
+These techniques have typically targeted the C language.
+
+A variety of constraint graph optimization techniques have been
+presented that can be applied either \emph{offline} (i.e., before
+points-to computation) \cite{sas/HardekopfL07,rountevOffline}, or
+\emph{online} (i.e., during points-to computation)
+\cite{pldi/FahndrichFSA98}. Hybrid approaches also exist
+\cite{antgrasshopper}. The essence of most of these techniques lies
+in identifying nodes with guaranteed-equivalent points-to sets and
+collapsing them into a single representative node. Such equivalence
+classes may arise, for instance, when nodes participate in a cycle of
+the constraint graph
+\cite{pldi/FahndrichFSA98,pldi/HeintzeT01a}, or even if
+they share a common dominator \cite{ismm/Nasre12}. The
+\emph{set-based pre-processing}
+technique~\cite{oopsla/SmaragdakisBK13} generalizes such
+approaches by also allowing the removal of \emph{edges} (and not just
+merging of nodes) from the constraint graph. It also restricts the
+application of optimizations to an intra-procedural setting, so that
+they can be applied in conjunction with nearly any pointer analysis
+algorithm, together with on-the-fly call-graph construction.
+
+%% -----------------------------------------------------------------------------
 %   Shape Analysis
 %% -----------------------------------------------------------------------------
 
