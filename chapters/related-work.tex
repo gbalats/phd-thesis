@@ -691,7 +691,9 @@ There are many flavors of context sensitivity in existing literature,
 which use different strategies for creating contexts. To name a few:
 \begin{itemize}[--]
 \item \emph{Call-site sensitivity} (or \emph{k}-CFA in the context of
-  functional languages) that uses method call sites as context
+  functional languages, even though there are important differences in
+  applying it to functional versus object-oriented settings
+  \cite{pldi/MightSH10}) that uses method call sites as context
   elements \cite{Sharir:Interprocedural,shivers:thesis}
 \item \emph{Object sensitivity}, where object allocation sites are used as
   context elements \cite{issta/MilanovaRR02,tosem/MilanovaRR05}
