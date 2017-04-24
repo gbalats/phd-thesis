@@ -1,6 +1,103 @@
 \label{chapter:conclusions}
 \epigraph{That rug really tied the room together.}{\textit{The Dude}}
 
+In the final chapter, we shall assess our initial thesis and conclude,
+while also considering interesting directions for future work.
+
+Our thesis states that there exists \emph{implicit structural
+  information} in the program, about the memory it will allocate,
+which we can recover via inference and use it to improve the quality
+of a static analysis (by coming up with a better abstract memory
+model). In Chapter~\ref{chapter:structsens}, we examined the problem
+of pointer analysis in C/C++, as a typical example of a low-level
+language with direct memory access. We identified particular causes of
+analysis imprecision, in untyped allocations (via generic
+\code{malloc}-like allocation routines) and in the language's
+capability of allowing pointers to point \emph{inside} an object
+(i.e., to point to one of its fields or array elements), which further
+complicates the modeling of field sensitivity.
+
+We presented a structure-sensitive pointer analysis that may achieve
+better precision by changing its abstraction strategy: when the same
+allocation site is used to create objects of many different types, the
+analysis comes up with many different strongly-typed abstract objects
+to represent the same instruction. Also, each different field and
+array element of each such strongly-typed object (of a complex type)
+will be represented by a unique abstract subobject itself, having its
+own separate points-to set, while also maintaining strong type
+information. The final outcome is a much more fine-grained allocation
+abstraction than that of the typical C/C++ points-to analysis, that is
+guided primarily by the flow of types. The key to this technique is
+that tracking the flow of types that will determine what objects will be
+created is not determined before the analysis has run, but
+simultaneously (``on-the-fly''), thus yielding better results due to
+the recursive nature of the computation.
+
+This is a prime example of how complex inference (in this case, the
+relations computed by the pointer analysis itself) that tracks the use
+of types in the program can be used to recover structural information,
+namely, the various structures that may be used to access or modify
+any untyped heap allocation in memory. The recovered structural
+information, in turn, improves the quality of the analysis, in terms
+of precision, as shown in the evaluation section of
+Chapter~\ref{chapter:structsens}.
+
+In Chapter~\ref{chapter:reflection}, we shift our focus to
+higher-level languages like Java, with no pointer arithmetic or direct
+memory access capabilities. However, even in such a setting, our thesis
+applies: we can improve the quality of a pointer analysis (now, in
+terms of empirical soundness) by recovering structural information for
+objects involved in reflective operations. By using reflection, Java
+programs can encompass dynamic behavior, and as such, are difficult to
+statically analyze.
+
+The challenges with reflection idioms are quite similar to those of
+analyzing C/C++ that we have already encountered:
+\begin{itemize}[\(\cdot\)]
+\item the same (reflective) allocation site can be used to allocate
+  objects of many different types
+\item no local type information exists for reflective objects;
+  instead, the types are determined by runtime-strings that are passed
+  on as arguments to the reflective operations involved
+\item apart from normal object allocations, there are also reflective
+  calls that return special objects representing program classes,
+  fields, and methods; a reflective call on a method object is much
+  like a C/C++ call via a function pointer.
+\end{itemize}
+
+To tackle the limitations of existing pointer analyses, induced by
+reflection, we presented a reflection analysis (which also runs
+simultaneously to the core points-to analysis) that employs similar
+techniques to those of Chapter~\ref{chapter:structsens}: by inspecting
+the use of reflective objects (i.e., what types they are cast to, what
+fields they access, and so on), the analysis is able to recover
+essential parts of the objects' structure.
+%
+By comparing the statically computed call-graphs against dynamically
+computed ones from actual executions, we find that these techniques
+improve empirical soundness (i.e., the static analysis is now able to
+cover more of the actual dynamic behavior of the program than
+before).
+
+As already noted, reflection is but one of the possible causes of lost
+memory structure, when statically analyzing Java programs. In
+Chapter~\ref{chapter:hiercomp}, we examine how to recover lost
+structural information for partial Java programs.
+
+Dynamic class loading allows programs to depend on an abundance of
+external libraries, without actually requiring all of them to
+execute. Transitive dependencies (i.e., the dependencies of the
+libraries directly used by the program) make things even worse, from
+the perspective of a static analyzer, since such dependencies are much
+more numerous and less likely to be actually used. Hence, whole
+programs might be both prohibitively difficult to obtain and
+superfluous; if some parts of the program were missing, it would make
+no difference in any actual execution, had these parts been truly
+redundant. In such cases, missing these parts should also make no
+difference in analyzing the program too, which explains why there is a
+strong incentive for static analysis tools in being able to analyze
+partial programs.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
