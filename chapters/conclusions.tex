@@ -94,6 +94,16 @@ memory structure, when statically analyzing Java programs. In
 Chapter~\ref{chapter:hiercomp}, we examine how to recover lost
 structural information for partial Java programs.
 
+% Static whole-program analysis requires the availability of every class
+% transitively referenced in a program, even if it is never used. For
+% instance, trying to analyze a program P that uses a small part of a
+% third-party library L also requires the full code of any library L'
+% that different parts of L may reference---the fact that L' is not
+% necessary for P cannot be determined before the analysis of P is
+% performed. This is a oft-encountered practical challenge, motivating
+% mechanisms such as the ``phantom class'' facility in the well-known
+% Soot analysis framework for Java.
+
 Regarding such need, dynamic class loading allows programs to depend
 on an abundance of external libraries, without actually requiring all
 of them to execute. Transitive dependencies (i.e., the dependencies of
@@ -101,39 +111,53 @@ the libraries directly used by the program) make things even worse,
 from the perspective of a static analyzer, since such dependencies are
 much more numerous and less likely to be actually used. Hence, whole
 programs might be both prohibitively difficult to obtain and
-superfluous; if some parts of the program were missing, it would make
-no difference in any actual execution, had these parts been truly
-redundant. In such cases, missing these parts should also make no
-difference in analyzing the program too, which explains why there is a
-strong incentive for static analysis tools in being able to analyze
-partial programs. Despite such incentive, static analysis tools are
-rarely well-equipped or tolerant enough to be able to cope with
-partial programs. When they do so, they risk a great deterioration to
-their results.
+superfluous at the same time; if some parts of the program were
+missing, it would make no difference in any actual execution, had
+these parts been truly redundant. In such cases, missing these parts
+should also make no difference in analyzing the program too, which
+explains why there is a strong incentive for static analysis tools in
+being able to analyze partial programs. Despite such incentive, static
+analysis tools are rarely well-equipped or tolerant enough to be able
+to cope with partial programs. When they do so, they risk a great
+deterioration to their results.
 
+% To address this challenge in full generality we define the problem
+% of ``program complementation''
 To this end, we have presented a generic complementation approach, in
 Chapter~\ref{chapter:hiercomp}, that transforms a partial program to a
-whole one, by adding stubs for missing code. To create this
-complement, we analyze the program and track the use of any phantom types
-therein (i.e., types being used but not defined in the code that is
-available), to recover their lost structure. Inferring missing members
-of phantom types is straightforward. The primary challenge, however,
-lies in computing the missing parts of the type hierarchy, in a way
-that satisfies all the implied subtyping constraints.
+whole one, while also seeking to provide definitions for its missing
+parts so that the ``complement'' satisfies all static and dynamic
+typing requirements induced by the code under analysis. This requires
+satisfying constraints relative to methods and fields of the missing
+classes, as well as subtyping constraints and constraints on whether a
+missing type has to be a class or interface.
+%
+To identify such constraints, we analyze the program and track uses
+of any phantom types therein (i.e., types being used but not defined
+in the code that is available), so that we can recover their
+lost structure. Inferring missing members of phantom types is
+straightforward. The primary challenge, however, lies in computing the
+missing parts of the type hierarchy, in a way that satisfies all the
+implied subtyping constraints.
 
 We have defined the type hierarchy complementation problem as follows:
 given a partially known hierarchy of classes together with subtyping
 constraints (``A has to be a transitive subtype of B'') complete the
-hierarchy so that it satisfies all constraints. We presented
-algorithms to solve this problem in various inheritance settings
-and  implemented these algorithms in JPhantom, a program
-complementation tool for Java bytecode.
+hierarchy so that it satisfies all constraints. We formulate the
+problem systematically and offer algorithms to solve it in various
+inheritance settings. The result is the articulation of a novel typing
+problem in the OO context.
 
-We evaluated JPhantom on synthetic and real-world benchmarks of
-significant size and complexity. JPhantom is highly scalable and runs
-in mere seconds even for large input applications and complex
-constraints (with a maximum of 14s for a 19MB binary).
+The entire complementation approach, including the algorithms to solve
+the type hierarchy complementation problem are implemented in
+JPhantom, a program complementation tool of practical interest for
+Java bytecode.
 %
+We evaluated JPhantom on both synthetic and real-world benchmarks to
+show that we produce practical complements of significant size in a
+few seconds and, in this way, allow the analysis of previously
+un-analyzable partial programs.
+
 Lastly, we used the synthetic benchmark (based on the \emph{antlr}
 parser generator) to evaluate the difference between analyzing a
 partial program as is, and analyzing it after being complemented by
@@ -152,8 +176,6 @@ aided by our modeling of the problem and some of its solution avenues.
 % To summarize, 
 
 % TODO put in conclusions
-
-% \section{Conclusions}
 
 % %Reflection is of key importance, yet very hard to handle in static
 % %analysis.  We presented powerful techniques that elegantly extend
@@ -182,35 +204,6 @@ aided by our modeling of the problem and some of its solution avenues.
 % commonly used dynamic feature: dynamic loading. Continued work will
 % hopefully make such language features a lot more feasible to analyze
 % statically.
-
-
-% TODO
-
-% Static whole-program analysis requires the availability of every class
-% transitively referenced in a program, even if it is never used. For
-% instance, trying to analyze a program P that uses a small part of a
-% third-party library L also requires the full code of any library L'
-% that different parts of L may reference---the fact that L' is not
-% necessary for P cannot be determined before the analysis of P is
-% performed. This is a oft-encountered practical challenge, motivating
-% mechanisms such as the ``phantom class'' facility in the well-known
-% Soot analysis framework for Java.
-
-% To address this challenge in full generality we define the problem of
-% ``program complementation'': given a partial program we seek to
-% provide definitions for its missing parts so that the ``complement''
-% satisfies all static and dynamic typing requirements induced by the
-% code under analysis. This requires satisfying constraints relative to
-% methods and fields of the missing classes, as well as subtyping
-% constraints and constraints on whether a missing type has to be a
-% class or interface. We formulate the problem systematically and offer
-% an algorithm that produces solutions for the resulting constraints.
-% The result is the articulation of a novel typing problem in the OO
-% context, as well as a tool of practical interest. We show that we
-% produce practical complements of significant size in a few seconds
-% and, in this way, allow the analysis of previously un-analyzable
-% partial programs.
-
 
 %%% Local Variables:
 %%% mode: latex
