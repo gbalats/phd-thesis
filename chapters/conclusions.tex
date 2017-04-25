@@ -84,19 +84,60 @@ memory structure, when statically analyzing Java programs. In
 Chapter~\ref{chapter:hiercomp}, we examine how to recover lost
 structural information for partial Java programs.
 
-Dynamic class loading allows programs to depend on an abundance of
-external libraries, without actually requiring all of them to
-execute. Transitive dependencies (i.e., the dependencies of the
-libraries directly used by the program) make things even worse, from
-the perspective of a static analyzer, since such dependencies are much
-more numerous and less likely to be actually used. Hence, whole
+Regarding such need, dynamic class loading allows programs to depend
+on an abundance of external libraries, without actually requiring all
+of them to execute. Transitive dependencies (i.e., the dependencies of
+the libraries directly used by the program) make things even worse,
+from the perspective of a static analyzer, since such dependencies are
+much more numerous and less likely to be actually used. Hence, whole
 programs might be both prohibitively difficult to obtain and
 superfluous; if some parts of the program were missing, it would make
 no difference in any actual execution, had these parts been truly
 redundant. In such cases, missing these parts should also make no
 difference in analyzing the program too, which explains why there is a
 strong incentive for static analysis tools in being able to analyze
-partial programs.
+partial programs. Despite such incentive, static analysis tools are
+rarely well-equipped or tolerant enough to be able to cope with
+partial programs. When they do so, they risk a great deterioration to
+their results.
+
+To this end, we have presented a generic complementation approach, in
+Chapter~\ref{chapter:hiercomp}, that transforms a partial program to a
+whole one, by adding stubs for missing code. To create this
+complement, we analyze the program and track the use of any phantom types
+therein (i.e., types being used but not defined in the code that is
+available), to recover their lost structure. Inferring missing members
+of phantom types is straightforward. The primary challenge, however,
+lies in computing the missing parts of the type hierarchy, in a way
+that satisfies all the implied subtyping constraints.
+
+We have defined the type hierarchy complementation problem as follows:
+given a partially known hierarchy of classes together with subtyping
+constraints (``A has to be a transitive subtype of B'') complete the
+hierarchy so that it satisfies all constraints. We presented
+algorithms to solve this problem in various inheritance settings
+and  implemented these algorithms in JPhantom, a program
+complementation tool for Java bytecode.
+
+We evaluated JPhantom on synthetic and real-world benchmarks of
+significant size and complexity. JPhantom is highly scalable and runs
+in mere seconds even for large input applications and complex
+constraints (with a maximum of 14s for a 19MB binary).
+%
+Lastly, we used the synthetic benchmark (based on the \emph{antlr}
+parser generator) to evaluate the difference between analyzing a
+partial program as is, and analyzing it after being complemented by
+JPhantom. The comparison demonstrated that the latter is much closer
+to analyzing the original whole program: analyzing the partial program
+without complementation fails to find a great number of reachable
+methods (which will not be analyzed at all). Therefore, recovering the
+structural information of phantom types, via our program
+complementation technique, has improved the static analysis of the
+partial program, thus enforcing our thesis.
+
+We believe that the hierarchy complementation problem is fundamental
+and is likely to arise in different settings in the future, hopefully
+aided by our modeling of the problem and some of its solution avenues.
 
 %%% Local Variables:
 %%% mode: latex
