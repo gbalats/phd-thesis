@@ -17,6 +17,12 @@ capability of allowing pointers to point \emph{inside} an object
 (i.e., to point to one of its fields or array elements), which further
 complicates the modeling of field sensitivity.
 
+% We presented a structure-sensitive points-to analysis for C and
+% C++. The analysis attempts to always distinguish abstract objects and
+% assign them a unique type (even when none is known at the point of
+% object creation) as well as to discriminate between subobjects of a
+% single object (array or structure instance).
+
 We presented a structure-sensitive pointer analysis that may achieve
 better precision by changing its abstraction strategy: when the same
 allocation site is used to create objects of many different types, the
@@ -28,10 +34,12 @@ own separate points-to set, while also maintaining strong type
 information. The final outcome is a much more fine-grained allocation
 abstraction than that of the typical C/C++ points-to analysis, that is
 guided primarily by the flow of types. The key to this technique is
-that tracking the flow of types that will determine what objects will be
-created is not determined before the analysis has run, but
+that tracking the flow of types that will determine what objects will
+be created is not determined before the analysis has run, but
 simultaneously (``on-the-fly''), thus yielding better results due to
-the recursive nature of the computation.
+the recursive nature of the computation. We describe the analysis in
+precise terms and show that its approach succeeds in maintaining
+precision when analyzing realistic programs.
 
 This is a prime example of how complex inference (in this case, the
 relations computed by the pointer analysis itself) that tracks the use
@@ -40,7 +48,9 @@ namely, the various structures that may be used to access or modify
 any untyped heap allocation in memory. The recovered structural
 information, in turn, improves the quality of the analysis, in terms
 of precision, as shown in the evaluation section of
-Chapter~\ref{chapter:structsens}.
+Chapter~\ref{chapter:structsens}. In our experience, the techniques we
+described are essential for analyzing C/C++ programs at the same level
+of precision as programs in higher-level languages.
 
 In Chapter~\ref{chapter:reflection}, we shift our focus to
 higher-level languages like Java, with no pointer arithmetic or direct
@@ -142,17 +152,6 @@ aided by our modeling of the problem and some of its solution avenues.
 % To summarize, 
 
 % TODO put in conclusions
-% We presented a structure-sensitive points-to analysis for C and
-% C++. The analysis attempts to always distinguish abstract objects and
-% assign them a unique type (even when none is known at the point of
-% object creation) as well as to discriminate between subobjects of a
-% single object (array or structure instance). We describe the analysis
-% in precise terms and show that its approach succeeds in maintaining
-% precision when analyzing realistic programs. In our experience, the
-% techniques we described are essential for analyzing C/C++ programs at
-% the same level of precision as programs in higher-level languages.
-
-% TODO put in conclusions
 
 % \section{Conclusions}
 
@@ -183,6 +182,35 @@ aided by our modeling of the problem and some of its solution avenues.
 % commonly used dynamic feature: dynamic loading. Continued work will
 % hopefully make such language features a lot more feasible to analyze
 % statically.
+
+
+% TODO
+
+% Static whole-program analysis requires the availability of every class
+% transitively referenced in a program, even if it is never used. For
+% instance, trying to analyze a program P that uses a small part of a
+% third-party library L also requires the full code of any library L'
+% that different parts of L may reference---the fact that L' is not
+% necessary for P cannot be determined before the analysis of P is
+% performed. This is a oft-encountered practical challenge, motivating
+% mechanisms such as the ``phantom class'' facility in the well-known
+% Soot analysis framework for Java.
+
+% To address this challenge in full generality we define the problem of
+% ``program complementation'': given a partial program we seek to
+% provide definitions for its missing parts so that the ``complement''
+% satisfies all static and dynamic typing requirements induced by the
+% code under analysis. This requires satisfying constraints relative to
+% methods and fields of the missing classes, as well as subtyping
+% constraints and constraints on whether a missing type has to be a
+% class or interface. We formulate the problem systematically and offer
+% an algorithm that produces solutions for the resulting constraints.
+% The result is the articulation of a novel typing problem in the OO
+% context, as well as a tool of practical interest. We show that we
+% produce practical complements of significant size in a few seconds
+% and, in this way, allow the analysis of previously un-analyzable
+% partial programs.
+
 
 %%% Local Variables:
 %%% mode: latex

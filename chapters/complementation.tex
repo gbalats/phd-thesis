@@ -47,32 +47,6 @@ code. JPhantom is highly scalable and runs in mere seconds even for
 large input applications and complex constraints (with a maximum of
 14s for a 19MB binary).
 
-%Static whole-program analysis requires the availability of every class
-%transitively referenced in a program, even if it is never used. For
-%instance, trying to analyze a program P that uses a small part of a
-%third-party library L also requires the full code of any library L'
-%that different parts of L may reference---the fact that L' is not
-%necessary for P cannot be determined before the analysis of P is
-%performed. This is a oft-encountered practical challenge, motivating
-%mechanisms such as the ``phantom class'' facility in the well-known
-%Soot analysis framework for Java.
-%
-%To address this challenge in full generality we define the problem of
-%``program complementation'': given a partial program we seek to
-%provide definitions for its missing parts so that the ``complement''
-%satisfies all static and dynamic typing requirements induced by the
-%code under analysis. This requires satisfying constraints relative to
-%methods and fields of the missing classes, as well as subtyping
-%constraints and constraints on whether a missing type has to be a
-%class or interface. We formulate the problem systematically and offer
-%an algorithm that produces solutions for the resulting constraints.
-%The result is the articulation of a novel typing problem in the OO
-%context, as well as a tool of practical interest. We show that we
-%produce practical complements of significant size in a few seconds
-%and, in this way, allow the analysis of previously un-analyzable
-%partial programs.
-
-
 %-------------------------------------------------------------------------------
 % Introduction
 %-------------------------------------------------------------------------------
