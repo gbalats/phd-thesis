@@ -2157,39 +2157,6 @@ of context-sensitivity.
 %or extreme recall improvement are worthy of further study.
 
 
-% TODO put in conclusions
-
-% \section{Conclusions}
-
-% %Reflection is of key importance, yet very hard to handle in static
-% %analysis.  We presented powerful techniques that elegantly extend
-% %declarative reasoning over reflection calls and inter-procedural
-% %object flow.
-
-
-% Highly dynamic features, such as reflection and dynamic loading, are
-% the bane of static analysis. These features are not only hard to
-% analyze well, but also ubiquitous in practice, thus limiting the
-% practical impact of static analysis. We presented techniques for
-% static reflection handling in Java program analysis. Our techniques
-% build on top of state-of-the-art handling of reflection in Java, by
-% elegantly extending declarative reasoning over reflection calls and
-% inter-procedural object flow. Our main emphasis has been in achieving
-% higher empirical soundness, i.e., in having the static analysis truly
-% model observed dynamic behaviors. Although full soundness is
-% infeasible for a realistic analysis, it is possible to produce
-% general techniques that enhance the ability to analyze reflection calls.
-
-% Although our techniques improve on the problem of handling reflection,
-% further work is necessary to achieve
-% good scalability and empirical
-% soundness for complex programs.
-% % and sophisticated analysis algorithms.
-% Furthermore, our work has not addressed another major and
-% commonly used dynamic feature: dynamic loading. Continued work will
-% hopefully make such language features a lot more feasible to analyze
-% statically.
-
 As a final note, the improved soundness due to the techniques
 presented in this chapter supports our thesis statement:
 %

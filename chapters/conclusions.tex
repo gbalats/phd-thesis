@@ -139,6 +139,51 @@ We believe that the hierarchy complementation problem is fundamental
 and is likely to arise in different settings in the future, hopefully
 aided by our modeling of the problem and some of its solution avenues.
 
+% To summarize, 
+
+% TODO put in conclusions
+% We presented a structure-sensitive points-to analysis for C and
+% C++. The analysis attempts to always distinguish abstract objects and
+% assign them a unique type (even when none is known at the point of
+% object creation) as well as to discriminate between subobjects of a
+% single object (array or structure instance). We describe the analysis
+% in precise terms and show that its approach succeeds in maintaining
+% precision when analyzing realistic programs. In our experience, the
+% techniques we described are essential for analyzing C/C++ programs at
+% the same level of precision as programs in higher-level languages.
+
+% TODO put in conclusions
+
+% \section{Conclusions}
+
+% %Reflection is of key importance, yet very hard to handle in static
+% %analysis.  We presented powerful techniques that elegantly extend
+% %declarative reasoning over reflection calls and inter-procedural
+% %object flow.
+
+% Highly dynamic features, such as reflection and dynamic loading, are
+% the bane of static analysis. These features are not only hard to
+% analyze well, but also ubiquitous in practice, thus limiting the
+% practical impact of static analysis. We presented techniques for
+% static reflection handling in Java program analysis. Our techniques
+% build on top of state-of-the-art handling of reflection in Java, by
+% elegantly extending declarative reasoning over reflection calls and
+% inter-procedural object flow. Our main emphasis has been in achieving
+% higher empirical soundness, i.e., in having the static analysis truly
+% model observed dynamic behaviors. Although full soundness is
+% infeasible for a realistic analysis, it is possible to produce
+% general techniques that enhance the ability to analyze reflection calls.
+
+% Although our techniques improve on the problem of handling reflection,
+% further work is necessary to achieve
+% good scalability and empirical
+% soundness for complex programs.
+% % and sophisticated analysis algorithms.
+% Furthermore, our work has not addressed another major and
+% commonly used dynamic feature: dynamic loading. Continued work will
+% hopefully make such language features a lot more feasible to analyze
+% statically.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis"
