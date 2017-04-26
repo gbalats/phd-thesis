@@ -17,7 +17,20 @@ analysis.
 This dissertation shows how we can recover structural information,
 first, in the context of C/C++, by introducing a structure-sensitive
 pointer analysis that refines its abstraction based on type
-information that is discovered on-they-fly.
+information that is discovered on-they-fly. Next, in the context of
+higher-level languages without direct memory access, like Java, we
+identify two primary causes of losing structural information:
+\begin{inparaenum}[(i)]
+\item the use of reflection, and
+\item analysis of partial programs.
+\end{inparaenum}
+We present techniques that extend a standard Java pointer analysis by
+building on top of state-of-the-art handling of reflection. The
+principle is similar to our structure-sensitive analysis for C/C++: to
+track the use of reflective objects, \emph{during} pointer analysis,
+to gain important insights on their structure, which can be used to
+``patch'' the handling of reflective operations on the running
+analysis, in a mutually recursive fashion.
 
 %%% Local Variables:
 %%% mode: latex
