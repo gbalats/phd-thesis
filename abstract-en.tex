@@ -11,7 +11,13 @@ the use of specific programming idioms and language features, or
 because of practical analysis limitations. In many cases, some of the
 lost memory structure may be retrieved, though it requires complex
 inference that takes advantage of indirect uses of types. Such
-recovered structural information may greatly benefit static analysis.
+recovered structural information may, then, greatly benefit static
+analysis.
+
+This dissertation shows how we can recover structural information,
+first, in the context of C/C++, by introducing a structure-sensitive
+pointer analysis that refines its abstraction based on type
+information that is discovered on-they-fly.
 
 %%% Local Variables:
 %%% mode: latex

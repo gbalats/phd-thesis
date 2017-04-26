@@ -17,12 +17,6 @@ capability of allowing pointers to point \emph{inside} an object
 (i.e., to point to one of its fields or array elements), which further
 complicates the modeling of field sensitivity.
 
-% We presented a structure-sensitive points-to analysis for C and
-% C++. The analysis attempts to always distinguish abstract objects and
-% assign them a unique type (even when none is known at the point of
-% object creation) as well as to discriminate between subobjects of a
-% single object (array or structure instance).
-
 We presented a structure-sensitive pointer analysis that may achieve
 better precision by changing its abstraction strategy: when the same
 allocation site is used to create objects of many different types, the
