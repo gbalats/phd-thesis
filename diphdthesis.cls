@@ -154,7 +154,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \usepackage[greek,english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{csquotes}
-\usepackage[T1]{fontenc}
+\usepackage[LGR, T1]{fontenc}
 \usepackage[normalem]{ulem}
 
 \newcommand{\gr}{\selectlanguage{greek}}
