@@ -15,41 +15,44 @@ recovered structural information may, then, greatly benefit static
 analysis.
 
 This dissertation shows how we can recover structural information,
-first, in the context of C/C++, by introducing a structure-sensitive
-pointer analysis that refines its abstraction based on type
-information that it discovers on-they-fly. This analysis is
-implemented in \cclyzer{}, a static analysis tool for LLVM bitcode.
-%
-Next, in the context of higher-level languages without direct memory
-access, like Java, we identify two primary causes of losing structural
-information:
+first
 \begin{inparaenum}[(i)]
+\item in the context of C/C++, and next, in the context of
+  higher-level languages without direct memory access, like Java,
+  where we identify two primary causes of losing memory structure:
 \item the use of reflection, and
 \item analysis of partial programs.
 \end{inparaenum}
-We present techniques that extend a standard Java pointer analysis by
-building on top of state-of-the-art handling of reflection. The
-principle is similar to that of our structure-sensitive analysis for
-C/C++: track the use of reflective objects, \emph{during} pointer
-analysis, to gain important insights on their structure, which can be
-used to ``patch'' the handling of reflective operations on the running
-analysis, in a mutually recursive fashion.
+We show that, in all cases, the recovered structural information
+greatly benefits static analysis on the program.
+
+For C/C++, we introduce a structure-sensitive pointer analysis that
+refines its abstraction based on type information that it discovers
+on-they-fly. This analysis is implemented in \cclyzer{}, a static
+analysis tool for LLVM bitcode.
 %
-To address the challenge of analyzing partial Java programs in full
-generality, we define the problem of ``program complementation'':
-given a partial program we seek to provide definitions for its missing
-parts so that the ``complement'' satisfies all static and dynamic
-typing requirements induced by the code under analysis. Essentially,
-complementation aims to recover the structure of phantom types.  Apart
-from discovering missing class members (i.e., fields and methods),
-satisfying the subtyping constraints leads to the formulation of a
-novel typing problem in the OO context, regarding type hierarchy
-complementation. We offer algorithms to solve this problem in various
-inheritance settings, and implement them in JPhantom, a practical tool
-for Java bytecode complementation.
+Next, we present techniques that extend a standard Java pointer
+analysis by building on top of state-of-the-art handling of
+reflection. The principle is similar to that of our
+structure-sensitive analysis for C/C++: track the use of reflective
+objects, \emph{during} pointer analysis, to gain important insights on
+their structure, which can be used to ``patch'' the handling of
+reflective operations on the running analysis, in a mutually recursive
+fashion.
 %
-Finally, we show that, in all cases, the recovered structural
-information greatly benefits static analysis on the program.
+Finally, to address the challenge of analyzing partial Java programs
+in full generality, we define the problem of ``program
+complementation'': given a partial program we seek to provide
+definitions for its missing parts so that the ``complement'' satisfies
+all static and dynamic typing requirements induced by the code under
+analysis. Essentially, complementation aims to recover the structure
+of phantom types.  Apart from discovering missing class members (i.e.,
+fields and methods), satisfying the subtyping constraints leads to the
+formulation of a novel typing problem in the OO context, regarding
+type hierarchy complementation. We offer algorithms to solve this
+problem in various inheritance settings, and implement them in
+JPhantom, a practical tool for Java bytecode complementation.
+
 
 %%% Local Variables:
 %%% mode: latex
