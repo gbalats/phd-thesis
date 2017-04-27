@@ -157,16 +157,16 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
     % XeLaTeX
     \usepackage{csquotes}
     \usepackage[cm-default]{fontspec}
-    % \setromanfont{FreeSerif}
-    % \setsansfont{FreeSans}
-    % \setmonofont{FreeMono}
-    % \newfontfamily{\greekfont}{CMU Serif}
-    % \newfontfamily{\greekfontsf}{CMU Sans Serif}
+    \defaultfontfeatures{Mapping=tex-text}
+    % \setmainfont[Mapping=tex-text]{Linux Libertine O}
+    % \setmainfont[Ligatures={Common,TeX}]{Arial}
+    % \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+    % \setsansfont[Mapping=tex-text,Scale=MatchLowercase]{Arial}
+    \newfontfamily{\greekfont}{Linux Libertine O}   % CMU Serif
+    \newfontfamily{\greekfontsf}{Linux Libertine O} % CMU Sans Serif
     \usepackage{polyglossia}
     \setdefaultlanguage{english}
     \setotherlanguage{greek}
-    \usepackage{xunicode}
-    \usepackage{xgreek}
     \usepackage{unicode-math}
     \usepackage{amsthm}
     % \setmainfont{XITS}
