@@ -527,7 +527,10 @@ representation, used by the LLVM compiler infrastructure
 \cite{cgo/LattnerA04} that we will thoroughly present in
 Chapter~\ref{chapter:structsens}. Hence, instead of analyzing source
 or binaries, we chose this IR as our analysis target for reasons
-similar to those presented for preferring Java bytecode.
+similar to those presented for preferring Java bytecode. LLVM bitcode
+is already being used by a number of tools for many different types of
+static analysis
+\cite{cgo/HardekopfL11,sas/HenryMM12,popl/Lhotak11,cc/SuiX16}.
 
 Besides field sensitivity and our revised abstract memory model to
 fully support it, Chapter~\ref{chapter:structsens} introduces a
