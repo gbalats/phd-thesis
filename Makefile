@@ -1,4 +1,5 @@
-PDFLATEX     := pdflatex -shell-escape -interaction=nonstopmode -file-line-error
+LATEX        := pdflatex
+LATEX        += -shell-escape -interaction=nonstopmode -file-line-error
 BIBTEX       := bibtex -min-crossrefs=9000
 PS2PDF       := ps2pdf -dEPSCrop
 DOT          := dot
@@ -56,10 +57,10 @@ all: $(thesis.pdf)
 force:
 
 $(thesis.pdf): %.pdf: %.tex force
-	$(PDFLATEX) $<
+	$(LATEX) $<
 	$(BIBTEX) $*.aux
-	$(PDFLATEX) $<
-	$(PDFLATEX) $<
+	$(LATEX) $<
+	$(LATEX) $<
 
 thesis-full.tex: thesis.tex force
 	perl latexpand --expand-bbl thesis.bbl thesis.tex > $@

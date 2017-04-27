@@ -151,12 +151,35 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 %
 % Add Greek support
 %
-\usepackage[greek,english]{babel}
-\usepackage[utf8]{inputenc}
-\usepackage{csquotes}
-\usepackage[LGR, T1]{fontenc}
-\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{ifxetex}
+\ifxetex
+    % XeLaTeX
+    \usepackage{csquotes}
+    \usepackage[cm-default]{fontspec}
+    % \setromanfont{FreeSerif}
+    % \setsansfont{FreeSans}
+    % \setmonofont{FreeMono}
+    % \newfontfamily{\greekfont}{CMU Serif}
+    % \newfontfamily{\greekfontsf}{CMU Sans Serif}
+    \usepackage{polyglossia}
+    \setdefaultlanguage{english}
+    \setotherlanguage{greek}
+    \usepackage{xunicode}
+    \usepackage{xgreek}
+    \usepackage{unicode-math}
+    % \setmainfont{XITS}
+    % \setmathfont{XITS Math}
+\else
+    % default: pdfLaTeX
+    \usepackage{amssymb,amsmath,latexsym,amsthm}
+    \usepackage[greek,english]{babel}
+    \usepackage[LGR, T1]{fontenc}
+    \usepackage[utf8]{inputenc}
+    \usepackage{csquotes}
+\fi
 
+\usepackage[normalem]{ulem}
 \newcommand{\gr}{\selectlanguage{greek}}
 \newcommand{\en}{\selectlanguage{english}}
 
