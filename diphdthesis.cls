@@ -169,6 +169,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
     \setotherlanguage{greek}
     \usepackage{unicode-math}
     \usepackage{amsthm}
+    \usepackage{latexsym}
     % \setmainfont{XITS}
     % \setmathfont{XITS Math}
 \else
