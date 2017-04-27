@@ -155,8 +155,8 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \usepackage{ifxetex}
 \ifxetex
     % XeLaTeX
-    \usepackage{csquotes}
-    \usepackage[cm-default]{fontspec}
+    % \usepackage{xgreek}
+    \usepackage{fontspec}
     \defaultfontfeatures{Mapping=tex-text}
     % \setmainfont[Mapping=tex-text]{Linux Libertine O}
     % \setmainfont[Ligatures={Common,TeX}]{Arial}
@@ -170,6 +170,7 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
     \usepackage{unicode-math}
     \usepackage{amsthm}
     \usepackage{latexsym}
+    \usepackage{csquotes}
     % \setmainfont{XITS}
     % \setmathfont{XITS Math}
 \else
