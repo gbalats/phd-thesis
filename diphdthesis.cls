@@ -709,23 +709,26 @@ publications}\gdef\@lopfileinternal{#1}}
 %
 \renewcommand{\frontmatter}{
     \pagestyle{empty}
-    % frontpage - greek version
-    \@frontpage
 
     % frontpage - english version
     \englishfrontpagetrue
     \@frontpage
 
-    % examination committe page - greek version
-    \@committeepage
+    % frontpage - greek version
+    \englishfrontpagefalse
+    \@frontpage
 
-    % examination committe page - greek version
+    % examination committe page - english version
     \englishcommitteepagetrue
     \@committeepage
 
-    % abstract (greek and english version)
-    \@absGr
+    % examination committe page - greek version
+    \englishcommitteepagefalse
+    \@committeepage
+
+    % abstract (english and greek version)
     \@absEn
+    \@absGr
 
     % thesis synopsis (greek version only, OPTIONAL)
     \@synopsis
