@@ -730,12 +730,6 @@ publications}\gdef\@lopfileinternal{#1}}
     \@absEn
     \@absGr
 
-    % thesis synopsis (greek version only, OPTIONAL)
-    \@synopsis
-    \ifinscriptionpage
-       	\@inscr
-    \fi
-
     % acknowledgements (english version only, OPTIONAL)
     \ifackpage
     	\@acks
@@ -744,6 +738,12 @@ publications}\gdef\@lopfileinternal{#1}}
     % list of publications (english version only, OPTIONAL)
     \ifloppage
        	\@listofpubs
+    \fi
+
+    % thesis synopsis (greek version only, OPTIONAL)
+    \@synopsis
+    \ifinscriptionpage
+       	\@inscr
     \fi
 
     % table of contents
