@@ -176,10 +176,10 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \else
     % default: pdfLaTeX
     \usepackage{amssymb,amsmath,latexsym,amsthm}
-    % \usepackage{lmodern}
-    \usepackage[greek,english]{babel}
-    \usepackage[LGR, T1]{fontenc}
+    \usepackage[LGR,T1]{fontenc}
     \usepackage[utf8]{inputenc}
+    \usepackage{lmodern}
+    \usepackage[greek,english]{babel}
     \usepackage{csquotes}
 \fi
 
