@@ -192,6 +192,75 @@ memory structure that was not previously evident.
 % analyze well, but also ubiquitous in practice, thus limiting the
 % practical impact of static analysis.
 
+% +-----------------------------------------------------------------------------
+% |  Future Work
+% +-----------------------------------------------------------------------------
+
+\paragraph{Limitations \& Future Work.}
+
+Finally, we will discuss some interesting future directions to tackle
+existing limitations of our approaches.
+
+To begin with, our structure-sensitive points-to analysis for C/C++
+lacks flow sensitivity, which is an essential feature for C-like
+languages. Flow sensitivity takes the order of program instructions
+into account, to increase analysis precision. The results it computes
+are now specialized to a specific program point, at which they
+hold. Thus, different program points will be associated with different
+points-to results, by the end of an analysis run.
+
+We have already discussed, in Chapter~\ref{chapter:structsens}, the
+SSA transformation built in the LLVM bitcode format. SSA can be viewed
+as a limited form of flow sensitivity, since it ensures that a
+variable is only assigned once; a variable with multiple assignments
+will be split into multiple different variables, one per assignment.
+However, SSA is far from adequate, especially in LLVM bitcode, where
+address-taken variables bypass SSA, by being transformed to pointers
+whose contents can be changed by multiple store instructions. This is
+not specific to analysis of C/C++ or LLVM bitcode. In a Java pointer
+analysis, like the one we have briefly presented in
+Chapter~\ref{chapter:reflection}, despite SSA, fields of objects can
+be, again, updated multiple times.
+
+To take advantage of flow sensitivity and be able to substantially
+affect precision, an analysis has to perform \emph{strong updates}. A
+store instruction strongly updates the results of an over-approximate
+pointer analysis, when it overwrites the previous points-to contents
+for the given address. A weak update only \emph{extends} points-to
+contents without removing any prior results. However, it is not
+generally sound for a flow-sensitive pointer analysis to perform a
+strong update without additional reasoning. The reason is that an
+abstract object summarizes multiple concrete objects; to strongly
+update it, we have to ensure that the update applies to all concrete
+objects that it represents.
+
+We have already discussed how the recency-abstraction is able to
+perform strong updates \cite{sas/BalakrishnanR06}.
+%
+Another approach is that of \citeauthor{popl/Lhotak11}, who perform
+strong updates only on singleton points-to sets
+\cite{popl/Lhotak11}.
+%
+Improving the efficiency of flow-sensitive analyses has been studied
+extensively in the literature
+\cite{sigsoft/LiCK11,sigsoft/SuiX16,ecoop/DeD12,iwmm/LiCK13}.
+%
+\citeauthor*{sas/KhedkerMR12} perform a context-sensitive and
+flow-sensitive analysis but limit the points-to information they
+compute based on a liveness analysis about pointer ranges
+\cite{sas/KhedkerMR12}.
+%
+\citeauthor*{sas/YeSX14} limit flow-sensitivity by partitioning the
+program into regions and maintaining flow-sensitivity only between the
+regions but not inside \cite{sas/YeSX14}.
+%
+Incorporating such approaches and possibly devising other methods that
+enable strong updates on some limited cases would be a key step in
+further improving the precision and overall value of our
+structure-sensitive analysis.
+
+
+
 
 % FUTURE WORK IDEAS
 
