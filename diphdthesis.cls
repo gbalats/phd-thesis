@@ -668,7 +668,7 @@ publications}\gdef\@lopfileinternal{#1}}
 % Enable it by passing option ``ack'' to the document class.
 %
 \def\@acks{
-  \chapter*{Acknowledgements}
+  \chapter*{Acknowledgments}
   \thispagestyle{empty}
   \@acksEn{}
   \clearpage
