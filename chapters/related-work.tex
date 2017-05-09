@@ -528,7 +528,7 @@ among others.
 %% -----------------------------------------------------------------------------
 
 \paragraph{Separation Logic.}
-Points-to analysis provides a model of the heap (or of memory in
+Points-to analysis provides a model of the heap (or memory, in
 general, for a language such as C). Other approaches for heap analysis
 that can be used to prove pointer safety are based on the field of
 \emph{separation logic}. Separation logic, in turn, can be viewed as
@@ -627,7 +627,7 @@ allocation site, their analysis creates two abstract objects:
 \item the second one summarizes all the other (least recent)
   objects for the same site.
 \end{inparaenum}
-Note that the first object abstracts just a \emph{single} concrete
+Note that the first object represents just a \emph{single} concrete
 object and, hence, can be used to perform strong updates, which is an
 essential technique to improve the precision and scalability of a
 flow-sensitive analysis.
@@ -682,7 +682,7 @@ context \(c_1\), points to abstract object \(\alloc{o}\), allocated
 under context \(c_2\). Essentially, this means that we have refined
 our abstractions: the same variable \(v\) is represented by multiple
 variable-context tuples, \((v, c_1)\), each one corresponding to some
-different execution, and having an independent points-to
+different execution path, and having an independent points-to
 set. Similarly, the same allocation site (given that we have used the
 allocation-site abstraction as a basis for our object abstraction) of
 \(\alloc{o}\) is now represented by multiple object-context tuples,
@@ -713,8 +713,8 @@ but automated machine-learning techniques can also be used to adapt
 the degree of context sensitivity
 \cite{oopsla/OhYY15,pldi/LiangN11,popl/LiangTN11,popl/GrigoreY16}.
 %
-Other approaches use counter-example-guided abstraction refinements,
-using the feedback from failed analysis runs to pick a new abstraction
+Other approaches such as counter-example-guided abstraction refinements,
+use the feedback from failed analysis runs to pick a new abstraction
 which is less likely to fail
 \cite{pldi/ZhangNY13,pldi/ZhangMGNY14,tacas/GulavaniR06}.
 
