@@ -25,8 +25,8 @@ to represent the same instruction. Also, each different field and
 array element of each such strongly-typed object (of a complex type)
 will be represented by a unique abstract subobject itself, having its
 own separate points-to set, while also maintaining strong type
-information. The final outcome is a much more fine-grained allocation
-abstraction than that of the typical C/C++ points-to analysis, that is
+information. The final outcome is a much finer-grained allocation
+abstraction (than that of the typical C/C++ points-to analysis) that is
 guided primarily by the flow of types. The key to this technique is
 that tracking the flow of types that will determine what objects will
 be created is not determined before the analysis has run, but
@@ -61,7 +61,7 @@ analyzing C/C++ that we have already encountered:
 \item the same (reflective) allocation site can be used to allocate
   objects of many different types
 \item no local type information exists for reflective objects;
-  instead, the types are determined by runtime-strings that are passed
+  instead, the types are determined by run-time strings that are passed
   on as arguments to the reflective operations involved
 \item apart from normal object allocations, there are also reflective
   calls that return special objects representing program classes,
@@ -71,7 +71,7 @@ analyzing C/C++ that we have already encountered:
 
 To tackle the limitations of existing pointer analyses, induced by
 reflection, we presented a static reflection analysis (which also runs
-simultaneously to the core points-to analysis) that employs similar
+simultaneously with the core points-to analysis) that employs similar
 techniques to those of Chapter~\ref{chapter:structsens}: by inspecting
 the use of reflective objects (i.e., what types they are cast to, what
 fields they access, and so on), the analysis is able to recover
@@ -112,15 +112,15 @@ the libraries directly used by the program) make things even worse,
 from the perspective of a static analyzer, since such dependencies are
 much more numerous and less likely to be actually used. Hence, whole
 programs might be both prohibitively difficult to obtain and
-superfluous at the same time; if some parts of the program were
-missing, it would make no difference in any actual execution, had
+unnecessary at the same time; if some parts of the program were
+missing, they would make no difference in any actual execution, had
 these parts been truly redundant. In such cases, missing these parts
-should also make no difference in analyzing the program too, which
-explains why there is a strong incentive for static analysis tools in
-being able to analyze partial programs. Despite such incentive, static
-analysis tools are rarely well-equipped or error tolerant enough to be
+should also make no difference in analyzing the program, which
+explains why there is a strong incentive for static analysis tools to
+be able to analyze partial programs. Despite such incentive, static
+analysis tools are rarely well-equipped or error-tolerant enough to be
 able to cope with partial programs. When they do so, they risk a great
-deterioration to their results.
+deterioration of their results.
 
 % To address this challenge in full generality we define the problem
 % of ``program complementation''
@@ -168,15 +168,15 @@ without complementation fails to find a great number of reachable
 methods (which will not be analyzed at all). Therefore, recovering the
 structural information of phantom types, via our program
 complementation technique, has improved the static analysis on the
-partial program, thus enforcing our thesis.
+partial program, thus reinforcing our thesis.
 
 We believe that the hierarchy complementation problem is fundamental
 and is likely to arise in different settings in the future, hopefully
 aided by our modeling of the problem and some of its solution avenues.
 
-To summarize, we advocate that there are many opportunities in
+To summarize, we advocate that there are many opportunities of
 recovering implicit structural information about memory that can
-improve static analysis of programs, but require complex inference
+improve the static analysis of programs, but require complex inference
 that takes advantage of indirect uses of types. We have examined three
 different scenarios to test and evaluate our thesis, regarding
 \begin{inparablank}
@@ -204,7 +204,7 @@ existing limitations of our approaches.
 \subsection{Flow-Sensitivity and Strong Updates}
 
 To begin with, our structure-sensitive points-to analysis for C/C++
-lacks flow sensitivity, which is an essential feature for C-like
+lacks flow sensitivity, which is a useful feature for C-like
 languages. Flow sensitivity takes the order of program instructions
 into account, to increase analysis precision. The results it computes
 are now specialized to a specific program point, at which they
@@ -236,7 +236,7 @@ abstract object summarizes multiple concrete objects; to strongly
 update it, we have to ensure that the update applies to all concrete
 objects that it represents.
 
-We addressed how the recency-abstraction of
+We previously discussed how the recency-abstraction of
 \citeauthor{sas/BalakrishnanR06}~\cite{sas/BalakrishnanR06} allows us
 to perform strong updates.
 %
@@ -259,7 +259,7 @@ program into regions and maintaining flow-sensitivity only between the
 regions but not inside \cite{sas/YeSX14}.
 %
 Incorporating such approaches and possibly devising other methods that
-enable strong updates on some limited cases would be a key step in
+enable strong updates in limited cases would be a key step in
 further improving the precision and overall value of our
 structure-sensitive analysis.
 
@@ -268,8 +268,8 @@ structure-sensitive analysis.
 
 Our structure sensitive analysis for C/C++ takes array indices into
 account, to introduce a form of array-sensitivity by which it can
-statically differentiate distinct array elements. Array indices is not
-the only case where our analysis could benefit by integer values. The
+statically differentiate distinct array elements. Array indices are not
+the only case where our analysis could benefit from integer values. The
 number of bytes specified in an allocation instruction (e.g., via the
 single parameter of a \code{malloc()} call) could help us filter some
 invalid object-type associations.
@@ -281,7 +281,7 @@ in tracking integer-valued quantities and numerical properties of
 program variables. For a language like C, which allows pointers to be
 treated as integers, even aliasing information could be tied to
 the computation of integer value domains. The standard use case of
-numeric domains, however, is answering queries about integer overflows
+numeric domains, however, is for answering queries about integer overflows
 and array bounds checking.
 %
 One of the most precise approaches in the computation of numeric
