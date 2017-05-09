@@ -196,10 +196,12 @@ memory structure that was not previously evident.
 % |  Future Work
 % +-----------------------------------------------------------------------------
 
-\paragraph{Limitations \& Future Work.}
+\section{Future Work}
 
 Finally, we will discuss some interesting future directions to tackle
 existing limitations of our approaches.
+
+\subsection{Flow-Sensitivity and Strong Updates}
 
 To begin with, our structure-sensitive points-to analysis for C/C++
 lacks flow sensitivity, which is an essential feature for C-like
@@ -234,15 +236,17 @@ abstract object summarizes multiple concrete objects; to strongly
 update it, we have to ensure that the update applies to all concrete
 objects that it represents.
 
-We have already discussed how the recency-abstraction is able to
-perform strong updates \cite{sas/BalakrishnanR06}.
+We addressed how the recency-abstraction of
+\citeauthor{sas/BalakrishnanR06}~\cite{sas/BalakrishnanR06} allows us
+to perform strong updates.
 %
 Another approach is that of \citeauthor{popl/Lhotak11}, who perform
 strong updates only on singleton points-to sets
 \cite{popl/Lhotak11}.
 %
-Improving the efficiency of flow-sensitive analyses has been studied
-extensively in the literature
+However, even with strong updates, the cost of flow-sensitivity could
+be prohibitive. Improving the efficiency of flow-sensitive analyses
+has been studied extensively in the literature
 \cite{sigsoft/LiCK11,sigsoft/SuiX16,ecoop/DeD12,iwmm/LiCK13}.
 %
 \citeauthor*{sas/KhedkerMR12} perform a context-sensitive and
@@ -260,11 +264,59 @@ further improving the precision and overall value of our
 structure-sensitive analysis.
 
 
+\subsection{Integer and String Value Analysis}
+
+Our structure sensitive analysis for C/C++ takes array indices into
+account, to introduce a form of array-sensitivity by which it can
+statically differentiate distinct array elements. Array indices is not
+the only case where our analysis could benefit by integer values. The
+number of bytes specified in an allocation instruction (e.g., via the
+single parameter of a \code{malloc()} call) could help us filter some
+invalid object-type associations.
+
+Such cases, however, are only the tip of the iceberg in how a static
+analysis can find use in reasoning about the domains of integer
+values. Our analysis could incorporate more sophisticated approaches
+in tracking integer-valued quantities and numerical properties of
+program variables. For a language like C, which allows pointers to be
+treated as integers, even aliasing information could be tied to
+the computation of integer value domains. The standard use case of
+numeric domains, however, is answering queries about integer overflows
+and array bounds checking.
+%
+One of the most precise approaches in the computation of numeric
+abstract domains is the polyhedral domain
+\cite{popl/CousotH78}. Cheaper variants include
+\begin{inparablank}
+\item the Octagons abstract domain~\cite{journals/lisp/Mine06},
+\item the Pentagons domain~\cite{sac/LogozzoF08},
+\item and difference-bound matrices (or Zones)~\cite{pado/Mine01}.
+\end{inparablank}
+
+For similar reasons, we can employ more sophisticated string analyses
+to upgrade our reflection handling of
+Chapter~\ref{chapter:reflection}, such as that of
+\citeauthor*{sas/ChristensenMS03}~\cite{sas/ChristensenMS03}, which we
+discussed in the previous chapter.
 
 
-% FUTURE WORK IDEAS
+\subsection{Context Sensitivity}
 
-% integer value analysis that enhances array sensitivity
+We have already discussed context sensitivity in the previous section,
+and the various strategies in specifying what program elements will
+constitute the context.
+
+For the analysis of LLVM bitcode---or any other format that has been
+lowered to a C-like language for that purpose, where the OO features
+have been translated away to more basic constructs---it is not evident
+when and how to use object sensitivity in a generic and parameterized
+way, such as the one proposed by \citeauthor*{popl/SmaragdakisBL11}
+\cite{popl/SmaragdakisBL11}. Generalizing such approaches to work well
+both in the presence and absence of object-oriented features, e.g., by
+identifying what parameters could be used as objects, per method call,
+is a direction worth investigating.
+
+
 
 %%% Local Variables:
 %%% mode: latex
