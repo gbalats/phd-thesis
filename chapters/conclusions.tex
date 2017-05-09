@@ -310,12 +310,16 @@ For the analysis of LLVM bitcode---or any other format that has been
 lowered to a C-like language for that purpose, where the OO features
 have been translated away to more basic constructs---it is not evident
 when and how to use object sensitivity in a generic and parameterized
-way, such as the one proposed by \citeauthor*{popl/SmaragdakisBL11}
-\cite{popl/SmaragdakisBL11}. Generalizing such approaches to work well
+way. An obvious generalization would be to leverage the values of
+every parameter (and not just the receiver object) for the purposes of
+building context at method calls, as in the cartesian product
+algorithm \cite{Agesen:1995:CPA}. Such an approach, however, would
+certainly impede the scalability of the analysis.
+%
+Generalizing past approaches on context-sensitivity to work well
 both in the presence and absence of object-oriented features, e.g., by
 identifying what parameters could be used as objects, per method call,
 is a direction worth investigating.
-
 
 
 %%% Local Variables:
