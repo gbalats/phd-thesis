@@ -427,11 +427,9 @@ publications}\gdef\@lopfileinternal{#1}}
 
       {\bfseries
       \ifenglishfrontpage
-      	PhD THESIS \\
-        \hl{current revision} \revisiondate{}, \revision{}
+      	PhD THESIS
       \else
-        {\gr ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ } \\
-        \hl{current revision} \revisiondate{}, \revision{}
+        {\gr ΔΙΔΑΚΤΟΡΙΚΗ ΔΙΑΤΡΙΒΗ }
       \fi}
       \linebreak\linebreak\linebreak
 
