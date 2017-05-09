@@ -436,12 +436,14 @@ algorithm, together with on-the-fly call-graph construction.
 
 \paragraph{Shape Analysis.}
 
-So far, the techniques we have presented for pointer analysis have
-been based on the allocation sites as the primary source for inventing
-new abstract objects in memory. Despite our deviation from the
+So far, allocation sites is the primary source that drives abstract
+object creation, in the techniques we have presented for pointer
+analysis.
+%
+Despite our deviation from the
 standard allocation-site abstraction, where a single abstract object
-will be allocated per allocation site, even our own techniques
-described in Chapter~\ref{chapter:structsens} will use the allocation
+will be created per allocation site, even our own techniques,
+described in Chapter~\ref{chapter:structsens}, will use the allocation
 site as the basis of abstraction (but may create multiple objects per
 site, nonetheless). A different approach altogether is that of the
 techniques termed as \emph{shape analysis}
@@ -481,9 +483,9 @@ of its input states.  As for abstract objects, they are defined only
 by the values they have for some basic properties (called
 \emph{abstraction properties}) of the particular analysis. Therefore,
 the upper bound for the number of abstract objects in memory is
-exponential with respect to the number of abstraction predicates
-defined. The latter will almost certainly include a predicate per each
-program variable.
+exponential to the number of abstraction predicates defined. (The
+latter will almost certainly include a predicate per each program
+variable.)
 
 By applying these techniques, and choosing the right abstraction
 predicates, the analysis will be able to carve out the \emph{shapes}
@@ -501,7 +503,7 @@ two elements, the abstract interpretation of instruction ``\code{v =
 \end{inparaenum}
 In both output memory states, the analysis will compute values of 1
 for the predicate ``\emph{pointed by variable \var{v}}''; hence, it
-will know exactly where \var{v} points to and not lose any precision,
+will know exactly where \var{v} points to and maintain precision,
 at the expense of increasing the possible memory states by 1.
 
 \citeauthor{popl/SagivRW99} initiated the field of parametric shape
@@ -514,7 +516,7 @@ various extensions such as
 \item a more economic heap abstraction \cite{sas/ManevichSRF04},
 \item better support for recursive programs \cite{cc/RinetzkyS01}
 \item and programs with highly nested data structures
-  \cite{cav/BerdineCCDOWY07} , and
+  \cite{cav/BerdineCCDOWY07}, and
 \item the incorporation of a value analysis into the shape analysis
   algorithm~\cite{sefm/FerraraFJ12},
 \end{inparablank}
