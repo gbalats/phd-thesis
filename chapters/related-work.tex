@@ -597,7 +597,16 @@ if we allow for leftover portions of state (the frame):
 \[A \,*\, \textit{?anti-frame} \;\vdash\; G \,*\, \textit{?frame} \]
 
 The notion of bi-abduction is used as the basis of a new compositional
-interprocedural shape analysis algorithm.
+interprocedural shape analysis algorithm, which synthesizes pre- and
+post-conditions for each program function, by performing a symbolic
+execution that presumes existing specifications.
+%
+When symbolically executing a method call with a given specification,
+in the form of a pre- and a post-condition (which correspond to \(A\)
+and \(G\)), the analysis infers a frame and an anti-frame. Such
+inferred frames and anti-frames will eventually lead to the
+computation of the final pre- and post-conditions for the enclosing
+function, when all of its instructions are processed.
 
 
 \paragraph{Abstraction Strategies.} In Chapter~\ref{chapter:structsens}, we
