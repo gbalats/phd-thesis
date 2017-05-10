@@ -1,0 +1,522 @@
+\documentclass{llncs}
+
+\usepackage{amssymb,amsmath,latexsym}
+\usepackage[chapter]{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{alltt}
+\usepackage{bookmark}
+\usepackage{booktabs}
+\usepackage{color,soul}
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage{footnote}
+\usepackage{graphicx}
+\usepackage{marvosym}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{epigraph}
+\usepackage[defblank]{paralist}
+% \usepackage{boxedminipage}
+% \usepackage{varwidth}
+\usepackage{url}
+\usepackage{subcaption}
+% \usepackage{cite}
+% \captionsetup{compatibility=false}
+\usepackage{verbatimbox}
+\usepackage{minted}
+\usemintedstyle{friendly}             % set minted colour theme
+\usepackage{xparse}
+\usepackage{hyperref}
+\hypersetup{
+    unicode=true,                     % non-Latin characters in bookmarks
+    pdffitwindow=true,                % page fit to window when opened
+    pdfnewwindow=true,                % links in new window
+    pdfkeywords={},                   % list of keywords
+    colorlinks=true,                  % false: boxed links; true: colored links
+    linkcolor=black,                  % color of internal links
+    citecolor=black,                  % color of links to bibliography
+    filecolor=black,                  % color of file links
+    urlcolor=black,                   % color of external links
+    pdftitle={},                      % title
+    pdfauthor={},                     % author
+    pdfsubject={}                     % subject of the document
+}
+\usepackage{csquotes}
+
+% \usepackage{datetime}
+% \usepackage{booktabs}
+% \usepackage{float}
+% \usepackage{upquote}
+% \usepackage{color}
+% \usepackage{dcolumn}
+% \usepackage{textcomp}
+% \usepackage{dcolumn}
+% \usepackage{chngcntr}
+% \usepackage{xspace}
+% \usepackage{tikz}
+% \usepackage{rotating}
+% \usepackage{array}
+% \usepackage{microtype}
+% \usepackage{float}
+
+\newcommand{\doop}{\textsc{Doop}}
+
+\newcommand{\cclyzer}{\texttt{cclyzer}}
+\newcommand{\pearce}{\emph{Pearce$^c$}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pt}[1]{\texttt{\textsc{Pt}(#1)}}
+\newcommand{\javaclass}[1]{\url{#1}}
+\newcommand{\javamethod}[1]{\url{#1}}
+\newcommand{\javasignature}[1]{\url{#1}}
+
+% \usepackage{../styles/instructions}
+\usepackage{../styles/languages}
+% \usepackage{../styles/mathmisc}
+% \usepackage{../styles/algorithms}
+
+
+\begin{document}
+\pagestyle{headings}
+
+\mainmatter 
+
+\title{Recovering Structural Information for Better Static Analysis}
+\author{George Balatsouras\thanks{Dissertation Advisor: Yannis Smaragdakis, Professor}}
+
+\institute{National and Kapodistrian University of Athens \\
+Department of Informatics and Telecommunications \\
+\email{gbalats@di.uoa.gr}}
+
+\maketitle              
+
+\pagestyle{empty}
+
+\begin{abstract}
+
+  To reach a truly broad level of program understanding, static
+  analysis techniques need to create an abstraction of memory that
+  covers all possible executions. Such abstract models may quickly
+  degenerate after losing essential structural information about the
+  memory objects they describe, due to the use of specific programming
+  idioms and language features, or because of practical analysis
+  limitations. In many cases, some of the lost memory structure may be
+  retrieved, though it requires complex inference that takes advantage
+  of indirect uses of types. Such recovered structural information
+  may, then, greatly benefit static analysis.
+  %
+  This dissertation shows how we can recover structural information,
+  first
+  \begin{inparaenum}[(i)]
+  \item in the context of C/C++, and next, in the context of
+    higher-level languages without direct memory access, like Java,
+    where we identify two primary causes of losing memory structure:
+  \item the use of reflection, and
+  \item analysis of partial programs.
+  \end{inparaenum}
+  We show that, in all cases, the recovered structural information
+  greatly benefits static analysis on the program.
+
+  \keywords{Pointer Analysis; Object-Oriented Programming; Type %
+    Hierarchy; Reflection}
+
+\end{abstract}
+
+\section{Introduction}
+
+The most promising and powerful of existing static analysis techniques
+rely on the creation of some \emph{abstract memory model} of the
+program. What objects will the memory contain, at some state of
+execution? What will their structure be like?  A faithful abstract
+representation of the actual memory is, however, a demanding task; its
+precision often decisive for the value of whatever the static
+analysis is aiming to eventually compute (be it the identification of
+complex bug patterns or the opportunities for effective
+optimizations).
+
+\paragraph*{Thesis.}
+\begin{displayquote}
+  There is \emph{implicit structural information} in the program,
+  about the memory it will allocate, that can improve the quality of
+  the abstract memory model constructed by static analysis. This
+  structural information is not readily available, but may be
+  recovered via inference, primarily by tracking the use of types in
+  the program.
+\end{displayquote}
+
+\noindent
+We provide a number of techniques that recover such
+lost memory structure, in two different settings:
+\begin{inparaenum}[(1)]
+\item in C/C++ programs, as a typical case of low-level code with
+  direct memory access, where the program's memory structure is often
+  lost due to specific programming idioms and the inherent low-level
+  nature of the language, and
+\item in Java programs, where, despite the high-level nature of the
+  language, structural information may be lost
+  \begin{inparaenum}[(a)]
+  \item for \emph{partial programs} (i.e., libraries or any programs that
+    lack some of their parts), which, in the form of Java Archives
+    (JARs), constitute the main distributable code entity of this
+    managed language, or
+  \item due to Java's \emph{reflection} mechanism, which allows
+    runtime inspection of classes, interfaces, fields and methods, and
+    can be used to instantiate new objects, invoke methods, get/set
+    field values, and so on, without exact static type information
+    (e.g., the name of the method to be invoked can be created
+    dynamically using plain string operations).
+  \end{inparaenum}
+\end{inparaenum}
+
+\section{Structure-Sensitive Points-To Analysis for C and C++}
+
+Points-to analysis computes an abstract model of the memory that is
+used to answer the following query: \emph{What can a pointer variable
+  point-to, i.e., what can its value be when dereferenced during
+  program execution?}  This query serves as the cornerstone of
+many other static analyses aiming to enhance program understanding or
+assist in bug discovery (e.g., deadlock detection), by computing
+higher-level relations that derive from the computed points-to
+sets. In the literature, one can find a multitude of points-to
+analyses with varying degrees of precision and speed.
+
+One of the most popular families of pointer analysis algorithms,
+\emph{inclusion-based} analyses (or Andersen-style analyses
+\cite{andersen:thesis}), originally targeted the C language, but has
+been extended over time and successfully applied to higher-level
+object-oriented languages, such as Java
+\cite{pldi/BerndlLQHU03,oopsla/BravenboerS09,issta/MilanovaRR02,oopsla/RountevMR01,oopsla/WhaleyR99}.
+Surprisingly, precision-enhancing features that are common practice in
+the analysis of Java programs, such as field sensitivity or online
+call-graph construction are absent in many analyses of C/C++
+\cite{antgrasshopper,toplas/HindBCC99,popl/ZhengR08,pldi/HeintzeT01a,pldi/Das00,sas/HardekopfL07}.
+
+In the case of field sensitivity, the reason behind its frequent
+omission when analyzing C is that it is much harder to implement
+correctly than in Java. As noted by Pearce et
+al. \cite{toplas/PearceKH07}, the crucial difference is that, in C/C++,
+it is possible to have the address of a field taken, stored to some
+pointer, and then dereferenced later, at an arbitrarily distant
+program point. In contrast, Java does not permit taking the address of
+a field; one can only load or store to some field directly. Hence,
+\code{load/store} instructions in Java bytecode (or any equivalent IR)
+need an extra field specifier, whereas in C/C++ intermediate
+representations (e.g., LLVM bitcode) \code{load/store} requires only a
+single address operand. The precise field affected is not explicit, but
+only possibly computed by the analysis itself.
+
+The effect of such difference in the underlying IRs, as far as pointer
+analysis is concerned, is far from trivial. In C, the computed
+points-to sets have an expanded domain, since now the analysis must
+be able to express that a variable \code{p} \emph{at some offset}
+\code{i} may point-to another variable \code{q} \emph{at some offset}
+\code{j}, with these offsets corresponding to either field components or
+array elements.
+
+The best-documented approach on how to incorporate
+field sensitivity in a C/C++ points-to analysis is that of Pearce et
+al. \cite{paste/PearceKH04,toplas/PearceKH07}. The authors extend the
+constraint-graph of the analysis by adding (positive) weights to 
+edges; the weights correspond to the respective field indices. For
+instance, the instruction ``\code{q = \&(p->f$_{\code{i}}$)}'' would
+be encoded as a constraint $q \supseteq p + i$. However, this approach
+does not take types into account. In fact, types are not even
+statically available at all allocation sites, since most standard C
+allocation routines are type-agnostic and return byte arrays that are
+cast to the correct type at a later point (e.g., \code{malloc()},
+\code{realloc()}, \code{calloc()}).  Thus, field $i$ is represented
+with no regard to the type of its base object, even when this base
+object abstracts a number of concrete objects of different types.
+The lack of type information for abstract objects is a great source of
+imprecision, since it results in a prohibitive number of spurious
+points-to inferences.
+
+We argue that type information is an essential part in increasing
+analysis precision, even when it is not readily available. The
+abstract object types should be rigorously recorded in all cases,
+especially when indexing fields, and used to filter the points-to
+sets. In this spirit, we present a \emph{structure-sensitive} analysis
+for C/C++ that employs a number of techniques in this direction,
+aiming to retrieve high-level structure information for abstract
+objects in order to increase analysis precision:
+
+\begin{enumerate}
+\setlength\itemsep{0.5em}
+\item First, the analysis records the type of an abstract object when this type is
+  available at the allocation site. This is the case with stack
+  allocations, global variables, and calls to C++'s \code{new()}
+  heap allocation routine.
+\item In cases where the type is not available (as in a call to
+  \code{malloc()}), the analysis deviates from the allocation-site
+  abstraction and creates multiple abstract objects per allocation
+  site: one for every type that the object could have. Thus, each
+  abstract object of type \code{T} now represents the set of all
+  concrete objects of type \code{T} allocated at this site. To
+  determine the possible types for a given allocation site, the
+  analysis creates a special type-less object and records the cast
+  instructions it flows to (i.e., the types it is cast to), using the
+  existing points-to analysis. This is similar to the use-based
+  \emph{back-propagation} technique used in past work
+  \cite{ecoop/LiTSX14,aplas/LivshitsWL05,aplas/SmaragdakisBKB15}, in a
+  completely different context---handling Java reflection.
+\item The field components of abstract objects are represented as
+  abstract objects themselves, as long as their type can be
+  determined. That is, an abstract object \code{SO} of struct type
+  \code{S} will trigger the creation of abstract object
+  \code{SO.f$_\code{i}$}, for each field \code{f$_\code{i}$} in
+  \code{S}. (The aforementioned special objects trigger no such field
+  component creation, since they are typeless.)
+%  we cannot determine either their type or
+%  their resulting fields' types. 
+  Thus, the recursive creation of subobjects is bounded by the type
+  system, which does not allow the declaration of types of infinite
+  size.
+\item Finally, the analysis treats array elements similarly to
+  field components (i.e., by representing them as distinct abstract
+  objects, if we can determine their type), as long as their respective
+  indices statically appear in the source code. That is, an abstract
+  object \code{AO} of array type \code{[T$\times$N]} will trigger the
+  creation of abstract object \code{AO[c]}, if the constant \code{c}
+  is used to index into type \code{[T$\times$N]}. The object
+  \code{AO[*]} is also created, to account for indexing at unknown
+  (variable) indices.
+\end{enumerate}
+
+\noindent
+The last point offers some form of array-sensitivity
+as well and is crucial for analyzing C++ code, lowered to an
+intermediate representation such as LLVM bitcode, in which all the
+object-oriented features have been translated away. To be able to
+resolve virtual calls, an analysis must precisely reason about the
+exact v-table index that a variable may point to, and the method that
+such an index may itself point-to. That is, a precise analysis should
+not merge the points-to sets of distinct indices of v-tables.
+
+We offer an implementation of our approach over the full LLVM bitcode
+intermediate language, in the form of a new static analysis tool,
+\cclyzer{}\footnote{\cclyzer{} is publicly available at
+  \url{https://github.com/plast-lab/cclyzer}}.  We show that our
+approach yields much higher precision than past analyses, allowing
+accurate distinctions between subobjects, v-table entries, array
+components, and more. Especially for C++ programs, this precision is
+invaluable for a realistic analysis. Compared to the state-of-the-art
+past approach, our techniques exhibit substantially better precision
+along multiple metrics and realistic benchmarks (e.g., 40+\% more
+variables with a single points-to target).
+
+\section{More Sound Static Handling of Java Reflection}
+
+
+\section{Class Hierarchy Complementation for Java}
+
+Whole-program static analysis is essential for clients that require
+high-precision
+and a deeper understanding of program behavior. Modern applications of
+program analysis, such as large scale refactoring tools
+\cite{journals/software/Dig11}, race and deadlock detectors
+\cite{pldi/NaikAW06}, and security vulnerability detectors
+\cite{sigsoft/MadsenLF13,uss/GuarnieriL09}, are virtually
+inconceivable without whole-program analysis.
+
+For whole-program analysis to become truly practical, however, it
+needs to overcome several real-world challenges. One of the somewhat
+surprising real-world observations is that whole-program analysis
+requires the availability of much more than the ``whole program''.
+The analysis needs an overapproximation of what constitutes the
+program. Furthermore, this overapproximation is not merely
+what the analysis computes to be the ``whole program'' after it
+has completed executing. Instead, the overapproximation needs to be
+as conservative as required by any intermediate step of the analysis,
+which has not yet been able to tell, for instance, that some method
+is never called.
+
+Consider the example of trying to analyze a program $P$ that uses a
+third-party library $L$. Program $P$ will likely only need small parts
+of $L$.  However, other, entirely separate, parts of $L$ may make use
+of a second library, $L'$.  It is typically not possible to analyze
+$P$ with a whole program analysis framework without also supplying the
+code not just for $L$ but also for $L'$, which is an unreasonable
+burden. In modern languages and runtime systems, $L'$ is usually not
+necessary in order to either compile $P$ or run it under any
+input. The problem is exacerbated in the current era of large-scale
+library reuse.  In fact, it is often the case that the user is not
+even aware of the existence of $L'$ until trying to analyze $P$.
+
+Our research consists precisely of addressing such need in full
+generality. \emph{Given a set of Java class and interface definitions,
+  in bytecode form, we compute a ``program complement'', i.e.,
+  skeletal versions of any referenced missing classes and interfaces
+  so that the combined result constitutes verifiable Java bytecode.}
+
+To see why the problem has interesting depth and complexity,
+consider a simple fragment of Java bytecode and the constraints it
+induces. Our convention here is that single-letter class names at
+the lower end of the alphabet (\code{A}, \code{B}, ...)  correspond
+to known types, while class names at the high end of the alphabet
+(\code{X}, \code{Y}, \code{Z}) denote phantom types.  We present
+bytecode in a slightly condensed form, to make clear what method
+names or type names are referenced in every instruction.
+
+\begin{bytecode}
+  public void foo(X, Y)
+  0: aload_2     // load on stack 2nd argument (of type Y)
+  1: aload_1     // load on stack 1st argument (of type X)
+  2: invokevirtual X.bar:(LA;)LZ; // method 'Z bar(A)' in X
+  3: invokevirtual B.baz:()V;     // method 'void baz()' in B
+   ...
+\end{bytecode}
+
+Although the above fragment is merely four bytecode instructions
+long, it induces several interesting constraints for our phantom
+types \code{X}, \code{Y}, and \code{Z}:
+
+\begin{itemize}[--]
+\item \code{X} has to support a method \code{bar} accepting an
+  argument of type \code{A} and returning a value of type \code{Z}.
+\item \code{Y} has to be a subtype of \code{A}, since an actual
+  argument of declared type \code{Y} is passed to \code{bar}, which
+  has a formal parameter of type \code{A}. This constraint also
+  means that if \code{A} is known to be a class (and not an
+  interface) then \code{Y} is also a class.
+\item \code{Z} has to be a subtype of \code{B}, since a method of
+  \code{B} is invoked on an object of declared type \code{Z} (returned
+  on top of the stack by the earlier invocation).
+\end{itemize}
+
+Our goal is to satisfy all such constraints and
+generate definitions of phantom types \code{X}, \code{Y}, and \code{Z}
+that are compatible with the bytecode that is available to the tool
+(i.e., exists in known classes). Compatibility with existing bytecode
+is defined as satisfying the requirements of the Java verifier, which
+concern type well-formedness.
+
+Note that such definitions will contain essential parts of missing
+structural information for the phantom types: method and field
+members, as well as supertypes. Any subsequent static analysis that
+will operate on the types produced by complementation will create abstract
+objects that are much closer, in structure, to reality.
+
+Of these constraints, the hardest to satisfy are those involving
+subtyping.  Constraints on members (e.g., \code{X} has to contain a
+``\code{Z bar(A)}'') are easy to satisfy by just adding type-correct
+dummy members to the generated classes. This means that the core of
+the general program complementation problem is solving the \emph{class
+  hierarchy complementation problem}: given a partial type hierarchy
+and a set of subtyping constraints, compute a complete type hierarchy
+that satisfies the subtyping constraints \emph{without} changing the
+direct parents of known types.
+
+Solving the hierarchy complementation problem, constitutes the main
+novelty of our approach. The problem appears to be fundamental, and
+even of a certain interest in purely graph-theoretic terms. For a
+representative special case, consider an object-oriented language with
+multiple inheritance (or, equivalently, an interface-only hierarchy in
+Java or C\#).  A partial hierarchy, augmented with constraints, can be
+represented as a graph, as shown in
+Figure~\ref{hiercomp/fig:ex0:problem}. The known part of the hierarchy
+is shown as double circles and solid edges. Unknown (i.e., missing)
+classes are shown as single circles. Dashed edges represent subtyping
+constraints, i.e., indirect subtyping relations that have to hold in
+the resulting hierarchy. In graph-theoretic terms, a dashed edge means
+that there is a path in the solution between the two endpoints. For
+instance, the dashed edge from $C$ to $D$ in
+Figure~\ref{hiercomp/fig:ex0:problem} means that the unknown part of
+the class hierarchy has a path from $C$ to $D$. This path cannot be a
+direct edge from $C$ to $D$, however: $C$ is a known class, so the set
+of its supertypes is fixed.
+
+\begin{figure}[ht]
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{../figures/complementation/cgraph2.pdf}
+    \subcaption{Constraint Graph}\label{hiercomp/fig:ex0:problem}
+  \end{minipage}
+  \begin{minipage}[b]{.5\linewidth}
+    \centering
+    \includegraphics[scale=0.6]{../figures/complementation/cgraph2-solution.pdf}
+    \subcaption{Solution}\label{hiercomp/fig:ex0:solution}
+  \end{minipage}
+  \caption[Example of constraints in a multiple inheritance setting]{%
+    Example of constraints in a multiple inheritance
+    setting. Double-circles signify known classes, single circles
+    signify unknown classes. Solid edges (``known edges'') signify
+    direct subtyping, dashed edges signify transitive subtyping.}
+  \label{hiercomp/fig:ex0}
+\end{figure}
+
+In order to solve the above problem instance, we need to compute a
+directed acyclic graph (DAG) over the same nodes,\footnote{Inventing
+extra nodes does not contribute to a solution in this problem.} so
+that it preserves all known nodes and edges, and adds edges \emph{only
+to unknown nodes} so that all dashed-edge constraints are
+satisfied. That is, the solution will not contain dashed edges
+(indirect subtyping relationships), but every dashed edge in the input
+will have a matching directed path in the solution
+graph. Figure~\ref{hiercomp/fig:ex0:solution} shows one such possible solution.
+As can be seen, solving the constraints (or determining that they are
+unsatisfiable) is not trivial. In this example, any solution has to
+include an edge from $B$ to $E$, for reasons that are not immediately
+apparent. Accordingly, if we change the input of
+Figure~\ref{hiercomp/fig:ex0:problem} to include an edge from $E$ to $B$, then
+the constraints are not satisfiable---any attempted solution
+introduces a cycle. The essence of the algorithmic difficulty of the
+problem (compared to, say, a simple topological sort) is that we
+cannot add extra direct parents to known classes $A$ and $C$---any
+subtyping constraints over these types have to be satisfied via
+existing parent types. This corresponds directly to our high-level
+program requirement: we want to compute definitions for the missing
+types only, without changing existing code.
+%
+For a language with single inheritance, the problem is similar, with
+one difference: the solution needs to be a tree instead of a DAG. (Of
+course, the input in Figure~\ref{hiercomp/fig:ex0:problem} already violates the
+tree property since it contains known nodes with multiple known
+parents.)
+
+We provide algorithms to solve the hierarchy complementation problem
+in the single inheritance and multiple inheritance settings.  We also
+show that the problem in a language such as Java, with single
+inheritance but multiple subtyping and distinguished class
+vs. interface types, can be decomposed into separate single- and
+multiple-subtyping instances.  We implement our algorithms in a tool,
+JPhantom,\footnote{JPhantom is available online at
+  \url{https://github.com/gbalats/jphantom}} which complements partial
+Java bytecode programs so that the result is guaranteed to satisfy the
+Java verifier requirements. In a sense, JPhantom aims to recover
+structural information for phantom classes, via inference, by tracking
+their use in existing code. JPhantom is highly scalable and runs in
+mere seconds even for large input applications and complex constraints
+(with a maximum of 14s for a 19MB binary).
+
+\section{Conclusions}
+
+To summarize, we advocate that there are many opportunities in
+recovering implicit structural information about memory that can
+improve static analysis of programs, but require complex inference
+that takes advantage of indirect uses of types. We have examined three
+different scenarios to test and evaluate our thesis, regarding
+\begin{inparablank}
+\item generic C/C++ programs, and
+\item Java programs that either use reflection or
+\item are missing parts of their code.
+\end{inparablank}
+In all cases, we where able to improve static analysis, by recovering
+memory structure that was not previously evident.
+
+\section{Credits}
+% The contents of this doctoral dissertation are based on published papers that were written in collaboration with others. Specifically:
+
+% \begin{itemize}
+%   \item \emph{Clash of the Lambdas}~\cite{biboudis_clash_2014}; joint research with Nick Palladinos and Yannis Smaragdakis.
+%   \item \emph{Streams {\`a} la carte}~\cite{biboudis_streams_2015}; joint research with Nick Palladinos, George Fourtounis and Yannis Smaragdakis.
+%   \item \emph{Recaf: Java Dialects As Libraries}~\cite{biboudis_recaf_2016}; work done while the author was affiliated with CWI; original design and implementation by the author, Pablo Inostroza and Tijs van der Storm; implementation of expression-level extensibility and corresponding applications by Pablo Inostroza.
+%   \item \emph{Stream Fusion, to Completeness}~\cite{kiselyov_stream_2017}; original design by Oleg Kiselyov with help by the author on implementation and evaluation, jointly with Nick Palladinos and Yannis Smaragdakis.
+% \end{itemize}
+
+
+
+\bibliographystyle{splncs03}
+\bibliography{../bib/my-publications,../bib/thesis,../bib/class-hier-comp,../bib/reflection,../bib/ptr-analysis/ptranalysis,../bib/ptr-analysis/specs,../bib/ptr-analysis/tools,../bib/ptr-analysis/proceedings}
+
+\end{document}
