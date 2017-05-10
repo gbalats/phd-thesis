@@ -311,13 +311,10 @@ variables with a single points-to target).
 \section{Class Hierarchy Complementation for Java}
 
 Whole-program static analysis is essential for clients that require
-high-precision
-and a deeper understanding of program behavior. Modern applications of
-program analysis, such as large scale refactoring tools
-\cite{journals/software/Dig11}, race and deadlock detectors
-\cite{pldi/NaikAW06}, and security vulnerability detectors
-\cite{sigsoft/MadsenLF13,uss/GuarnieriL09}, are virtually
-inconceivable without whole-program analysis.
+high-precision and a deeper understanding of program behavior. Modern
+applications of program analysis, such as large scale refactoring
+tools, race and deadlock detectors, and security vulnerability
+detectors, are virtually inconceivable without whole-program analysis.
 
 For whole-program analysis to become truly practical, however, it
 needs to overcome several real-world challenges. One of the somewhat
@@ -504,16 +501,20 @@ different scenarios to test and evaluate our thesis, regarding
 In all cases, we where able to improve static analysis, by recovering
 memory structure that was not previously evident.
 
-\section{Credits}
-% The contents of this doctoral dissertation are based on published papers that were written in collaboration with others. Specifically:
+\section{Publications}
 
-% \begin{itemize}
-%   \item \emph{Clash of the Lambdas}~\cite{biboudis_clash_2014}; joint research with Nick Palladinos and Yannis Smaragdakis.
-%   \item \emph{Streams {\`a} la carte}~\cite{biboudis_streams_2015}; joint research with Nick Palladinos, George Fourtounis and Yannis Smaragdakis.
-%   \item \emph{Recaf: Java Dialects As Libraries}~\cite{biboudis_recaf_2016}; work done while the author was affiliated with CWI; original design and implementation by the author, Pablo Inostroza and Tijs van der Storm; implementation of expression-level extensibility and corresponding applications by Pablo Inostroza.
-%   \item \emph{Stream Fusion, to Completeness}~\cite{kiselyov_stream_2017}; original design by Oleg Kiselyov with help by the author on implementation and evaluation, jointly with Nick Palladinos and Yannis Smaragdakis.
-% \end{itemize}
+The contents of this doctoral dissertation are based on the following
+published papers:
 
+\begin{itemize}[--]
+\item \emph{Structure-Sensitive Points-To Analysis for C and C++}
+  \cite{structsens}
+\item \emph{More Sound Static Handling of Java Reflection}
+  \cite{reflection}
+\item \emph{Class Hierarchy Complementation: Soundly Completing a
+    Partial Type Graph}~\cite{jphantom}
+\item \emph{Pointer Analysis} \cite{survey}
+\end{itemize}
 
 
 \bibliographystyle{splncs03}
