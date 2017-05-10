@@ -158,6 +158,11 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
     % \usepackage{xgreek}
     \usepackage{fontspec}
     \defaultfontfeatures{Mapping=tex-text}
+    \setmainfont[ExternalLocation=fonts/arial/fonts/,Ligatures={Common,TeX},BoldFont=Arial-Bold.ttf,ItalicFont=Arial-Italic.ttf,BoldItalicFont=Arial-Bold-Italic.ttf]{Arial.ttf}
+    \setsansfont[ExternalLocation=fonts/arial/fonts/,Mapping=tex-text,Scale=MatchLowercase,Ligatures={Common,TeX},BoldFont=Arial-Bold.ttf,ItalicFont=Arial-Italic.ttf,BoldItalicFont=Arial-Bold-Italic.ttf]{Arial.ttf}%
+    \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+    \setmonofont[Mapping=no-mapping]{Liberation Mono}
+    \newfontfamily\lstmonofont[Scale=0.80,Mapping=no-mapping]{Liberation Mono}
     % \setmainfont[Mapping=tex-text]{Linux Libertine O}
     % \setmainfont[Ligatures={Common,TeX}]{Arial}
     % \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
