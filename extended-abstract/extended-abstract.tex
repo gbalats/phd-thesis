@@ -307,6 +307,132 @@ variables with a single points-to target).
 
 \section{More Sound Static Handling of Java Reflection}
 
+Moving to higher-level languages, like Java, we note that essential
+structural information is often lost in Java programs too, yet for
+different reasons. A source of analysis imprecision, especially in
+determining the types of abstract objects constructed by the analysis,
+lies in the use of Java's reflection mechanism: the ability to inspect
+and dynamically retrieve classes, methods, attributes, etc. at
+runtime.
+
+By using the Reflection API, Java programs can encompass dynamic
+behavior. However, statically reasoning about the behavior of software
+that uses reflection can be especially cumbersome.  Unfortunately,
+reflection is ubiquitous in large Java programs.
+%
+When a Java program accesses a class by supplying its name as a
+run-time string, via the \javasignature{Class.forName} library call,
+the static analysis has very few available courses of action: It needs
+to either conservatively over-approximate (e.g., assume that
+\emph{any} class can be accessed, possibly limiting the set later,
+after the returned object is used), or to perform a string analysis
+that will allow it to infer the contents of the \code{forName} string
+argument. Both options can be detrimental to the scalability of the
+analysis: the conservative over-approximation may never become
+constrained enough by further instructions to be feasible in practice;
+precise string analysis is impractical for programs of realistic size.
+It is telling that \emph{no practical Java program analysis framework
+  in existence handles reflection soundly} \cite{soundiness15},
+although other language features are modeled soundly.\footnote{In our
+  context, \emph{sound} = over-approximate, i.e., guaranteeing that
+  all possible behaviors of reflection operations are modeled.}
+
+%
+Full soundness is not practically achievable, but it can still be
+approximated for the well-behaved reflection patterns encountered in
+regular, non-adversarial programs.  Therefore, it makes sense to treat
+soundness as a continuous quantity: something to improve on, even
+though we cannot perfectly reach.  To avoid confusion, we use the term
+\emph{empirical soundness} for the quantification of how much of the
+dynamic behavior the static analysis covers. Computable metrics of
+empirical soundness can help quantify how close an analysis is to the
+fully sound result. Based on such metrics, one can make comparisons
+(e.g., ``more sound'') to describe soundness improvements.
+
+The second challenge of handling reflection in a static analysis is
+\emph{scalability}.  The online documentation of the IBM \textsc{Wala}
+library~\cite{www:wala-reflection} concisely summarizes the current
+state of the practice, for \emph{points-to analysis} in the Java
+setting.
+
+\begin{quote}
+  \emph{Reflection usage and the size of modern libraries/frameworks
+    make it very difficult to scale flow-insensitive points-to
+    analysis to modern Java programs. For example, with default
+    settings, \textsc{Wala}'s pointer analyses cannot handle any
+    program linked against the Java 6 standard libraries, due to
+    extensive reflection in the libraries.}
+\end{quote}
+
+\noindent The same caveats routinely appear in the research
+literature. Multiple published points-to analysis papers analyze
+well-known benchmarks with reflection
+disabled~\cite{popl/SmaragdakisBL11,pldi/KastrinisS13,ecoop/AliL12,ecoop/AliL13}.
+
+
+A representative quote~\cite{popl/SmaragdakisBL11} illustrates:
+\begin{quote}
+  \emph{Hsqldb and jython could not be analyzed with reflection
+    analysis enabled [...]  ---hsqldb cannot even be analyzed
+    context-insensitively and jython cannot even be analyzed with the
+    1obj analysis. This is due to vast imprecision introduced when
+    reflection methods are not filtered in any way by constant strings
+    (for classes, fields, or methods) and the analysis infers a large
+    number of reflection objects to flow to several variables.  [...]
+    For these two applications, our analysis has reflection reasoning
+    disabled.  Since hsqldb in the DaCapo benchmark code has its main
+    functionality called via reflection, we had to configure its entry
+    point manually.}
+\end{quote}
+
+\noindent
+We describe an approach for handling reflection with improved empirical
+soundness (as measured against prior approaches and dynamic
+information), again, in the context of a points-to analysis. Our
+approach is based on the combination of string-flow and points-to
+analysis from past literature augmented with
+\begin{inparaenum}[(a)]
+\item substring analysis and modeling of partial string flow through
+  string builder classes;
+\item new techniques for analyzing reflective entities based on
+  information available at their use-sites.
+\end{inparaenum}
+% The resulting analysis is general, without any need for hand-tuning. 
+In experimental comparisons with prior approaches, we demonstrate a
+combination of both improved soundness (recovering the majority of
+missing call-graph edges) and increased performance.
+%
+Our approach requires no manual configuration and achieves
+significantly higher empirical soundness without sacrificing
+scalability, for realistic benchmarks and libraries (DaCapo Bach and
+Java 7).
+
+In experimental comparisons with the recent \textsc{Elf}
+system~\cite{ecoop/LiTSX14} (itself improving over the reflection
+analysis of the \textsc{Doop} framework~\cite{oopsla/BravenboerS09}),
+our algorithm discovers most of the call-graph edges missing (relative
+to a dynamic analysis) from \textsc{Elf}'s reflection analysis.  This
+improvement in empirical soundness is accompanied by \emph{increased}
+performance relative to \textsc{Elf}, demonstrating that near-sound
+handling of reflection is often practically possible. Concretely, our
+work for reflection:
+\begin{itemize}[\(\cdot\)]
+\item introduces key techniques in static reflection handling that
+  contribute greatly to empirical soundness. The techniques generalize
+  past work from an intra-procedural to an inter-procedural setting
+  and combine it with a string analysis;
+\item shows how scalability can be addressed with appropriate tuning
+  of the above generalized techniques;
+\item thoroughly quantifies the empirical soundness of a static
+  points-to analysis, compared to past approaches and to a dynamic
+  analysis;
+\item is implemented and evaluated on top of an existing open
+  framework (\textsc{Doop}~\cite{oopsla/BravenboerS09}).
+  % This can offer a platform for experimentation with sophisticated
+  % static reflection handling, possibly also leading to good static
+  % handling of other dynamic features (e.g., complex dynamic
+  % loading).
+\end{itemize}
 
 \section{Class Hierarchy Complementation for Java}
 
@@ -517,6 +643,7 @@ published papers:
 \end{itemize}
 
 
+% \clearpage
 \bibliographystyle{splncs03}
 \bibliography{../bib/my-publications,../bib/thesis,../bib/class-hier-comp,../bib/reflection,../bib/ptr-analysis/ptranalysis,../bib/ptr-analysis/specs,../bib/ptr-analysis/tools,../bib/ptr-analysis/proceedings}
 
