@@ -1,4 +1,4 @@
-LATEX        := pdflatex
+LATEX        := xelatex
 LATEX        += -shell-escape -interaction=nonstopmode -file-line-error
 BIBTEX       := bibtex -min-crossrefs=9000
 PS2PDF       := ps2pdf -dEPSCrop

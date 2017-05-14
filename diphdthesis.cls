@@ -157,18 +157,19 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
     % XeLaTeX
     % \usepackage{xgreek}
     \usepackage{fontspec}
-    \defaultfontfeatures{Mapping=tex-text}
+
     \setmainfont[ExternalLocation=fonts/arial/fonts/,Ligatures={Common,TeX},BoldFont=Arial-Bold.ttf,ItalicFont=Arial-Italic.ttf,BoldItalicFont=Arial-Bold-Italic.ttf]{Arial.ttf}
-    \setsansfont[ExternalLocation=fonts/arial/fonts/,Mapping=tex-text,Scale=MatchLowercase,Ligatures={Common,TeX},BoldFont=Arial-Bold.ttf,ItalicFont=Arial-Italic.ttf,BoldItalicFont=Arial-Bold-Italic.ttf]{Arial.ttf}%
     \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-    \setmonofont[Mapping=no-mapping]{Liberation Mono}
-    \newfontfamily\lstmonofont[Scale=0.80,Mapping=no-mapping]{Liberation Mono}
+    \setsansfont[ExternalLocation=fonts/arial/fonts/,Mapping=tex-text,Scale=MatchLowercase,Ligatures={Common,TeX},BoldFont=Arial-Bold.ttf,ItalicFont=Arial-Italic.ttf,BoldItalicFont=Arial-Bold-Italic.ttf]{Arial.ttf}%
+    % \setmonofont[Mapping=no-mapping]{Liberation Mono}
+    % \newfontfamily\lstmonofont[Scale=0.80,Mapping=no-mapping]{Liberation Mono}
+
     % \setmainfont[Mapping=tex-text]{Linux Libertine O}
     % \setmainfont[Ligatures={Common,TeX}]{Arial}
     % \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
     % \setsansfont[Mapping=tex-text,Scale=MatchLowercase]{Arial}
-    \newfontfamily{\greekfont}{Linux Libertine O}   % CMU Serif
-    \newfontfamily{\greekfontsf}{Linux Libertine O} % CMU Sans Serif
+    % \newfontfamily{\greekfont}{Linux Libertine O}   % CMU Serif
+    % \newfontfamily{\greekfontsf}{Linux Libertine O} % CMU Sans Serif
     \usepackage{polyglossia}
     \setdefaultlanguage{english}
     \setotherlanguage{greek}
@@ -181,6 +182,8 @@ includehead,includefoot]{geometry} % add option showframe=true for debugging
 \else
     % default: pdfLaTeX
     \usepackage{amssymb,amsmath,latexsym,amsthm}
+    \usepackage[scaled]{helvet}
+    \renewcommand*\familydefault{\sfdefault}
     \usepackage[LGR,T1]{fontenc}
     \usepackage[utf8]{inputenc}
     \usepackage{lmodern}
